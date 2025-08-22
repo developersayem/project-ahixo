@@ -121,62 +121,60 @@ export default function MobileNavbar() {
             <X className="text-red-500" />
           </Button>
         </div>
-        <div className="flex flex-col justify-end items-center h-full">
-          {/* Menu Items */}
-          <div className="py-4">
-            {navItems.map((item, index) => (
-              <Link key={index} href={item.link}>
-                <button
-                  className="w-full text-left px-6 py-4 text-gray-700 hover:bg-gray-50 hover:text-red-500 transition-colors border-b border-gray-100 last:border-b-0"
-                  onClick={closeMenu}
+        {/* Menu Items */}
+        <div className="py-4">
+          {navItems.map((item, index) => (
+            <Link key={index} href={item.link}>
+              <button
+                className="w-full text-left px-6 py-4 text-gray-700 hover:bg-gray-50 hover:text-red-500 transition-colors border-b border-gray-100 last:border-b-0"
+                onClick={closeMenu}
+              >
+                <span className="text-lg font-medium capitalize">
+                  {item.name}
+                </span>
+              </button>
+            </Link>
+          ))}
+        </div>
+        {/* Language and Currency selector */}
+        <div className="flex items-end justify-center h-7 text-sm">
+          {/* Left side - Language and Currency */}
+          <div className="flex items-center space-x-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-gray-600 hover:text-gray-900"
                 >
-                  <span className="text-lg font-medium capitalize">
-                    {item.name}
-                  </span>
-                </button>
-              </Link>
-            ))}
-          </div>
-          {/* Language and Currency selector */}
-          <div className="flex items-end justify-center h-7 text-sm bg-amber-300">
-            {/* Left side - Language and Currency */}
-            <div className="flex items-center space-x-4">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 px-2 text-gray-600 hover:text-gray-900"
-                  >
-                    English
-                    <ChevronDown className="ml-1 h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem>English</DropdownMenuItem>
-                  <DropdownMenuItem>Spanish</DropdownMenuItem>
-                  <DropdownMenuItem>French</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  English
+                  <ChevronDown className="ml-1 h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>English</DropdownMenuItem>
+                <DropdownMenuItem>Spanish</DropdownMenuItem>
+                <DropdownMenuItem>French</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 px-2 text-gray-600 hover:text-gray-900"
-                  >
-                    U.S. Dollar
-                    <ChevronDown className="ml-1 h-3 w-3" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem>U.S. Dollar</DropdownMenuItem>
-                  <DropdownMenuItem>Euro</DropdownMenuItem>
-                  <DropdownMenuItem>British Pound</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-gray-600 hover:text-gray-900"
+                >
+                  U.S. Dollar
+                  <ChevronDown className="ml-1 h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>U.S. Dollar</DropdownMenuItem>
+                <DropdownMenuItem>Euro</DropdownMenuItem>
+                <DropdownMenuItem>British Pound</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
