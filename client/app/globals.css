@@ -43,6 +43,32 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+@theme {
+  /* Brand Greens */
+  --color-brand-50: #e9f2ec;
+  --color-brand-100: #d4e5d9;
+  --color-brand-200: #adcdb6;
+  --color-brand-300: #84b892;
+  --color-brand-400: #5a9d6b;
+  --color-brand-500: #397f49;
+  --color-brand-600: #226c30;
+  --color-brand-700: #145c22;
+  --color-brand-800: #0b4f18;
+  --color-brand-900: #063d12;
+
+  /* Neutral Grays */
+  --color-neutral-50: #f5f5f5;
+  --color-neutral-100: #e2e2e2;
+  --color-neutral-200: #c8c8c8;
+  --color-neutral-300: #a6a6a6;
+  --color-neutral-400: #8a8a8a;
+  --color-neutral-500: #6d6d6d;
+  --color-neutral-600: #555555;
+  --color-neutral-700: #3d3d3d;
+  --color-neutral-800: #2b2b2b;
+  --color-neutral-900: #1a1a1a;
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
