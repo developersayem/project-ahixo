@@ -7,10 +7,30 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { useState } from "react";
+import { VerificationForm } from "@/components/shared/verification-form";
 
 export default function SellerRegisterPage() {
+  const [isVerified, setIsVerified] = useState(false);
+
+  // form state
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    shopName: "",
+    shopAddress: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Seller Registration Data:", formData);
     // TODO: Call /auth/register-seller API
   };
 
@@ -18,18 +38,12 @@ export default function SellerRegisterPage() {
     <div className="w-full max-w-md bg-white p-8 rounded-lg shadow">
       {/* logo */}
       <div className="flex justify-center mb-4 md:hidden">
-        <div className="flex items-center">
-          <div className="flex items-center">
-            <div className="text-xl font-bold">
-              <Image
-                src="/logos/ahixo-logo.webp"
-                alt="AHIXO"
-                width={150}
-                height={50}
-              />
-            </div>
-          </div>
-        </div>
+        <Image
+          src="/logos/ahixo-logo.webp"
+          alt="AHIXO"
+          width={150}
+          height={50}
+        />
       </div>
       <h1 className="text-2xl font-bold text-brand-600 mb-6 text-center">
         Become a Seller
@@ -44,6 +58,8 @@ export default function SellerRegisterPage() {
             placeholder="John Doe"
             required
             className="rounded-none"
+            value={formData.name}
+            onChange={handleChange}
           />
         </div>
 
@@ -55,6 +71,8 @@ export default function SellerRegisterPage() {
             placeholder="you@example.com"
             required
             className="rounded-none"
+            value={formData.email}
+            onChange={handleChange}
           />
         </div>
 
@@ -62,9 +80,11 @@ export default function SellerRegisterPage() {
           <Label htmlFor="phone">Phone Number</Label>
           <PhoneInput
             country={"auto"}
-            value={""}
-            onChange={(phone) => console.log(phone)}
-            inputClass="w-full rounded-none"
+            enableSearch={true}
+            disableDropdown={false}
+            value={formData.phone}
+            onChange={(phone) => setFormData((prev) => ({ ...prev, phone }))}
+            inputClass="!w-full !h-9 !pl-12 !rounded-none !border !border-gray-300 focus:!border-blue-500 focus:!ring-2 focus:!ring-blue-200"
           />
         </div>
 
@@ -76,6 +96,8 @@ export default function SellerRegisterPage() {
             placeholder="********"
             required
             className="rounded-none"
+            value={formData.password}
+            onChange={handleChange}
           />
         </div>
 
@@ -88,6 +110,8 @@ export default function SellerRegisterPage() {
             placeholder="My Awesome Shop"
             required
             className="rounded-none"
+            value={formData.shopName}
+            onChange={handleChange}
           />
         </div>
 
@@ -99,6 +123,8 @@ export default function SellerRegisterPage() {
             placeholder="123 Main Street, Dhaka"
             required
             className="rounded-none"
+            value={formData.shopAddress}
+            onChange={handleChange}
           />
         </div>
 
@@ -136,31 +162,36 @@ export default function SellerRegisterPage() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      {/* Desktop Layout */}
-      <div className="hidden lg:flex min-h-screen">
-        {/* Left Side - Logo/Image */}
-        <div className="flex-1 relative bg-gradient-to-br from-brand-100 to-gray-200">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Image
-              src="/logos/ahixo-logo-not-align.webp"
-              alt="AHIXO Seller Register"
-              className="max-w-md w-full h-auto object-contain"
-              width={600}
-              height={400}
-            />
+      {isVerified ? (
+        <>
+          {/* Desktop Layout */}
+          <div className="hidden lg:flex min-h-screen">
+            <div className="flex-1 relative bg-gradient-to-br from-brand-100 to-gray-200">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Image
+                  src="/logos/ahixo-logo-not-align.webp"
+                  alt="AHIXO Seller Register"
+                  className="max-w-md w-full h-auto object-contain"
+                  width={600}
+                  height={400}
+                />
+              </div>
+            </div>
+            <div className="flex-1 flex items-center justify-center p-8">
+              <SellerRegisterForm />
+            </div>
           </div>
-        </div>
 
-        {/* Right Side - Form */}
-        <div className="flex-1 flex items-center justify-center p-8">
-          <SellerRegisterForm />
+          {/* Mobile Layout */}
+          <div className="lg:hidden flex items-center justify-center min-h-screen p-4">
+            <SellerRegisterForm />
+          </div>
+        </>
+      ) : (
+        <div className="flex justify-center items-center min-h-screen m-5">
+          <VerificationForm setIsVerified={setIsVerified} />
         </div>
-      </div>
-
-      {/* Mobile Layout */}
-      <div className="lg:hidden flex items-center justify-center min-h-screen p-4">
-        <SellerRegisterForm />
-      </div>
+      )}
     </div>
   );
 }

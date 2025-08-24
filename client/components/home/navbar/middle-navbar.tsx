@@ -4,6 +4,7 @@ import { Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import Link from "next/link";
 
 export function MiddleNavbar() {
   return (
@@ -44,25 +45,31 @@ export function MiddleNavbar() {
           {/* User Account */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="border hover:border-brand-500 text-gray-600 hover:text-brand-500 p-1 rounded-full">
-                <User className="w-6 h-6 " />
-              </div>
+              <Link href={"/login"} className="group">
+                <div className="flex gap-1  items-center">
+                  <div className="border group-hover:border-brand-500 text-gray-600 group-hover:text-brand-500 p-1 rounded-full">
+                    <User className="w-6 h-6" />
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto p-0 text-gray-600 group-hover:text-brand-500 hover:bg-transparent"
+                  >
+                    Login
+                  </Button>
+                </div>
+              </Link>
+              <span className="text-gray-600">|</span>
               <div className="flex text-sm">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 text-gray-600 hover:text-red-500"
-                >
-                  Login
-                </Button>
-                <span className="w-0.5 bg-neutral-100 mx-1"></span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-auto p-0 text-gray-600 hover:text-red-500"
-                >
-                  Registration
-                </Button>
+                <Link href={"/register"}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto p-0 text-gray-600 hover:text-brand-500 hover:bg-transparent"
+                  >
+                    Registration
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

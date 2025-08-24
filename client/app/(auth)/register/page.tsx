@@ -62,9 +62,11 @@ export default function RegisterPage() {
           <Label htmlFor="phone">Phone Number</Label>
           <PhoneInput
             country={"auto"}
+            enableSearch={true}
+            disableDropdown={false}
             value={""}
-            onChange={(phone) => console.log(phone)}
-            inputClass="w-full rounded-none"
+            onChange={(phone, countryData) => console.log(phone, countryData)}
+            inputClass="!w-full !h-9 !pl-12 !rounded-none !border !border-gray-300 focus:!border-blue-500 focus:!ring-2 focus:!ring-blue-200"
           />
         </div>
 

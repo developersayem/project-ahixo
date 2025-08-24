@@ -56,23 +56,19 @@ export function TopNavbar() {
 
           {/* Right side - Seller links */}
           <div className="flex items-center space-x-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 px-2 text-gray-600 hover:text-gray-900"
-                >
-                  Become a Seller !
-                  <ChevronDown className="ml-1 h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Apply as Seller</DropdownMenuItem>
-                <DropdownMenuItem>Seller Guidelines</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
+            <Link
+              href="/register/seller"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-gray-600 hover:text-gray-900"
+              >
+                Become a Seller !
+              </Button>
+            </Link>
+            <span className="text-gray-600">|</span>
             <Link
               href="/seller/login"
               className="text-gray-600 hover:text-gray-900"
