@@ -1,20 +1,22 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, ShoppingBag } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface SellerLoginFormProps {
+  formDescription?: string;
   showBackButton?: boolean;
 }
 
-export function SellerLoginForm({
+export function LoginForm({
+  formDescription = "Login to your account",
   showBackButton = false,
 }: SellerLoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,32 +26,40 @@ export function SellerLoginForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("[v0] Login attempt:", { email, rememberMe });
-  };
-
-  const handleCopyCredentials = () => {
-    setEmail("seller@example.com");
-    setPassword("password123");
-    console.log("[v0] Credentials copied");
+    console.log("Login attempt:", { email, rememberMe });
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white p-8 rounded-lg shadow-sm">
+    <div className="w-full max-w-md mx-auto bg-white p-8 shadow-sm">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-red-500 rounded-lg flex items-center justify-center">
-            <ShoppingBag className="w-8 h-8 text-white" />
+        <div className="flex justify-center mb-4 md:hidden">
+          <div className="flex items-center">
+            <div className="flex items-center">
+              <div className="text-xl font-bold">
+                <Image
+                  src="/logos/ahixo-logo.webp"
+                  alt="AHIXO"
+                  width={150}
+                  height={50}
+                />
+              </div>
+            </div>
           </div>
         </div>
-        <h1 className="text-2xl font-bold text-red-500 mb-2">WELCOME BACK !</h1>
-        <p className="text-gray-600">Login To Your Seller Account</p>
+        <h1 className="text-2xl font-bold text-brand-500 mb-2">
+          WELCOME BACK !
+        </h1>
+        <p className="text-neutral-600 text-sm capitalize">{formDescription}</p>
       </div>
 
       {/* Login Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <Label htmlFor="email" className="text-sm font-medium text-gray-900">
+          <Label
+            htmlFor="email"
+            className="text-sm font-medium text-neutral-900"
+          >
             Email
           </Label>
           <Input
@@ -57,7 +67,7 @@ export function SellerLoginForm({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 h-12 text-gray-500"
+            className="mt-1 h-12 text-neutral-500 rounded-none"
             required
           />
         </div>
@@ -65,7 +75,7 @@ export function SellerLoginForm({
         <div>
           <Label
             htmlFor="password"
-            className="text-sm font-medium text-gray-900"
+            className="text-sm font-medium text-neutral-900"
           >
             Password
           </Label>
@@ -76,13 +86,13 @@ export function SellerLoginForm({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="h-12 pr-10"
+              className="h-12 pr-10 rounded-none"
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
             >
               {showPassword ? (
                 <EyeOff className="w-5 h-5" />
@@ -101,7 +111,10 @@ export function SellerLoginForm({
               checked={rememberMe}
               onCheckedChange={(checked) => setRememberMe(checked as boolean)}
             />
-            <Label htmlFor="remember" className="text-sm text-gray-600">
+            <Label
+              htmlFor="remember"
+              className="text-sm text-gray-600 rounded-none"
+            >
               Remember Me
             </Label>
           </div>
@@ -116,24 +129,10 @@ export function SellerLoginForm({
         {/* Login Button */}
         <Button
           type="submit"
-          className="w-full h-12 bg-red-500 hover:bg-red-600 text-white font-medium"
+          className="w-full h-12 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-none"
         >
           Login
         </Button>
-
-        {/* Copy Credentials */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-          <span className="text-sm font-medium text-gray-700">
-            Seller Account
-          </span>
-          <Button
-            type="button"
-            onClick={handleCopyCredentials}
-            className="bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 text-sm"
-          >
-            Copy credentials
-          </Button>
-        </div>
 
         {/* Register Link */}
         <div className="text-center">
@@ -141,8 +140,8 @@ export function SellerLoginForm({
             Don&apos;t have an account?{" "}
           </span>
           <Link
-            href="/seller/register"
-            className="text-sm text-red-500 hover:text-red-600 font-medium"
+            href="/register"
+            className="text-sm text-brand-500 hover:text-brand-600 font-medium"
           >
             Register Now
           </Link>
@@ -153,9 +152,9 @@ export function SellerLoginForm({
           <div className="text-center pt-4">
             <Link
               href="/"
-              className="text-sm text-red-500 hover:text-red-600 inline-flex items-center"
+              className="text-sm text-brand-500 hover:text-brand-600 inline-flex items-center"
             >
-              ← Back to Previous Page
+              ← Back to Home
             </Link>
           </div>
         )}

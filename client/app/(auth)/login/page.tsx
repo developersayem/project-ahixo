@@ -1,7 +1,7 @@
 import { LoginForm } from "@/components/shared/login-form";
 import Image from "next/image";
 
-export default function SellerLoginPage() {
+export default function LoginPage() {
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Split Layout for Desktop */}
@@ -21,19 +21,13 @@ export default function SellerLoginPage() {
 
         {/* Right Side - Form */}
         <div className="flex-1 flex items-center justify-center p-8">
-          <LoginForm
-            showBackButton={true}
-            formDescription="Login to your seller account"
-          />
+          <LoginForm showBackButton={true} />
         </div>
       </div>
 
       {/* Mobile Layout */}
       <div className="lg:hidden flex items-center justify-center min-h-screen p-4">
-        <LoginForm
-          showBackButton={true}
-          formDescription="Login to your seller account"
-        />
+        <LoginForm showBackButton={true} />
       </div>
     </div>
   );
