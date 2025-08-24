@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 export function TopNavbar() {
   return (
@@ -72,13 +73,18 @@ export function TopNavbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-gray-600 hover:text-gray-900"
+            <Link
+              href="/seller/login"
+              className="text-gray-600 hover:text-gray-900"
             >
-              Login to Seller
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-gray-600 hover:text-gray-900"
+              >
+                Login to Seller
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

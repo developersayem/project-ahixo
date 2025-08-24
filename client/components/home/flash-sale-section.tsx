@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { MoveRight, Zap } from "lucide-react";
-import { IFlashSaleProduct } from "@/app/types/flash-sale-product.type";
+import { IFlashSaleProduct } from "@/types/flash-sale-product.type";
 import Link from "next/link";
 
 // Import Swiper + Grid

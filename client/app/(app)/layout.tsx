@@ -1,6 +1,8 @@
+import Footer from "@/components/home/footer/footer";
+import { MainHeader } from "@/components/home/navbar/main-header";
+import MobileNavbar from "@/components/home/navbar/mobile-navbar";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import "./globals.css";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -20,7 +22,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} antialiased`}>{children}</body>
+      <body className={`${poppins.variable} antialiased`}>
+        {/* Header */}
+        <MainHeader />
+        <MobileNavbar />
+        {/* Children */}
+        {children}
+        {/* Footer */}
+        <div className="mt-10">
+          <Footer />
+        </div>
+      </body>
     </html>
   );
 }
