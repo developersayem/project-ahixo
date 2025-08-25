@@ -11,7 +11,7 @@ import { useState } from "react";
 import { VerificationForm } from "@/components/shared/verification-form";
 
 export default function SellerRegisterPage() {
-  const [isVerified, setIsVerified] = useState(false);
+  const [step, setStep] = useState("register");
 
   // form state
   const [formData, setFormData] = useState({
@@ -32,6 +32,7 @@ export default function SellerRegisterPage() {
     e.preventDefault();
     console.log("Seller Registration Data:", formData);
     // TODO: Call /auth/register-seller API
+    setStep("verify");
   };
 
   const SellerRegisterForm = () => (
@@ -162,7 +163,7 @@ export default function SellerRegisterPage() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      {isVerified ? (
+      {step === "register" ? (
         <>
           {/* Desktop Layout */}
           <div className="hidden lg:flex min-h-screen">
@@ -189,7 +190,7 @@ export default function SellerRegisterPage() {
         </>
       ) : (
         <div className="flex justify-center items-center min-h-screen m-5">
-          <VerificationForm setIsVerified={setIsVerified} />
+          <VerificationForm />
         </div>
       )}
     </div>

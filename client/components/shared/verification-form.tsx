@@ -14,11 +14,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-interface VerificationFormProps {
-  setIsVerified: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export function VerificationForm({ setIsVerified }: VerificationFormProps) {
+export function VerificationForm() {
   const [value, setValue] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"email" | "code">("email");
@@ -33,7 +29,6 @@ export function VerificationForm({ setIsVerified }: VerificationFormProps) {
   // Handle verification of OTP
   const handleVerify = () => {
     console.log("OTP entered:", otp); // Log OTP
-    setIsVerified(true);
   };
 
   return (
