@@ -2,9 +2,11 @@ import type{ Request, Response, NextFunction } from "express";
 import type{ JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError";
-import { User } from "../models/users.model";
+import { User } from "../models/user.model";
 import asyncHandler from "../utils/asyncHandler";
 import dotenv from "dotenv";
+
+
 dotenv.config();
 
 

@@ -1,6 +1,6 @@
 import mongoose, { Types } from "mongoose";
 import { ApiError } from "../utils/ApiError";
-import { User } from "../models/users.model";
+import { User } from "../models/user.model";
 
 
 interface TokenResponse {

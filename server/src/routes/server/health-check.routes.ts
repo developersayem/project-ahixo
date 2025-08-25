@@ -1,5 +1,6 @@
+import { getDeploymentStats, getServerPing, getServerStatus, healthCheckController } from "../../controller/server/health-check.controller";
 import { Router } from "express";
-import { getDeploymentStats, getServerPing, getServerStatus, healthCheckController } from "../controller/health-check.controller";
+
 
 
 

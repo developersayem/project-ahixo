@@ -1,5 +1,5 @@
-import { ApiResponse } from "../utils/ApiResponse";
-import asyncHandler from "../utils/asyncHandler";
+import { ApiResponse } from "../../utils/ApiResponse";
+import asyncHandler from "../../utils/asyncHandler";
 import os from "os";
 import type { Request, Response } from "express";
 

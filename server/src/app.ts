@@ -64,14 +64,15 @@ app.use(loggerMiddleware);
 );
 
 
-
 // Import routes
-import healthCheckRoutes from "./routes/health-check.routes";
-import userRoutes from "./routes/users.routes";
+import healthCheckRoutes from "./routes/server/health-check.routes";
+import sellerRoutes from "./routes/seller/index";
+import buyerRoutes from "./routes/buyer/index";
 
 // Use routes
 app.use("/api/v1/health-check", healthCheckRoutes);
-app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/buyer", buyerRoutes);
+app.use("/api/v1/seller", sellerRoutes);
 
 
 
