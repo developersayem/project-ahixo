@@ -10,5 +10,4 @@ export const cookieOptions: CookieOptions = {
   sameSite: isProduction ? "none" : "lax", // lax in local, none in prod
   domain: isProduction ? ".example.com" : undefined, // no domain for localhost
   path: "/",
-  // maxAge: 24 * 60 * 60 * 1000, // 1 day
 };

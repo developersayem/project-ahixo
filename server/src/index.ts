@@ -2,11 +2,25 @@ import dotenv from "dotenv"
 import connectDB from "./db/index";
 import logger from "./utils/logger";
 import { app } from "./app";
+import asyncHandler from "./utils/asyncHandler";
+import { ApiResponse } from "./utils/ApiResponse";
+import type {Request, Response} from"express"
 
 dotenv.config({
     path:"./.env"
   })
   
+
+  // Health check route 
+  app.use("/api/v1/health-check", asyncHandler(async (req: Request, res: Response) => {
+    res
+    .status(200)
+    .json(new ApiResponse(
+        200, 
+        "AHIXO Server is running", 
+        "Health check Passed"
+    ))
+}))
 
 
 
