@@ -32,6 +32,7 @@ interface AuthContextType extends AuthState {
   loginAsBuyer: (email: string, password: string) => Promise<void>;
   loginAsSeller: (email: string, password: string) => Promise<void>;
   registerAsBuyer: (data: RegisterData) => Promise<ApiResponse<IUser>>;
+  registerAsSeller: (data: RegisterData) => Promise<ApiResponse<IUser>>;
   verifyEmail: (payload: {
     email: string;
     code: string;
@@ -104,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   // ---------------- Actions ----------------
+  // Buyer
   const registerAsBuyer = async (data: RegisterData) => {
     dispatch({ type: "LOGIN_START" });
     try {
@@ -137,7 +139,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
-
+  // Seller
+  const registerAsSeller = async (data: RegisterData) => {
+    dispatch({ type: "LOGIN_START" });
+    try {
+      const res = await api.post<ApiResponse<IUser>>(
+        "/api/v1/seller/register",
+        data
+      );
+      return res.data; // return typed response
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      toast.error(error.response?.data?.message || "Registration failed");
+      dispatch({ type: "LOGIN_FAILURE" });
+      throw error.response?.data;
+    }
+  };
   const loginAsSeller = async (email: string, password: string) => {
     dispatch({ type: "LOGIN_START" });
     try {
@@ -156,7 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
-
+  // Common
   const verifyEmail = async (payload: { email: string; code: string }) => {
     try {
       const res = await api.post<ApiResponse<{ success: boolean }>>(
@@ -190,6 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         loginAsBuyer,
         loginAsSeller,
         registerAsBuyer,
+        registerAsSeller,
         verifyEmail,
         logout,
         updateUser,
