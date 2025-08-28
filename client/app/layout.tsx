@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import Script from "next/script";
+import { AuthProvider } from "@/contexts/auth-context";
+import { Toaster } from "sonner";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AHIXO",
-  description: "A multi vendor e-commerce platform",
+  title: "AHIXO - Your E-commerce Destination",
+  description: "Find the best products at AHIXO.",
 };
 
 export default function RootLayout({
@@ -21,13 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable} antialiased`}>{children}</body>
-      {/* GTranslate Script */}
-      <Script
-        src="https://cdn.gtranslate.net/widgets/latest/gtranslate.js"
-        strategy="lazyOnload"
-        defer
-      />
+      <body className={inter.className}>
+        <AuthProvider>
+          {children}
+          <Toaster richColors position="top-right" />
+        </AuthProvider>
+      </body>
     </html>
   );
 }

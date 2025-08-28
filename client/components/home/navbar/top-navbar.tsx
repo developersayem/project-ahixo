@@ -70,7 +70,7 @@ export function TopNavbar() {
             </Link>
             <span className="text-gray-600">|</span>
             <Link
-              href="/seller/login"
+              href="/login/seller"
               className="text-gray-600 hover:text-gray-900"
             >
               <Button

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL, // e.g. http://localhost:5000/v1
+  baseURL: process.env.NEXT_PUBLIC_API_URL, // e.g. http://localhost:5001
   withCredentials: true, // ✅ send cookies (important for refresh tokens)
 });
 
@@ -16,7 +16,7 @@ api.interceptors.response.use(
 
       try {
         // call refresh endpoint
-        await api.get("/auth/refresh-token");
+        await api.get("api/v1/auth/refresh-token");
 
         // retry original request
         return api(originalRequest);
