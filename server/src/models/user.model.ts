@@ -23,6 +23,7 @@ export interface ISellerInfo {
 export interface IUserProps {
   fullName: string;
   email: string;
+  avatar?: string;
   phone: string;
   password: string;
   role: "buyer" | "seller";
@@ -60,6 +61,7 @@ export type IUserModel = Model<IUserDocument>;
 const UserSchema = new Schema<IUserDocument, IUserModel>(
   {
     fullName: { type: String, required: true },
+    avatar: { type: String, default: "/default-avatar.png" },
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
     password: { type: String, required: true },

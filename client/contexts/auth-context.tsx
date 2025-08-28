@@ -29,7 +29,8 @@ interface RegisterData {
 }
 
 interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
+  loginAsBuyer: (email: string, password: string) => Promise<void>;
+  loginAsSeller: (email: string, password: string) => Promise<void>;
   registerAsBuyer: (data: RegisterData) => Promise<ApiResponse<IUser>>;
   verifyEmail: (payload: {
     email: string;
@@ -118,6 +119,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
+  const loginAsBuyer = async (email: string, password: string) => {
+    dispatch({ type: "LOGIN_START" });
+    try {
+      const res = await api.post<ApiResponse<IUser>>("/api/v1/buyer/login", {
+        email,
+        password,
+      });
+      const user = res.data.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({ type: "LOGIN_SUCCESS", payload: user });
+      router.push("/");
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      toast.error(error.response?.data?.message || "Login failed");
+      dispatch({ type: "LOGIN_FAILURE" });
+      throw error.response?.data;
+    }
+  };
+
+  const loginAsSeller = async (email: string, password: string) => {
+    dispatch({ type: "LOGIN_START" });
+    try {
+      const res = await api.post<ApiResponse<IUser>>("/api/v1/seller/login", {
+        email,
+        password,
+      });
+      const user = res.data.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({ type: "LOGIN_SUCCESS", payload: user });
+      router.push("/");
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      toast.error(error.response?.data?.message || "Login failed");
+      dispatch({ type: "LOGIN_FAILURE" });
+      throw error.response?.data;
+    }
+  };
 
   const verifyEmail = async (payload: { email: string; code: string }) => {
     try {
@@ -132,27 +170,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
-
-  const login = async (email: string, password: string) => {
-    dispatch({ type: "LOGIN_START" });
-    try {
-      const res = await api.post<ApiResponse<IUser>>("/api/v1/auth/login", {
-        email,
-        password,
-      });
-      const user = res.data.data;
-      localStorage.setItem("user", JSON.stringify(user));
-      dispatch({ type: "LOGIN_SUCCESS", payload: user });
-      toast.success("Login successful!");
-      router.push("/");
-    } catch (err) {
-      const error = err as AxiosError<ApiError>;
-      toast.error(error.response?.data?.message || "Login failed");
-      dispatch({ type: "LOGIN_FAILURE" });
-      throw error.response?.data;
-    }
-  };
-
   const logout = async () => {
     try {
       await api.post("/api/v1/auth/logout");
@@ -170,7 +187,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     <AuthContext.Provider
       value={{
         ...state,
-        login,
+        loginAsBuyer,
+        loginAsSeller,
         registerAsBuyer,
         verifyEmail,
         logout,

@@ -9,24 +9,48 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface SellerLoginFormProps {
   formDescription?: string;
   showBackButton?: boolean;
+  role: "buyer" | "seller";
 }
 
 export function LoginForm({
   formDescription = "Login to your account",
   showBackButton = false,
+  role,
 }: SellerLoginFormProps) {
+  const router = useRouter();
+  const { loginAsBuyer, loginAsSeller } = useAuth(); // useAuth from context
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("johndoe@example.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, rememberMe });
+    setLoading(true);
+
+    try {
+      if (role === "buyer") {
+        await loginAsBuyer(email, password);
+      }
+      if (role === "seller") {
+        await loginAsSeller(email, password);
+      }
+      toast.success("Logged in successfully!");
+      router.push("/"); // redirect after login
+    } catch (err) {
+      toast.error("Login failed! Please check your credentials.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,18 +58,12 @@ export function LoginForm({
       {/* Header */}
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4 md:hidden">
-          <div className="flex items-center">
-            <div className="flex items-center">
-              <div className="text-xl font-bold">
-                <Image
-                  src="/logos/ahixo-logo.webp"
-                  alt="AHIXO"
-                  width={150}
-                  height={50}
-                />
-              </div>
-            </div>
-          </div>
+          <Image
+            src="/logos/ahixo-logo.webp"
+            alt="AHIXO"
+            width={150}
+            height={50}
+          />
         </div>
         <h1 className="text-2xl font-bold text-brand-500 mb-2">
           WELCOME BACK !
@@ -130,8 +148,9 @@ export function LoginForm({
         <Button
           type="submit"
           className="w-full h-12 bg-brand-500 hover:bg-brand-600 text-white font-medium rounded-none"
+          disabled={loading}
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </Button>
 
         {/* Register Link */}

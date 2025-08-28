@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/contexts/auth-context";
+import { UserNav } from "@/components/shared/user-nav";
 
 export function MiddleNavbar() {
+  const { user } = useAuth();
+
   return (
     <div className="bg-white border-b border-gray-200">
       <div className="container mx-auto">
@@ -44,34 +48,40 @@ export function MiddleNavbar() {
 
           {/* User Account */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Link href={"/login"} className="group">
-                <div className="flex gap-1  items-center">
-                  <div className="border group-hover:border-brand-500 text-gray-600 group-hover:text-brand-500 p-1 rounded-full">
-                    <User className="w-6 h-6" />
+            {!user ? (
+              <div className="flex items-center space-x-2">
+                <Link href={"/login"} className="group">
+                  <div className="flex gap-1  items-center">
+                    <div className="border group-hover:border-brand-500 text-gray-600 group-hover:text-brand-500 p-1 rounded-full">
+                      <User className="w-6 h-6" />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 text-gray-600 group-hover:text-brand-500 hover:bg-transparent"
+                    >
+                      Login
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-auto p-0 text-gray-600 group-hover:text-brand-500 hover:bg-transparent"
-                  >
-                    Login
-                  </Button>
-                </div>
-              </Link>
-              <span className="text-gray-600">|</span>
-              <div className="flex text-sm">
-                <Link href={"/register"}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-auto p-0 text-gray-600 hover:text-brand-500 hover:bg-transparent"
-                  >
-                    Registration
-                  </Button>
                 </Link>
+                <span className="text-gray-600">|</span>
+                <div className="flex text-sm">
+                  <Link href={"/register"}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-auto p-0 text-gray-600 hover:text-brand-500 hover:bg-transparent"
+                    >
+                      Registration
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center space-x-2 mr-5">
+                <UserNav />
+              </div>
+            )}
           </div>
         </div>
       </div>

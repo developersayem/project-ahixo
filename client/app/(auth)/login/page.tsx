@@ -5,9 +5,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Split Layout for Desktop */}
-      <div className="hidden lg:flex min-h-screen">
+      <div className=" flex justify-center lg:flex-row flex-col min-h-screen">
         {/* Left Side - Image */}
-        <div className="flex-1 relative bg-gradient-to-br from-brand-100 to-gray-200">
+        <div className="hidden lg:flex flex-1 relative bg-gradient-to-br from-brand-100 to-gray-200">
           <div className="absolute inset-0 flex items-center justify-center">
             <Image
               src="/logos/ahixo-logo-not-align.webp"
@@ -21,13 +21,8 @@ export default function LoginPage() {
 
         {/* Right Side - Form */}
         <div className="flex-1 flex items-center justify-center p-8">
-          <LoginForm showBackButton={true} />
+          <LoginForm role="buyer" showBackButton={true} />
         </div>
-      </div>
-
-      {/* Mobile Layout */}
-      <div className="lg:hidden flex items-center justify-center min-h-screen p-4">
-        <LoginForm showBackButton={true} />
       </div>
     </div>
   );

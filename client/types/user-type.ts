@@ -22,6 +22,7 @@ export type UserRole = "buyer" | "seller";
 export interface IUser {
   _id: string;                     // MongoDB ID
   fullName: string;
+  avatar: string;
   email: string;
   phone: string;
   role: UserRole;

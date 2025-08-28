@@ -45,7 +45,7 @@ export const buyerLoginController = asyncHandler(async (req: Request, res: Respo
   const { email, password } = req.body;
   if (!email || !password) throw new ApiError(400, "Email and password required");
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email , role: "buyer" });
   if (!user) throw new ApiError(404, "User not found");
 
   const isValid = await user.isPasswordCorrect(password);
@@ -58,8 +58,9 @@ export const buyerLoginController = asyncHandler(async (req: Request, res: Respo
   const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user._id as string);
 
   return res.status(200)
+  .cookie("accessToken", accessToken, cookieOptions)
   .cookie("refreshToken", refreshToken, cookieOptions)
   .json(
-    new ApiResponse(200, { accessToken, refreshToken, user }, "Login successful")
+    new ApiResponse(200, user, "Login successful")
   );
 });
