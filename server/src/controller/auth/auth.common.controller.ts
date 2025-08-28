@@ -1,12 +1,12 @@
 import type {  Request, Response } from "express";
-import { AuthenticatedRequest } from "../middlewares/auth.middlewares";
-import { User } from "../models/user.model";
-import { ApiError } from "../utils/ApiError";
-import { ApiResponse } from "../utils/ApiResponse";
-import asyncHandler from "../utils/asyncHandler";
-import { cookieOptions } from "../utils/cookieOptions";
-import { generateVerificationCode } from "../utils/generateVerificationCode";
-import { sendVerificationEmailByGMAIL } from "email-templates/sendVerificationEmailByGMAIL";
+import { AuthenticatedRequest } from "../../middlewares/auth.middlewares";
+import { User } from "../../models/user.model";
+import { ApiError } from "../../utils/ApiError";
+import { ApiResponse } from "../../utils/ApiResponse";
+import asyncHandler from "../../utils/asyncHandler";
+import { cookieOptions } from "../../utils/cookieOptions";
+import { generateVerificationCode } from "../../utils/generateVerificationCode";
+import { sendVerificationEmailByGMAIL } from "../../email-templates/sendVerificationEmailByGMAIL";
 
 // *---------------- Get Current User ----------------
 export const getCurrentUserController = asyncHandler(async (req: Request, res: Response) => {
