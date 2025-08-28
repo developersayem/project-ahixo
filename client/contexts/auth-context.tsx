@@ -1,48 +1,25 @@
 "use client";
-import api from "@/lib/axios";
-import { IUser } from "@/types/user-type";
-import { AxiosError } from "axios";
-import { useRouter } from "next/navigation";
 import React, { createContext, useContext, useReducer, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
 import { toast } from "sonner";
+import type { AxiosError } from "axios";
+import type { IUser } from "@/types/user-type";
+import type { ApiResponse, ApiError } from "@/types/api-response.type";
 
-interface ApiErrorResponse {
-  message: string;
-}
-
-interface Tokens {
-  accessToken?: string;
-  refreshToken?: string;
-}
-
+// ---------------- Types ----------------
 interface AuthState {
   user: IUser | null;
-  tokens: Tokens | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
 
 type AuthAction =
   | { type: "LOGIN_START" }
-  | { type: "LOGIN_SUCCESS"; payload: { user: IUser; tokens: Tokens | null } }
+  | { type: "LOGIN_SUCCESS"; payload: IUser }
   | { type: "LOGIN_FAILURE" }
   | { type: "LOGOUT" }
   | { type: "UPDATE_USER"; payload: Partial<IUser> };
-
-const initialState: AuthState = {
-  user: null,
-  tokens: null,
-  isLoading: true,
-  isAuthenticated: false,
-};
-
-interface AuthContextType extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => Promise<void>;
-  updateUser: (data: Partial<IUser>) => void;
-  manualLogin: (user: IUser) => void;
-}
 
 interface RegisterData {
   fullName: string;
@@ -51,7 +28,24 @@ interface RegisterData {
   password: string;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthContextType extends AuthState {
+  login: (email: string, password: string) => Promise<void>;
+  registerAsBuyer: (data: RegisterData) => Promise<ApiResponse<IUser>>;
+  verifyEmail: (payload: {
+    email: string;
+    code: string;
+  }) => Promise<ApiResponse<{ success: boolean }>>;
+  logout: () => Promise<void>;
+  updateUser: (data: Partial<IUser>) => void;
+  manualLogin: (user: IUser) => void;
+}
+
+// ---------------- Reducer ----------------
+const initialState: AuthState = {
+  user: null,
+  isLoading: false,
+  isAuthenticated: false,
+};
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
@@ -60,21 +54,14 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case "LOGIN_SUCCESS":
       return {
         ...state,
-        user: action.payload.user,
-        tokens: action.payload.tokens,
+        user: action.payload,
         isLoading: false,
         isAuthenticated: true,
       };
     case "LOGIN_FAILURE":
-      return {
-        ...state,
-        user: null,
-        tokens: null,
-        isLoading: false,
-        isAuthenticated: false,
-      };
+      return { ...state, user: null, isLoading: false, isAuthenticated: false };
     case "LOGOUT":
-      return { ...initialState, isLoading: false };
+      return { ...initialState };
     case "UPDATE_USER":
       return {
         ...state,
@@ -85,97 +72,93 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   }
 };
 
+// ---------------- Context ----------------
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const router = useRouter();
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // On app start → check if already logged in
+  // Check existing session
   useEffect(() => {
-    const checkAuth = async () => {
-      const localUser = localStorage.getItem("user");
-      if (localUser) {
-        try {
-          const parsedUser = JSON.parse(localUser);
-          dispatch({
-            type: "LOGIN_SUCCESS",
-            payload: { user: parsedUser, tokens: null },
-          });
-        } catch {
-          localStorage.removeItem("user");
-        }
-      }
-
-      try {
-        const res = await api.get("/api/v1/users/me");
-        dispatch({
-          type: "LOGIN_SUCCESS",
-          payload: { user: res.data.data.user, tokens: null },
-        });
-        localStorage.setItem("user", JSON.stringify(res.data.data.user));
-      } catch {
-        dispatch({ type: "LOGIN_FAILURE" });
-      }
-    };
-
-    checkAuth();
+    const localUser = localStorage.getItem("user");
+    if (localUser) {
+      const parsedUser = JSON.parse(localUser) as IUser;
+      dispatch({ type: "LOGIN_SUCCESS", payload: parsedUser });
+    }
   }, []);
 
   const manualLogin = (user: IUser) => {
     localStorage.setItem("user", JSON.stringify(user));
-    dispatch({ type: "LOGIN_SUCCESS", payload: { user, tokens: null } });
+    dispatch({ type: "LOGIN_SUCCESS", payload: user });
   };
 
   const updateUser = (data: Partial<IUser>) => {
-    const updatedUser = { ...state.user, ...data } as IUser;
+    if (!state.user) return;
+    const updatedUser = { ...state.user, ...data };
     localStorage.setItem("user", JSON.stringify(updatedUser));
     dispatch({ type: "UPDATE_USER", payload: data });
   };
 
-  // register buyer
-  const register = async (data: RegisterData) => {
+  // ---------------- Actions ----------------
+  const registerAsBuyer = async (data: RegisterData) => {
     dispatch({ type: "LOGIN_START" });
     try {
-      const res = await api.post("/api/v1/buyer/register", data);
-      if (res.status === 201) {
-        toast.success("Registration successful!");
-        router.push("/login");
-      }
-    } catch (e) {
-      const error = e as AxiosError<ApiErrorResponse>;
+      const res = await api.post<ApiResponse<IUser>>(
+        "/api/v1/buyer/register",
+        data
+      );
+      return res.data; // return typed response
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
       toast.error(error.response?.data?.message || "Registration failed");
       dispatch({ type: "LOGIN_FAILURE" });
+      throw error.response?.data;
+    }
+  };
+
+  const verifyEmail = async (payload: { email: string; code: string }) => {
+    try {
+      const res = await api.post<ApiResponse<{ success: boolean }>>(
+        "/api/v1/auth/verify-email",
+        payload
+      );
+      return res.data;
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      toast.error(error.response?.data?.message || "Email verification failed");
+      throw error.response?.data;
     }
   };
 
   const login = async (email: string, password: string) => {
     dispatch({ type: "LOGIN_START" });
     try {
-      const res = await api.post("/api/v1/auth/login", { email, password });
-
-      const user = res.data.data.user;
+      const res = await api.post<ApiResponse<IUser>>("/api/v1/auth/login", {
+        email,
+        password,
+      });
+      const user = res.data.data;
       localStorage.setItem("user", JSON.stringify(user));
-      dispatch({ type: "LOGIN_SUCCESS", payload: { user, tokens: null } });
-
+      dispatch({ type: "LOGIN_SUCCESS", payload: user });
       toast.success("Login successful!");
       router.push("/");
-    } catch (e) {
-      const error = e as AxiosError<ApiErrorResponse>;
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
       toast.error(error.response?.data?.message || "Login failed");
       dispatch({ type: "LOGIN_FAILURE" });
+      throw error.response?.data;
     }
   };
 
   const logout = async () => {
     try {
       await api.post("/api/v1/auth/logout");
-    } catch (e) {
-      const error = e as AxiosError<ApiErrorResponse>;
-      console.error(
-        "Logout failed:",
-        error.response?.data?.message || error.message
-      );
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      console.error(error.response?.data?.message || error.message);
     } finally {
       localStorage.removeItem("user");
       dispatch({ type: "LOGOUT" });
@@ -188,7 +171,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         ...state,
         login,
-        register,
+        registerAsBuyer,
+        verifyEmail,
         logout,
         updateUser,
         manualLogin,
