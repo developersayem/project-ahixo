@@ -5,18 +5,14 @@ dotenv.config({});
 
 export const sendVerificationEmailByGMAIL = async (to: string, code: string) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: process.env.GMAIL_HOST,
-    port: 587,
-    secure: false,
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
+  host: process.env.GMAIL_HOST,
+  port: Number(process.env.GMAIL_PORT) || 465,
+  secure: true, // true for 465, false for 587
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
   const mailOptions = {
     from: `"AHIXO" <${process.env.GMAIL_USER}>`,
