@@ -11,18 +11,20 @@ export default function Footer() {
           <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
             {/* Logo and Tagline */}
             <div className="flex-1 space-y-2">
-              <div className="flex items-center">
-                <div className="flex items-center ">
-                  <div className="text-xl font-bold">
-                    <img
-                      src="/logos/ahixo-logo.webp"
-                      alt="AHIXO"
-                      width={150}
-                      height={50}
-                    />
+              <Link href="/">
+                <div className="flex items-center">
+                  <div className="flex items-center ">
+                    <div className="text-xl font-bold">
+                      <img
+                        src="/logos/ahixo-logo.webp"
+                        alt="AHIXO"
+                        width={150}
+                        height={50}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
               <p className="text-gray-300 text-sm">
                 A multi-vendor eCommerce platform
               </p>

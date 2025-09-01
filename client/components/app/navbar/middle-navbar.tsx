@@ -16,18 +16,20 @@ export function MiddleNavbar() {
       <div className="container mx-auto">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center">
-            <div className="flex items-center ml-10">
-              <div className="text-xl font-bold">
-                <Image
-                  src="/logos/ahixo-logo.webp"
-                  alt="AHIXO"
-                  width={150}
-                  height={50}
-                />
+          <Link href="/">
+            <div className="flex items-center">
+              <div className="flex items-center ml-10">
+                <div className="text-xl font-bold">
+                  <Image
+                    src="/logos/ahixo-logo.webp"
+                    alt="AHIXO"
+                    width={150}
+                    height={50}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          </Link>
 
           {/* Search Bar */}
           <div className="flex-1 max-w-2xl mx-8">
