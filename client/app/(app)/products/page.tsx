@@ -16,8 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ProductSidebar } from "@/components/products/product-sidebar";
-import { ProductGrid } from "@/components/products/product-grid";
+import { ProductSidebar } from "@/components/app/products/product-sidebar";
+import { ProductGrid } from "@/components/app/products/product-grid";
 
 export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);

@@ -1,6 +1,6 @@
-import Footer from "@/components/home/footer/footer";
-import { MainHeader } from "@/components/home/navbar/main-header";
-import MobileNavbar from "@/components/home/navbar/mobile-navbar";
+import Footer from "@/components/app/footer/footer";
+import { MainHeader } from "@/components/app/navbar/main-header";
+import MobileNavbar from "@/components/app/navbar/mobile-navbar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -1,10 +1,10 @@
-import BestSellingProducts from "@/components/home/best-selling-products";
-import FeaturedCategories from "@/components/home/featured-categories";
-import FeaturedProducts from "@/components/home/featured-products";
-import FlashSaleSection from "@/components/home/flash-sale-section";
-import { HeroCarousel } from "@/components/home/hero-carousel";
-import ProductShowcase from "@/components/home/product-showcase";
-import TopSellersCarousel from "@/components/home/top-sellers-carousel";
+import BestSellingProducts from "@/components/app/home/best-selling-products";
+import FeaturedCategories from "@/components/app/home/featured-categories";
+import FeaturedProducts from "@/components/app/home/featured-products";
+import FlashSaleSection from "@/components/app/home/flash-sale-section";
+import { HeroCarousel } from "@/components/app/home/hero-carousel";
+import ProductShowcase from "@/components/app/home/product-showcase";
+import TopSellersCarousel from "@/components/app/home/top-sellers-carousel";
 
 export default function Home() {
   return (
@@ -14,7 +14,7 @@ export default function Home() {
         <div className="flex justify-end">
           <HeroCarousel />
         </div>
-        <div className="px-4 md:px-0 ">
+        <div className="px-4 md:px-0 space-y-8 ">
           {/* Fash sale sections */}
           <FlashSaleSection />
           {/* Featured categories section */}
