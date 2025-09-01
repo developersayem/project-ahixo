@@ -25,12 +25,12 @@ const navItems: INav[] = [
     link: "/flash-sale",
   },
   {
-    name: "brands",
-    link: "/brands",
-  },
-  {
     name: "all categories",
     link: "/all-categories",
+  },
+  {
+    name: "brands",
+    link: "/brands",
   },
   {
     name: "contact us",
