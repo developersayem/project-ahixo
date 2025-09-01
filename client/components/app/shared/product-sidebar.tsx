@@ -24,6 +24,28 @@ const categories = [
   "Software",
 ];
 
+const mapCategoryToProductValue = (displayCategory: string): string => {
+  const categoryMap: { [key: string]: string } = {
+    "Women Clothing & Fashion": "women-clothing",
+    "Men Clothing & Fashion": "men-clothing",
+    "Computer & Accessories": "computer-accessories",
+    "Automobile & Motorcycle": "automobile-motorcycle",
+    "Kids & toy": "kids-toy",
+    "Sports & outdoor": "sports-outdoor",
+    "Jewelry & Watches": "jewelry-watches",
+    "Cellphones & Tabs": "cellphones-tabs",
+    "Beauty, Health & Hair": "beauty-health-hair",
+    "Home Improvement & Tools": "home-improvement-tools",
+    "Home decoration & Appliance": "home-decoration-appliance",
+    Toy: "toy",
+    Software: "software",
+  };
+  return (
+    categoryMap[displayCategory] ||
+    displayCategory.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "")
+  );
+};
+
 interface ProductSidebarProps {
   selectedCategory: string | null;
   onCategoryChange: (category: string | null) => void;
@@ -45,10 +67,15 @@ export function ProductSidebar({
     }
   };
 
+  const handleCategoryClick = (displayCategory: string) => {
+    const mappedCategory = mapCategoryToProductValue(displayCategory);
+    onCategoryChange(mappedCategory);
+  };
+
   return (
     <div className="space-y-4">
       {/* Categories */}
-      <Card className="rounded-none shadow-none border-gray-100">
+      <Card className="border-gray-100 shadow-none rounded-none">
         <Collapsible defaultOpen>
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
@@ -65,7 +92,7 @@ export function ProductSidebar({
                   onClick={() => onCategoryChange(null)}
                   className={`block w-full text-left text-sm transition-colors py-1 ${
                     selectedCategory === null
-                      ? "text-brand-500 font-medium"
+                      ? "text-orange-500 font-medium"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -74,10 +101,10 @@ export function ProductSidebar({
                 {categories.map((category) => (
                   <button
                     key={category}
-                    onClick={() => onCategoryChange(category)}
+                    onClick={() => handleCategoryClick(category)}
                     className={`block w-full text-left text-sm transition-colors py-1 ${
-                      selectedCategory === category
-                        ? "text-brand-500 font-medium"
+                      selectedCategory === mapCategoryToProductValue(category)
+                        ? "text-orange-500 font-medium"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -91,7 +118,7 @@ export function ProductSidebar({
       </Card>
 
       {/* Filter by Availability */}
-      <Card className="rounded-none shadow-none border-gray-100">
+      <Card className="border-gray-100 shadow-none rounded-none">
         <Collapsible defaultOpen>
           <CollapsibleTrigger asChild>
             <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors">
@@ -107,7 +134,7 @@ export function ProductSidebar({
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="border-border"
+                    className="rounded border-border"
                     checked={availabilityFilters.includes("in-stock")}
                     onChange={(e) =>
                       handleAvailabilityChange("in-stock", e.target.checked)
@@ -120,7 +147,7 @@ export function ProductSidebar({
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="border-border"
+                    className="rounded border-border"
                     checked={availabilityFilters.includes("out-of-stock")}
                     onChange={(e) =>
                       handleAvailabilityChange("out-of-stock", e.target.checked)

@@ -812,13 +812,13 @@ export default function CategoriesPage() {
             return (
               <Card
                 key={category.id}
-                className="border border-border rounded-none"
+                className="border border-gray-100 rounded-none shadow-none gap-0 p-0"
               >
                 <CardContent className="p-6">
                   {/* Category Header */}
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-8 h-8 flex items-center justify-center">
-                      <IconComponent className="w-6 h-6 text-brand-500" />
+                      <IconComponent className="w-6 h-6 text-orange-500" />
                     </div>
                     <h2 className="text-lg font-semibold text-foreground">
                       {category.name}
@@ -847,13 +847,10 @@ export default function CategoriesPage() {
                             {displayItems.map((item, itemIndex) => (
                               <li key={itemIndex}>
                                 <Link
-                                  href={`/?category=${
+                                  href={`/products?category=${encodeURIComponent(
                                     category.id
-                                  }&subcategory=${item
-                                    .toLowerCase()
-                                    .replace(/\s+/g, "-")
-                                    .replace(/\./g, "")}`}
-                                  className="text-sm text-muted-foreground hover:text-brand-500 hover:underline transition-colors duration-200"
+                                  )}&subcategory=${encodeURIComponent(item)}`}
+                                  className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
                                 >
                                   {item}
                                 </Link>
@@ -866,7 +863,7 @@ export default function CategoriesPage() {
                                     onClick={() =>
                                       toggleExpanded(category.id, index)
                                     }
-                                    className="text-sm text-brand-500 hover:text-brand-600 hover:underline transition-colors"
+                                    className="text-sm text-orange-500 hover:text-orange-600 hover:underline transition-colors"
                                   >
                                     {isExpanded ? "Less..." : "More..."}
                                   </button>

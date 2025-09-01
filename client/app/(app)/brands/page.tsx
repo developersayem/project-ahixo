@@ -1,11 +1,107 @@
-import { Button } from "@/components/ui/button";
+/* eslint-disable @next/next/no-img-element */
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { brandsData } from "@/app/data/brands";
 
 export default function BrandsPage() {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Filter brands based on search term
+  const filteredBrands = brandsData.filter((brand) =>
+    brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Button className="capitalize">brands</Button>
-      </main>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-6">
+        {/* Breadcrumb Navigation */}
+        <div className="mb-6">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/">Home</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>All Brands</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">All Brands</h1>
+
+          {/* Search Bar */}
+          <div className="max-w-md">
+            <input
+              type="text"
+              placeholder="Search brands..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+            />
+          </div>
+        </div>
+
+        {/* Brands Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-0">
+          {filteredBrands.map((brand, index) => (
+            <Link
+              key={index}
+              href={`/products?brand=${encodeURIComponent(brand.name)}`}
+              className="group"
+            >
+              <div className="bg-white p-6 border-spacing-0.5 border-[1px] border-gray-100  hover:shadow-2xl hover:scale-101 transition-all duration-200">
+                {/* Brand Logo */}
+                <div className="flex items-center justify-center mb-4 h-16">
+                  <img
+                    src={brand.logo || "/images/placeholders/placeholder.svg"}
+                    alt={`${brand.name} logo`}
+                    className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-200"
+                  />
+                </div>
+
+                {/* Brand Name */}
+                <div className="text-center">
+                  <h3 className="text-sm font-medium text-gray-900 group-hover:text-brand-600 transition-colors duration-200">
+                    {brand.name}
+                  </h3>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* No Results Message */}
+        {filteredBrands.length === 0 && searchTerm && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">
+              No brands found matching &quot;{searchTerm}&quot;
+            </p>
+          </div>
+        )}
+
+        {/* Total Brands Count */}
+        <div className="mt-8 text-center text-gray-600">
+          <p>
+            Showing {filteredBrands.length} of {brandsData.length} brands
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
