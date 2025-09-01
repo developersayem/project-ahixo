@@ -158,7 +158,7 @@ const products = [
   },
 ];
 
-interface ProductGridProps {
+interface FlashSaleGridProps {
   selectedCategory: string | null;
   availabilityFilters: string[];
   sortBy: string;
@@ -168,13 +168,13 @@ interface ProductGridProps {
 
 const PRODUCTS_PER_PAGE = 12;
 
-export function ProductGrid({
+export function FlashSaleGrid({
   selectedCategory,
   availabilityFilters,
   sortBy,
   currentPage,
   onPageChange,
-}: ProductGridProps) {
+}: FlashSaleGridProps) {
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = products;
 
