@@ -818,7 +818,7 @@ export default function CategoriesPage() {
                   {/* Category Header */}
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-8 h-8 flex items-center justify-center">
-                      <IconComponent className="w-6 h-6 text-orange-500" />
+                      <IconComponent className="w-6 h-6 text-brand-500" />
                     </div>
                     <h2 className="text-lg font-semibold text-foreground">
                       {category.name}
@@ -863,7 +863,7 @@ export default function CategoriesPage() {
                                     onClick={() =>
                                       toggleExpanded(category.id, index)
                                     }
-                                    className="text-sm text-orange-500 hover:text-orange-600 hover:underline transition-colors"
+                                    className="text-sm text-brand-500 hover:text-brand-600 hover:underline transition-colors"
                                   >
                                     {isExpanded ? "Less..." : "More..."}
                                   </button>
