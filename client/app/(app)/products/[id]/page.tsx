@@ -23,9 +23,11 @@ export default function ProductPage({ params }: ProductPageProps) {
         <div className="">
           {/* Main Product Content */}
           <div className="">
-            <div className="bg-white shadow-sm p-6">
+            <div className="bg-white">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
-                <ProductImages product={product} />
+                <div className="flex justify-center">
+                  <ProductImages product={product} />
+                </div>
                 <ProductInfo product={product} />
               </div>
             </div>

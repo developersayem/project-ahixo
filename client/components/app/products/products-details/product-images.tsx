@@ -29,7 +29,7 @@ export function ProductImages({ product }: ProductImagesProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 md:w-5/8">
       {/* Main Zoomable Image */}
       <div
         onMouseEnter={() => setIsHovered(true)}
@@ -59,7 +59,7 @@ export function ProductImages({ product }: ProductImagesProps) {
       </div>
 
       {/* Thumbnails */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-center">
         {images.map((image, index) => (
           <button
             key={index}

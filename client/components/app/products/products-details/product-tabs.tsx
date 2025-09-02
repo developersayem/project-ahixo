@@ -38,7 +38,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
         </div>
       </div>
 
-      <Card className="mt-6">
+      <Card className="mt-6 rounded-none">
         <CardContent className="p-6">
           {activeTab === "description" && (
             <div>
@@ -55,7 +55,7 @@ export function ProductTabs({ product }: ProductTabsProps) {
               <ul className="space-y-2">
                 {product.features.map((feature, index) => (
                   <li key={index} className="text-gray-600 flex items-start">
-                    <span className="w-2 h-2 bg-brand-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                    <span className="w-2 h-2 bg-brand-500 mt-2 mr-3 flex-shrink-0"></span>
                     {feature}
                   </li>
                 ))}
