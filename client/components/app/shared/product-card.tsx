@@ -64,17 +64,17 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
 
             {/* Buttons at bottom (consistent height) */}
-            <div className="flex gap-2 mt-auto">
+            <div className="flex flex-col md:flex-row gap-2 mt-auto">
               <Button
                 size="sm"
-                className="flex-1 bg-brand-500 hover:bg-brand-600 text-white rounded-none"
+                className="flex-1 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-none"
               >
                 Buy Now
               </Button>
               <Button
                 size="sm"
                 variant="outline"
-                className="flex-1 border-brand-500 text-brand-500 hover:bg-brand-50 bg-transparent rounded-none"
+                className="flex-1 py-2 border-brand-500 text-brand-500 hover:bg-brand-50 bg-transparent rounded-none"
               >
                 Add to Cart
               </Button>
