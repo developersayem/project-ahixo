@@ -212,7 +212,7 @@ export function ProductGrid({
                       isActive={currentPage === pageNum}
                       className={`cursor-pointer ${
                         currentPage === pageNum
-                          ? "bg-orange-500 text-white hover:bg-orange-600"
+                          ? "bg-brand-500 text-white hover:bg-brand-600"
                           : ""
                       }`}
                     >

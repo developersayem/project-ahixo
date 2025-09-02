@@ -92,7 +92,7 @@ export function ProductSidebar({
                   onClick={() => onCategoryChange(null)}
                   className={`block w-full text-left text-sm transition-colors py-1 ${
                     selectedCategory === null
-                      ? "text-orange-500 font-medium"
+                      ? "text-brand-500 font-medium"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -104,7 +104,7 @@ export function ProductSidebar({
                     onClick={() => handleCategoryClick(category)}
                     className={`block w-full text-left text-sm transition-colors py-1 ${
                       selectedCategory === mapCategoryToProductValue(category)
-                        ? "text-orange-500 font-medium"
+                        ? "text-brand-500 font-medium"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
