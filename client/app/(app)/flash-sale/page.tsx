@@ -70,7 +70,7 @@ function ProductsContent() {
   const getBreadcrumbItems = () => {
     const items = [
       { label: "Home", href: "/" },
-      { label: "All Products", href: "/products" },
+      { label: "Flash Sale", href: "/flash-sale" },
     ];
 
     if (selectedBrand) {
