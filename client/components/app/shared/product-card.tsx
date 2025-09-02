@@ -35,7 +35,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <Card className="group hover:shadow-lg transition-shadow duration-200 rounded-none h-full w-full gap-0 p-0 m-0 border-gray-100 shadow-gray-100 hover:scale-102">
         <CardContent className="p-4 flex flex-col h-full">
           {/* Product Image */}
-          <div className="relative aspect-square mb-4 bg-gray-50 rounded-lg overflow-hidden">
+          <div className="relative aspect-square mb-4 bg-gray-50 overflow-hidden">
             <Image
               src={product.image || "/placeholder.svg"}
               alt={product.name}
