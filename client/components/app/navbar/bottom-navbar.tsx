@@ -159,18 +159,18 @@ export function BottomNavbar() {
 
               {/* Dropdown Content */}
               {isOpen && (
-                <div className="absolute top-full left-0 w-64 bg-white border border-gray-200 shadow-none z-10">
+                <div className="absolute top-full left-0 w-64 h-[490px] bg-white border border-gray-200 shadow-none z-10">
                   {categories.map((cat, idx) => (
                     <div
                       key={idx}
                       onClick={() => handleCategoryClick(cat.value)}
-                      className="flex items-center space-x-3 px-4 py-3 hover:bg-brand-100 cursor-pointer border-b last:border-b-0 group"
+                      className="flex items-center space-x-3 px-2 py-3 hover:bg-brand-100 cursor-pointer border-b last:border-b-0 group"
                     >
                       <Image
                         src={cat.icon || "/placeholder.svg"}
                         alt={cat.name}
-                        width={24}
-                        height={24}
+                        width={20}
+                        height={20}
                       />
                       <span className="text-neutral-700 font-medium text-sm transition-transform group-hover:translate-x-2">
                         {cat.name}
