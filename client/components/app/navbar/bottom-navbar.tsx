@@ -3,8 +3,9 @@
 import { ChevronDown, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import clsx from "clsx";
 
 interface INav {
   name: string;
@@ -26,7 +27,7 @@ const navItems: INav[] = [
   },
   {
     name: "all categories",
-    link: "/all-categories",
+    link: "/categories",
   },
   {
     name: "brands",
@@ -34,11 +35,7 @@ const navItems: INav[] = [
   },
   {
     name: "contact us",
-    link: "/contact-us",
-  },
-  {
-    name: "about",
-    link: "/about",
+    link: "/contact",
   },
 ];
 
@@ -46,47 +43,58 @@ const categories = [
   {
     name: "Women Clothing & Fashion",
     icon: "/icons/woman-cloth-icon.png",
+    value: "women-clothing",
   },
   {
     name: "Men Clothing & Fashion",
     icon: "/icons/man-cloth-icon.png",
+    value: "men-clothing",
   },
   {
     name: "Computer & Accessories",
     icon: "/icons/computer-icon.png",
+    value: "computer-accessories",
   },
   {
     name: "Automobile & Motorcycle",
     icon: "/icons/car-icon.png",
+    value: "automobile-motorcycle",
   },
   {
     name: "Kids & toy",
     icon: "/icons/kids-icon.png",
+    value: "kids-toy",
   },
   {
     name: "Sports & outdoor",
     icon: "/icons/sports-icon.png",
+    value: "sports-outdoor",
   },
   {
     name: "Jewelry & Watches",
     icon: "/icons/watch-icon.png",
+    value: "jewelry-watches",
   },
   {
     name: "Cellphones & Tabs",
     icon: "/icons/phone-icon.png",
+    value: "cellphones-tabs",
   },
   {
     name: "Beauty, Health & Hair",
     icon: "/icons/beauty-icon.png",
+    value: "beauty-health-hair",
   },
   {
     name: "Home Improvement & Tools",
     icon: "/icons/tools-icon.png",
+    value: "home-improvement-tools",
   },
 ];
 
 export function BottomNavbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -113,6 +121,18 @@ export function BottomNavbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [shouldStayOpen]);
+
+  const handleCategoryClick = (categoryValue: string) => {
+    router.push(`/products?category=${categoryValue}`);
+    if (!shouldStayOpen) {
+      setIsOpen(false);
+    }
+  };
+
+  const isNavItemActive = (link: string) => {
+    return pathname === link || pathname.startsWith(link + "/");
+  };
+
   return (
     <div className="bg-brand-500">
       <div className="container mx-auto">
@@ -143,10 +163,11 @@ export function BottomNavbar() {
                   {categories.map((cat, idx) => (
                     <div
                       key={idx}
+                      onClick={() => handleCategoryClick(cat.value)}
                       className="flex items-center space-x-3 px-4 py-3 hover:bg-brand-100 cursor-pointer border-b last:border-b-0 group"
                     >
                       <Image
-                        src={cat.icon}
+                        src={cat.icon || "/placeholder.svg"}
                         alt={cat.name}
                         width={24}
                         height={24}
@@ -164,7 +185,12 @@ export function BottomNavbar() {
               <Link
                 key={index}
                 href={item.link}
-                className="bg-transparent text-white hover:bg-brand-700 h-12 capitalize rounded-none m-0 px-4 py-3 transition-all font-medium"
+                className={clsx(
+                  "h-12 capitalize rounded-none m-0 px-4 py-3 transition-all font-medium",
+                  isNavItemActive(item.link)
+                    ? "bg-brand-800 text-white" // Active state (darker)
+                    : "bg-transparent text-white hover:bg-brand-800 hover:text-white" // Hover state (lighter)
+                )}
               >
                 {item.name}
               </Link>
@@ -172,7 +198,6 @@ export function BottomNavbar() {
           </div>
 
           {/* Shopping Cart */}
-
           <div className="flex items-center">
             <div className="bg-brand-600 flex items-center text-white hover:bg-brand-700 h-12 capitalize space-x-3 m-0 px-4 py-2 transition-all">
               <ShoppingCart className="w-5 h-5" />
