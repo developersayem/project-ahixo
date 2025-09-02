@@ -42,15 +42,11 @@ export default function MobileNavbar() {
     },
     {
       name: "all categories",
-      link: "/all-categories",
+      link: "/categories",
     },
     {
       name: "contact us",
-      link: "/contact-us",
-    },
-    {
-      name: "about",
-      link: "/about",
+      link: "/contact",
     },
   ];
 
