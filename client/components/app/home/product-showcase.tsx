@@ -247,7 +247,7 @@ export default function ProductShowcase() {
                       {product.price}
                     </p>
                     <div className="flex justify-center items-center mt-5 w-full">
-                      <Button className="capitalize w-full rounded-none bg-brand-900 hover:bg-brand-700 transition-colors ease-in-out duration-300 ">
+                      <Button className="capitalize w-full rounded-none bg-brand-500 hover:bg-brand-700 transition-colors ease-in-out duration-300 ">
                         add to cart
                       </Button>
                     </div>
