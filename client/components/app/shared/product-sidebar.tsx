@@ -56,7 +56,7 @@ interface ProductSidebarProps {
 export function ProductSidebar({
   selectedCategory,
   onCategoryChange,
-  availabilityFilters,
+  availabilityFilters = [],
   onAvailabilityChange,
 }: ProductSidebarProps) {
   const handleAvailabilityChange = (filter: string, checked: boolean) => {
