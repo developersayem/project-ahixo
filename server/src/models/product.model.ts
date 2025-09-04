@@ -7,29 +7,47 @@ export interface IProduct extends Document {
   price: number;
   salePrice?: number;
   stock: number;
+  inHouseProduct?: boolean;
+  warranty?: boolean;
+  colors?: string[];
   images: string[];
   tags: string[];
-  category: mongoose.Types.ObjectId;
+  features?: string[];
+  category: string;
   brand?: string;
   shippingCost?: number;
-  rating?: number;
+  ratings?: { user: mongoose.Types.ObjectId; rating: number }[]; // new
+  rating?: number; // average rating
   createdAt: Date;
+  updatedAt: Date;
 }
 
-const ProductSchema: Schema = new Schema<IProduct>({
-  seller: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  title: { type: String, required: true },
-  description: String,
-  price: { type: Number, required: true },
-  salePrice: Number,
-  stock: { type: Number, default: 0 },
-  images: [String],
-  tags: [String],
-  category: { type: Schema.Types.ObjectId, ref: "Category" },
-  brand: String,
-  shippingCost: Number,
-  rating: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
-});
+const ProductSchema: Schema<IProduct> = new Schema(
+  {
+    seller: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    title: { type: String, required: true, trim: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true },
+    salePrice: { type: Number },
+    stock: { type: Number, default: 0 },
+    inHouseProduct: { type: Boolean, default: false },
+    images: [{ type: String, required: true }],
+    tags: [{ type: String }],
+    features: [{ type: String }],
+    category: { type: String, required: true },
+    brand: { type: String },
+    warranty: { type: Boolean, default: false },
+    colors: [{ type: String }],
+    shippingCost: { type: Number, default: 0 },
+    ratings: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: "User" },
+        rating: { type: Number, min: 0, max: 5 },
+      },
+    ],
+    rating: { type: Number, default: 0 }, // average rating
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model<IProduct>("Product", ProductSchema);
+export const Product = mongoose.model<IProduct>("Product", ProductSchema);

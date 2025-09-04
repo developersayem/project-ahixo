@@ -2,6 +2,8 @@ import { Router } from "express";
 import { sellerLoginController, sellerRegistrationController } from "../../controller/seller/auth.controller";
 import { getSellerProfileController } from "../../controller/seller/profile.controller";
 import { verifyJWT } from "../../middlewares/auth.middlewares";
+import productsRoutes from "../../routes/seller/product.route"; // all product routes
+
 
 
 const router = Router()
@@ -18,6 +20,10 @@ router.route("/login").post(
 router.route("/profile").get(verifyJWT, getSellerProfileController)
 // Route For seller profile update
 router.route("/profile").put( verifyJWT, getSellerProfileController)
+
+
+// Mount products routes
+router.use("/products", verifyJWT, productsRoutes);
 
 
 
