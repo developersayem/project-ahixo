@@ -45,7 +45,7 @@ interface AuthContextType extends AuthState {
 // ---------------- Reducer ----------------
 const initialState: AuthState = {
   user: null,
-  isLoading: false,
+  isLoading: true, // Start as loading
   isAuthenticated: false,
 };
 
@@ -57,13 +57,13 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       return {
         ...state,
         user: action.payload,
-        isLoading: false,
         isAuthenticated: true,
+        isLoading: false,
       };
     case "LOGIN_FAILURE":
-      return { ...state, user: null, isLoading: false, isAuthenticated: false };
+      return { ...state, user: null, isAuthenticated: false, isLoading: false };
     case "LOGOUT":
-      return { ...initialState };
+      return { user: null, isAuthenticated: false, isLoading: false };
     case "UPDATE_USER":
       return {
         ...state,
@@ -83,15 +83,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const router = useRouter();
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Check existing session
+  // ---------------- Load user from localStorage ----------------
   useEffect(() => {
     const localUser = localStorage.getItem("user");
     if (localUser) {
       const parsedUser = JSON.parse(localUser) as IUser;
       dispatch({ type: "LOGIN_SUCCESS", payload: parsedUser });
+    } else {
+      dispatch({ type: "LOGIN_FAILURE" }); // stops loading
     }
   }, []);
 
+  // ---------------- Helper Functions ----------------
   const manualLogin = (user: IUser) => {
     localStorage.setItem("user", JSON.stringify(user));
     dispatch({ type: "LOGIN_SUCCESS", payload: user });
@@ -113,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         "/api/v1/buyer/register",
         data
       );
-      return res.data; // return typed response
+      return res.data;
     } catch (err) {
       const error = err as AxiosError<ApiError>;
       toast.error(error.response?.data?.message || "Registration failed");
@@ -121,6 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
+
   const loginAsBuyer = async (email: string, password: string) => {
     dispatch({ type: "LOGIN_START" });
     try {
@@ -139,6 +143,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
+
   // Seller
   const registerAsSeller = async (data: RegisterData) => {
     dispatch({ type: "LOGIN_START" });
@@ -147,7 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         "/api/v1/seller/register",
         data
       );
-      return res.data; // return typed response
+      return res.data;
     } catch (err) {
       const error = err as AxiosError<ApiError>;
       toast.error(error.response?.data?.message || "Registration failed");
@@ -155,6 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
+
   const loginAsSeller = async (email: string, password: string) => {
     dispatch({ type: "LOGIN_START" });
     try {
@@ -173,7 +179,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
-  // Common
+
+  // Verify email
   const verifyEmail = async (payload: { email: string; code: string }) => {
     try {
       const res = await api.post<ApiResponse<{ success: boolean }>>(
@@ -187,6 +194,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
+
+  // Logout
   const logout = async () => {
     try {
       await api.post("/api/v1/auth/logout");
@@ -219,6 +228,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+// ---------------- Custom Hook ----------------
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used within an AuthProvider");

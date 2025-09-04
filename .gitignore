@@ -11,6 +11,9 @@ package-lock.json
 .env.*
 !.env.example
 
+# ignore the backend public folder
+server/public/
+
 # Build outputs
 dist/
 build/

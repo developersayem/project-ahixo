@@ -9,8 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { useAuth } from "@/contexts/auth-context";
 
 export function TopNavbar() {
+  const { user } = useAuth();
   return (
     <div className="bg-gray-100 border-b border-gray-200">
       <div className="container mx-auto">
@@ -55,33 +57,40 @@ export function TopNavbar() {
           </div>
 
           {/* Right side - Seller links */}
-          <div className="flex items-center space-x-4">
-            <Link
-              href="/register/seller"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-gray-600 hover:text-gray-900"
+          {!(user?.role === "seller") && (
+            <div className="flex items-center space-x-4">
+              <Link
+                href="/register/seller"
+                className="text-gray-600 hover:text-gray-900"
               >
-                Become a Seller !
-              </Button>
-            </Link>
-            <span className="text-gray-600">|</span>
-            <Link
-              href="/login/seller"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-gray-600 hover:text-gray-900"
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-gray-600 hover:text-gray-900"
+                >
+                  Become a Seller !
+                </Button>
+              </Link>
+              <span className="text-gray-600">|</span>
+              <Link
+                href="/login/seller"
+                className="text-gray-600 hover:text-gray-900"
               >
-                Login to Seller
-              </Button>
-            </Link>
-          </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-gray-600 hover:text-gray-900"
+                >
+                  Login to Seller
+                </Button>
+              </Link>
+            </div>
+          )}
+          {user?.role === "seller" && user.sellerInfo?.isVerified === false && (
+            <div className="text-red-600 hover:text-gray-900 capitalize">
+              not verified yet!
+            </div>
+          )}
         </div>
       </div>
     </div>
