@@ -3,6 +3,7 @@ import { sellerLoginController, sellerRegistrationController } from "../../contr
 import { getSellerProfileController } from "../../controller/seller/profile.controller";
 import { verifyJWT } from "../../middlewares/auth.middlewares";
 import productsRoutes from "../../routes/seller/product.route"; // all product routes
+import orderRoutes from "../../routes/seller/order.route"; // all order routes
 
 
 
@@ -24,6 +25,8 @@ router.route("/profile").put( verifyJWT, getSellerProfileController)
 
 // Mount products routes
 router.use("/products", verifyJWT, productsRoutes);
+// Mount orders routes
+router.use("/orders", verifyJWT, orderRoutes);
 
 
 

@@ -1,37 +1,87 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface IOrderProduct {
-  product: mongoose.Types.ObjectId;
-  seller: mongoose.Types.ObjectId;
-  quantity: number;
-  price: number;
+// Counter schema to track order numbers per seller
+const CounterSchema = new Schema({
+  seller: { type: Schema.Types.ObjectId, ref: "User", unique: true },
+  seq: { type: Number, default: 0 },
+});
+export const Counter = mongoose.model("Counter", CounterSchema);
+
+// Timeline entry interface
+interface ITimelineEntry {
+  status: "processing" | "completed" | "on-hold" | "canceled" | "refunded";
+  timestamp: Date;
+  note?: string;
+  updatedBy?: mongoose.Types.ObjectId; // User who made the change
 }
 
+// Order interface
 export interface IOrder extends Document {
+  orderNumber: number;
+  seller: mongoose.Types.ObjectId;
   buyer: mongoose.Types.ObjectId;
-  products: IOrderProduct[];
-  totalAmount: number;
-  status: "pending" | "processing" | "completed" | "canceled" | "refunded";
+  products: { product: mongoose.Types.ObjectId; quantity: number; price: number; name: string }[];
+  total: number;
+  status: "processing" | "completed" | "on-hold" | "canceled" | "refunded";
+  shippingAddress: string;
+  date: Date;
+  timeline: ITimelineEntry[];
   createdAt: Date;
+  updatedAt: Date;
 }
 
-const OrderProductSchema: Schema = new Schema<IOrderProduct>({
-  product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-  seller: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  quantity: { type: Number, required: true },
-  price: { type: Number, required: true },
-});
-
-const OrderSchema: Schema = new Schema<IOrder>({
-  buyer: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  products: [OrderProductSchema],
-  totalAmount: { type: Number, required: true },
-  status: {
-    type: String,
-    enum: ["pending", "processing", "completed", "canceled", "refunded"],
-    default: "pending",
+// Order schema
+const OrderSchema: Schema = new Schema(
+  {
+    orderNumber: { type: Number },
+    seller: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    buyer: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    products: [
+      {
+        product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+        name: { type: String, required: true },
+      },
+    ],
+    total: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: ["processing", "completed", "on-hold", "canceled", "refunded"],
+      default: "processing",
+    },
+    shippingAddress: { type: String, required: true },
+    date: { type: Date, default: Date.now },
+    timeline: [
+      {
+        status: {
+          type: String,
+          enum: ["processing", "completed", "on-hold", "canceled", "refunded"],
+          required: true,
+        },
+        timestamp: { type: Date, default: Date.now },
+        note: { type: String },
+        updatedBy: { type: Schema.Types.ObjectId, ref: "User" },
+      },
+    ],
   },
-  createdAt: { type: Date, default: Date.now },
+  { timestamps: true }
+);
+
+// Pre-save hook for order number assignment only
+OrderSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const counter = await Counter.findOneAndUpdate(
+      { seller: this.seller },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    this.orderNumber = counter.seq;
+
+    // Initial timeline entry
+    this.timeline = [{ status: this.status, timestamp: new Date(), note: "Order created" }];
+  }
+  next();
 });
 
-export default mongoose.model<IOrder>("Order", OrderSchema);
+export const Order = mongoose.model<IOrder>("Order", OrderSchema);
