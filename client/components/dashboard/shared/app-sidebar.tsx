@@ -15,9 +15,10 @@ import {
 } from "@/components/ui/sidebar";
 // import { useAuth } from "@/contexts/auth-context";
 import Link from "next/link";
-import { NavUser } from "./nav-user";
 import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 const mainRoute = "/dashboard";
 const role = "seller";
@@ -99,7 +100,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} logout={logout} />
+        <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+          <Avatar className="h-8 w-8 rounded-lg">
+            <AvatarImage src={user?.avatar} alt={user?.fullName} />
+            <AvatarFallback className="uppercase">
+              {user?.fullName
+                ?.split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </AvatarFallback>
+          </Avatar>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-medium">{user?.fullName}</span>
+            <span className="truncate text-xs">{user?.email}</span>
+          </div>
+        </div>
+        <div>
+          <Button variant="destructive" className="w-full" onClick={logout}>
+            Log out
+          </Button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
