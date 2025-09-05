@@ -1,52 +1,86 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ShoppingCart, Clock, CheckCircle, RefreshCw } from "lucide-react"
+"use client";
 
-export function OrderStats() {
-  const stats = [
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ShoppingCart, Clock, CheckCircle, RefreshCw } from "lucide-react";
+
+interface OrderStatsData {
+  totalOrders: number;
+  processing: number;
+  completed: number;
+  onHold: number;
+  canceled: number;
+}
+
+interface StatItem {
+  title: string;
+  value: number;
+  change?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+}
+
+interface OrderStatsProps {
+  data?: { data: OrderStatsData };
+  isLoading?: boolean;
+  error?: Error;
+  mutate?: () => void;
+}
+
+export function OrderStats({ data, isLoading, error }: OrderStatsProps) {
+  if (isLoading || !data) return <p>Loading...</p>;
+  if (error) return <p>Error loading stats</p>;
+
+  const stats: StatItem[] = [
     {
       title: "Total Orders",
-      value: "156",
-      change: "+12 today",
+      value: data.data.totalOrders,
       icon: ShoppingCart,
       color: "text-primary",
     },
     {
       title: "Processing",
-      value: "23",
-      change: "Needs attention",
+      value: data.data.processing,
       icon: Clock,
       color: "text-yellow-600",
     },
     {
       title: "Completed",
-      value: "128",
-      change: "+8 today",
+      value: data.data.completed,
       icon: CheckCircle,
       color: "text-green-600",
     },
     {
-      title: "Refunded",
-      value: "5",
-      change: "2 pending",
-      icon: RefreshCw,
-      color: "text-blue-600",
+      title: "On Hold",
+      value: data.data.onHold,
+      icon: Clock,
+      color: "text-orange-600",
     },
-  ]
+    {
+      title: "Canceled",
+      value: data.data.canceled,
+      icon: RefreshCw,
+      color: "text-red-600",
+    },
+  ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
       {stats.map((stat) => (
-        <Card key={stat.title}>
+        <Card key={stat.title} className="shadow-none rounded-none">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-card-foreground">{stat.title}</CardTitle>
-            <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            <stat.icon className={`h-8 w-8 ${stat.color}`} />
+            <CardTitle className="text-sm font-medium text-card-foreground">
+              {stat.title}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {stat.value}
+            </div>
             <p className="text-xs text-muted-foreground">{stat.change}</p>
           </CardContent>
         </Card>
       ))}
     </div>
-  )
+  );
 }
