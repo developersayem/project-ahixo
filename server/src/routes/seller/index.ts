@@ -2,8 +2,9 @@ import { Router } from "express";
 import { sellerLoginController, sellerRegistrationController } from "../../controller/seller/auth.controller";
 import { getSellerProfileController } from "../../controller/seller/profile.controller";
 import { verifyJWT } from "../../middlewares/auth.middlewares";
-import productsRoutes from "../../routes/seller/product.route"; // all product routes
+import overviewRoutes from "../../routes/seller/overview.route"; // all overview routes
 import orderRoutes from "../../routes/seller/order.route"; // all order routes
+import productsRoutes from "../../routes/seller/product.route"; // all product routes
 
 
 
@@ -23,11 +24,14 @@ router.route("/profile").get(verifyJWT, getSellerProfileController)
 router.route("/profile").put( verifyJWT, getSellerProfileController)
 
 
-// Mount products routes
-router.use("/products", verifyJWT, productsRoutes);
+// Mount overview routes
+router.use("/overview", verifyJWT, overviewRoutes);
+
 // Mount orders routes
 router.use("/orders", verifyJWT, orderRoutes);
 
+// Mount products routes
+router.use("/products", verifyJWT, productsRoutes);
 
 
 export default router

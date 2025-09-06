@@ -28,6 +28,7 @@ export interface IOrder {
   seller: string; // Just the seller ID from API response
   buyer?: IOrderBuyer; // Just the buyer ID from API response (optional since it might not be populated)
   products: IOrderProduct[];
+  totalItems?:number; // total number of items in the order
   total: number;
   status: "processing" | "completed" | "on-hold" | "canceled" | "refunded";
   shippingAddress: string;
