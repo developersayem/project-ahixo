@@ -144,10 +144,10 @@ export function OrderDetailsModal({
             </div>
             {/* Status Management */}
             <div>
-              <h3 className="font-medium mb-3">Order Status</h3>
-              <div className="flex items-center space-x-4">
+              <h3 className="font-medium">Order Status</h3>
+              <div className="space-y-2">
                 <Select value={order.status} onValueChange={handleStatusChange}>
-                  <SelectTrigger className="w-48 rounded-none">
+                  <SelectTrigger className="w-fit rounded-none">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-none">
@@ -158,7 +158,7 @@ export function OrderDetailsModal({
                   </SelectContent>
                 </Select>
 
-                <div className="flex space-x-2">
+                <div className="space-y-2">
                   {order.status === "processing" && (
                     <>
                       <Button
