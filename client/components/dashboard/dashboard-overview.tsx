@@ -22,7 +22,6 @@ export function DashboardOverview() {
     "/api/v1/seller/overview/top-products",
     fetcher
   );
-  console.log(recentOrders);
 
   if (error) return <div>Error loading dashboard overview.</div>;
   if (!data) return <div>Loading...</div>;
