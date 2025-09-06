@@ -60,7 +60,7 @@ export function NavUser({ user, logout }: INavBarProps) {
               className="flex items-center gap-3 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               {/* Avatar */}
-              <Avatar className="h-9 w-9 rounded-lg shrink-0">
+              <Avatar className="h-5 w-5 rounded-lg shrink-0">
                 <AvatarImage
                   src={currentUser.avatar}
                   alt={currentUser.fullName}
@@ -75,10 +75,10 @@ export function NavUser({ user, logout }: INavBarProps) {
 
               {/* User info */}
               <div className="flex flex-col text-left min-w-0">
-                <span className="font-medium text-sm">
+                <span className="font-medium text-xs">
                   {currentUser.fullName}
                 </span>
-                <span className="text-xs text-muted-foreground break-all">
+                <span className="text-xs text-muted-foreground text-wrap break-all">
                   {currentUser.email}
                 </span>
               </div>
