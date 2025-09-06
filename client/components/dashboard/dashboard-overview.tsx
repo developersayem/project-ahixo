@@ -148,6 +148,11 @@ export function DashboardOverview() {
                   </div>
                 </div>
               ))}
+              {topProductsError && (
+                <div className="text-center py-8 text-red-600">
+                  There was a problem loading recent orders.
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
