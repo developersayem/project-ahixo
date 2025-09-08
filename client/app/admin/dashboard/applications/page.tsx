@@ -1,4 +1,3 @@
-import { ApplicationForm } from "@/components/dashboard/application/application-form";
 import { ApplicationStatus } from "@/components/dashboard/application/application-status";
 
 export default function ApplicationPage() {
@@ -16,11 +15,7 @@ export default function ApplicationPage() {
         </p>
       </div>
 
-      {applicationStatus === "pending" ? (
-        <ApplicationForm />
-      ) : (
-        <ApplicationStatus status={applicationStatus} />
-      )}
+      <ApplicationStatus status={applicationStatus} />
     </div>
   );
 }
