@@ -68,11 +68,13 @@ app.use(loggerMiddleware);
 import authRoutes from "./routes/auth/index";
 import sellerRoutes from "./routes/seller/index";
 import buyerRoutes from "./routes/buyer/index";
+import adminRoutes from "./routes/admin/index";
 
 // Use routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/buyer", buyerRoutes);
 app.use("/api/v1/seller", sellerRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 
 

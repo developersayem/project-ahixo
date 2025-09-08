@@ -26,7 +26,7 @@ export interface IUserProps {
   avatar?: string;
   phone: string;
   password: string;
-  role: "buyer" | "seller";
+  role: "buyer" | "seller" | "admin";
   address?: IAddress;
   sellerInfo?: ISellerInfo;
   refreshToken?: string;
@@ -65,7 +65,7 @@ const UserSchema = new Schema<IUserDocument, IUserModel>(
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ["buyer", "seller"], default: "buyer" },
+    role: { type: String, enum: ["buyer", "seller", "admin"], default: "buyer" },
     address: {
       street: String,
       city: String,
