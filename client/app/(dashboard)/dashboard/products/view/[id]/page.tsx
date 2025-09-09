@@ -5,6 +5,7 @@ import { Info } from "@/components/dashboard/products/products-details/info";
 import { Tabs } from "@/components/dashboard/products/products-details/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/contexts/auth-context";
 import api from "@/lib/axios";
 import { ArrowBigLeftIcon, Pencil } from "lucide-react";
 import Link from "next/link";
@@ -17,12 +18,13 @@ interface ViewProductPageProps {
 }
 
 export default function ViewProductPage({ params }: ViewProductPageProps) {
+  const { user } = useAuth();
   // In a real app, fetch product data by ID
   const productId = params.id;
 
   const { data: product } = useSWR(
-    `/api/v1/seller/products/${productId}`,
-    (url) => api.get(url).then((res) => res.data.data)
+    `/api/v1/${user?.role}/products/${productId}`,
+    (url: string) => api.get(url).then((res) => res.data.data)
   );
 
   if (!product) {
