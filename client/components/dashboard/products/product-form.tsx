@@ -21,7 +21,6 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { UserRole } from "@/types/user-type";
 
 interface ProductFormProps {
   productId?: string;
@@ -246,11 +245,7 @@ export function ProductForm({ productId }: ProductFormProps) {
       toast.success(isEditing ? "Product updated!" : "Product created!");
       resetForm();
       // Redirect to the view page
-      if (user?.role === ("admin" as UserRole)) {
-        router.push(`/admin/dashboard/products/view/${productId}`);
-      } else {
-        router.push(`/dashboard/products/view/${productId}`);
-      }
+      router.push(`/dashboard/products/view/${productId}`);
     } catch (err) {
       const axiosError = err as AxiosError;
       console.error(

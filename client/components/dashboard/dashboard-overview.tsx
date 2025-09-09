@@ -15,7 +15,10 @@ interface ITopProduct {
 
 export function DashboardOverview() {
   const { user } = useAuth();
-  const { data, error } = useSWR("/api/v1/seller/overview/stats", fetcher);
+  const { data, error } = useSWR(
+    `/api/v1/${user?.role}/overview/stats`,
+    fetcher
+  );
   const { data: recentOrders, error: recentOrdersError } = useSWR(
     `/api/v1/${user?.role}/overview/recent-orders`,
     fetcher
