@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { sellerLoginController, sellerRegistrationController } from "../../controller/seller/auth.controller";
+import { sellerRegistrationController } from "../../controller/seller/auth.controller";
 import { getSellerProfileController } from "../../controller/seller/profile.controller";
 import { verifyJWT } from "../../middlewares/auth.middlewares";
 import overviewRoutes from "../../routes/seller/overview.route"; // all overview routes
@@ -13,10 +13,6 @@ const router = Router()
 // Route for register seller
 router.route("/register").post(
     sellerRegistrationController,
-)
-// Route for login seller
-router.route("/login").post(
-    sellerLoginController,
 )
 // Route For seller profile
 router.route("/profile").get(verifyJWT, getSellerProfileController)

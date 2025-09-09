@@ -21,7 +21,7 @@ export default function LoginPage() {
 
         {/* Right Side - Form */}
         <div className="flex-1 flex items-center justify-center p-8">
-          <LoginForm role="buyer" showBackButton={true} />
+          <LoginForm showBackButton={true} />
         </div>
       </div>
     </div>

@@ -60,28 +60,3 @@ export const sellerRegistrationController = asyncHandler(async (req: Request, re
   );
 });
 
-// *---------------- Login Seller ----------------
-export const sellerLoginController = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) throw new ApiError(400, "Email and password are required");
-
-  const user = await User.findOne({ email, role: "seller" });
-  if (!user) throw new ApiError(404, "Seller not found");
-
-  const isPasswordValid = await user.isPasswordCorrect(password);
-  if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
-
-  if (!user.emailVerified) {
-    throw new ApiError(403, "Email not verified");
-  }
-
-  const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user._id as string);
-
-  return res.status(200)
-  .cookie("accessToken", accessToken, cookieOptions)
-  .cookie("refreshToken", refreshToken, cookieOptions)
-  .json(
-    new ApiResponse(200, user , "Login successful")
-  );
-});

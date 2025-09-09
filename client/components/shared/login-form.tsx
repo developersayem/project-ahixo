@@ -16,16 +16,14 @@ import { useRouter } from "next/navigation";
 interface SellerLoginFormProps {
   formDescription?: string;
   showBackButton?: boolean;
-  role: "buyer" | "seller";
 }
 
 export function LoginForm({
   formDescription = "Login to your account",
   showBackButton = false,
-  role,
 }: SellerLoginFormProps) {
   const router = useRouter();
-  const { loginAsBuyer, loginAsSeller } = useAuth(); // useAuth from context
+  const { login } = useAuth(); // useAuth from context
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,14 +35,11 @@ export function LoginForm({
     setLoading(true);
 
     try {
-      if (role === "buyer") {
-        await loginAsBuyer(email, password);
-      }
-      if (role === "seller") {
-        await loginAsSeller(email, password);
-      }
+      await login(email, password);
+
       toast.success("Logged in successfully!");
-      router.push("/"); // redirect after login
+      // redirect to dashboard
+      router.push("/dashboard");
     } catch (err) {
       toast.error("Login failed! Please check your credentials.");
       console.error(err);
@@ -66,7 +61,7 @@ export function LoginForm({
           />
         </div>
         <h1 className="text-2xl font-bold text-brand-500 mb-2">
-          WELCOME BACK !
+          WELCOME BACK!
         </h1>
         <p className="text-neutral-600 text-sm capitalize">{formDescription}</p>
       </div>

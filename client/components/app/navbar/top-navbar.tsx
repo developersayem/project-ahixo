@@ -57,7 +57,7 @@ export function TopNavbar() {
           </div>
 
           {/* Right side - Seller links */}
-          {!(user?.role === "seller") && (
+          {user?.role === "buyer" && (
             <div className="flex items-center space-x-4">
               <Link
                 href="/register/seller"
@@ -84,11 +84,6 @@ export function TopNavbar() {
                   Login to Seller
                 </Button>
               </Link>
-            </div>
-          )}
-          {user?.role === "seller" && user.sellerInfo?.isVerified === false && (
-            <div className="text-red-600 hover:text-gray-900 capitalize">
-              not verified yet!
             </div>
           )}
         </div>

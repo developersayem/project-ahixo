@@ -29,8 +29,7 @@ interface RegisterData {
 }
 
 interface AuthContextType extends AuthState {
-  loginAsBuyer: (email: string, password: string) => Promise<void>;
-  loginAsSeller: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   registerAsBuyer: (data: RegisterData) => Promise<ApiResponse<IUser>>;
   registerAsSeller: (data: RegisterData) => Promise<ApiResponse<IUser>>;
   verifyEmail: (payload: {
@@ -125,10 +124,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const loginAsBuyer = async (email: string, password: string) => {
+  const login = async (email: string, password: string) => {
     dispatch({ type: "LOGIN_START" });
     try {
-      const res = await api.post<ApiResponse<IUser>>("/api/v1/buyer/login", {
+      const res = await api.post<ApiResponse<IUser>>("/api/v1/auth/login", {
         email,
         password,
       });
@@ -156,25 +155,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (err) {
       const error = err as AxiosError<ApiError>;
       toast.error(error.response?.data?.message || "Registration failed");
-      dispatch({ type: "LOGIN_FAILURE" });
-      throw error.response?.data;
-    }
-  };
-
-  const loginAsSeller = async (email: string, password: string) => {
-    dispatch({ type: "LOGIN_START" });
-    try {
-      const res = await api.post<ApiResponse<IUser>>("/api/v1/seller/login", {
-        email,
-        password,
-      });
-      const user = res.data.data;
-      localStorage.setItem("user", JSON.stringify(user));
-      dispatch({ type: "LOGIN_SUCCESS", payload: user });
-      router.push("/");
-    } catch (err) {
-      const error = err as AxiosError<ApiError>;
-      toast.error(error.response?.data?.message || "Login failed");
       dispatch({ type: "LOGIN_FAILURE" });
       throw error.response?.data;
     }
@@ -213,8 +193,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     <AuthContext.Provider
       value={{
         ...state,
-        loginAsBuyer,
-        loginAsSeller,
+        login,
         registerAsBuyer,
         registerAsSeller,
         verifyEmail,
