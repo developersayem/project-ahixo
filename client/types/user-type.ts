@@ -17,7 +17,7 @@ export interface ISellerInfo {
   documents?: string[];
 }
 
-export type UserRole = "buyer" | "seller";
+export type UserRole = "buyer" | "seller" | "admin";
 
 export interface IUser {
   _id: string;                     // MongoDB ID
