@@ -3,6 +3,7 @@ import { Package, ShoppingCart, DollarSign, TrendingUp } from "lucide-react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { IOrder } from "@/types/order-type";
+import { useAuth } from "@/contexts/auth-context";
 
 interface ITopProduct {
   _id: string; // ObjectId of the product
@@ -13,13 +14,14 @@ interface ITopProduct {
 }
 
 export function DashboardOverview() {
+  const { user } = useAuth();
   const { data, error } = useSWR("/api/v1/seller/overview/stats", fetcher);
   const { data: recentOrders, error: recentOrdersError } = useSWR(
-    "/api/v1/seller/overview/recent-orders",
+    `/api/v1/${user?.role}/overview/recent-orders`,
     fetcher
   );
   const { data: topProducts, error: topProductsError } = useSWR(
-    "/api/v1/seller/overview/top-products",
+    `/api/v1/${user?.role}/overview/top-products`,
     fetcher
   );
 

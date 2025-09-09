@@ -18,7 +18,6 @@ import { useState } from "react";
 import api from "@/lib/axios";
 import { fetcher } from "@/lib/fetcher";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/auth-context";
 
 interface Product {
   _id: string;
@@ -33,11 +32,10 @@ interface Product {
 }
 
 export function ProductList() {
-  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data, error, isLoading, mutate } = useSWR(
-    `/api/v1/${user?.role}/products`,
+    "/api/v1/seller/products",
     fetcher
   );
 

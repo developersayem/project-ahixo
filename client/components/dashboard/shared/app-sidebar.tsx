@@ -1,7 +1,15 @@
 "use client";
 
 import * as React from "react";
-import { Blocks, Layers, LayoutDashboard } from "lucide-react";
+import {
+  Blocks,
+  Files,
+  Layers,
+  LayoutDashboard,
+  List,
+  Users,
+  UserStar,
+} from "lucide-react";
 
 import { NavMain } from "@/components/dashboard/shared/nav-main";
 import {
@@ -20,56 +28,119 @@ import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
 
 const mainRoute = "/dashboard";
-const role = "seller";
-
-const data = {
-  navMain: [
-    ...(role === "seller"
-      ? [
-          {
-            title: "Application",
-            url: `${mainRoute}/application`,
-            icon: LayoutDashboard,
-            isActive: false,
-            items: [],
-          },
-        ]
-      : []),
-    {
-      title: "Dashboard",
-      url: `${mainRoute}`,
-      icon: LayoutDashboard,
-      isActive: false,
-      items: [],
-    },
-    {
-      title: "Orders",
-      url: `${mainRoute}/orders`,
-      icon: Layers,
-      isActive: false,
-      items: [],
-    },
-    {
-      title: "Products",
-      url: "#",
-      icon: Blocks,
-      isActive: true,
-      items: [
-        {
-          title: "Add Products",
-          url: `${mainRoute}/products/add`,
-        },
-        {
-          title: "Products",
-          url: `${mainRoute}/products`,
-        },
-      ],
-    },
-  ],
-};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, logout } = useAuth();
+
+  const AdminRoutes = {
+    navMain: [
+      {
+        title: "Dashboard",
+        url: `${mainRoute}`,
+        icon: LayoutDashboard,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Applications",
+        url: `${mainRoute}/applications`,
+        icon: Files,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Sellers",
+        url: `${mainRoute}/sellers`,
+        icon: UserStar,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Users",
+        url: `${mainRoute}/users`,
+        icon: Users,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Orders",
+        url: `${mainRoute}/orders`,
+        icon: Layers,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Categories",
+        url: `${mainRoute}/categories`,
+        icon: List,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Products",
+        url: "#",
+        icon: Blocks,
+        isActive: true,
+        items: [
+          {
+            title: "Add Products",
+            url: `${mainRoute}/products/add`,
+          },
+          {
+            title: "Products",
+            url: `${mainRoute}/products`,
+          },
+        ],
+      },
+    ],
+  };
+
+  const SellerRoutes = {
+    navMain: [
+      ...(user?.role === "seller"
+        ? [
+            {
+              title: "Application",
+              url: `${mainRoute}/application`,
+              icon: LayoutDashboard,
+              isActive: false,
+              items: [],
+            },
+          ]
+        : []),
+      {
+        title: "Dashboard",
+        url: `${mainRoute}`,
+        icon: LayoutDashboard,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Orders",
+        url: `${mainRoute}/orders`,
+        icon: Layers,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Products",
+        url: "#",
+        icon: Blocks,
+        isActive: true,
+        items: [
+          {
+            title: "Add Products",
+            url: `${mainRoute}/products/add`,
+          },
+          {
+            title: "Products",
+            url: `${mainRoute}/products`,
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -96,7 +167,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain
+          items={
+            user?.role === "seller" ? SellerRoutes.navMain : AdminRoutes.navMain
+          }
+        />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} logout={logout} />

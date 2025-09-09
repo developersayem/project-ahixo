@@ -4,15 +4,13 @@ import { fetcher } from "@/lib/fetcher";
 import { OrderList } from "./order-list";
 import { OrderStats } from "./order-stats";
 import useSWR from "swr";
-import { useAuth } from "@/contexts/auth-context";
 
 const OrdersCom = () => {
-  const { user } = useAuth();
   const {
     data,
     error,
     mutate: ordersStatsMutate,
-  } = useSWR(`/api/v1/${user?.role}/orders/stats`, fetcher);
+  } = useSWR("/api/v1/admin/orders/stats", fetcher);
 
   return (
     <>

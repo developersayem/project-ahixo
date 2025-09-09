@@ -34,7 +34,6 @@ import useSWR from "swr";
 import { IOrder } from "@/types/order-type";
 import api from "@/lib/axios";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/auth-context";
 
 type OrderStatus = "all" | "processing" | "completed" | "on-hold" | "canceled";
 
@@ -43,13 +42,12 @@ export function OrderList({
 }: {
   ordersStatsMutate?: () => void;
 }) {
-  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<OrderStatus>("all");
   const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
 
   const { data, error, isLoading, mutate } = useSWR(
-    `/api/v1/${user?.role}/orders`,
+    "/api/v1/admin/orders",
     fetcher
   );
 
@@ -95,7 +93,7 @@ export function OrderList({
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       await api.put(
-        `/api/v1/${user?.role}/orders/${orderId}/status`,
+        `/api/v1/seller/orders/${orderId}/status`,
         { status: newStatus },
         {
           headers: { "Content-Type": "application/json" },

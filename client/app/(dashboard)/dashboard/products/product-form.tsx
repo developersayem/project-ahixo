@@ -20,21 +20,18 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
-import { UserRole } from "@/types/user-type";
 
 interface ProductFormProps {
   productId?: string;
 }
 
 export function ProductForm({ productId }: ProductFormProps) {
-  const { user } = useAuth();
   const isEditing = !!productId;
   const router = useRouter();
 
   const { data: existingProduct } = useSWR(
-    isEditing ? `/api/v1/${user?.role}/products/${productId}` : null,
-    (url: string) => api.get(url).then((res) => res.data.data)
+    isEditing ? `/api/v1/seller/products/${productId}` : null,
+    (url) => api.get(url).then((res) => res.data.data)
   );
 
   const [formData, setFormData] = useState({
@@ -233,24 +230,19 @@ export function ProductForm({ productId }: ProductFormProps) {
       deletedImages.forEach((img) => data.append("removeImages[]", img));
 
       if (isEditing && productId) {
-        await api.put(`/api/v1/${user?.role}/products/${productId}`, data, {
+        await api.put(`/api/v1/admin/products/${productId}`, data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        await api.post(`/api/v1/${user?.role}/products`, data, {
+        await api.post("/api/v1/admin/products", data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
 
-      mutate(`/api/v1/${user?.role}/products`);
+      mutate("/api/v1/admin/products");
       toast.success(isEditing ? "Product updated!" : "Product created!");
       resetForm();
-      // Redirect to the view page
-      if (user?.role === ("admin" as UserRole)) {
-        router.push(`/admin/dashboard/products/view/${productId}`);
-      } else {
-        router.push(`/dashboard/products/view/${productId}`);
-      }
+      router.push(`/dashboard/products/view/${productId}`);
     } catch (err) {
       const axiosError = err as AxiosError;
       console.error(
