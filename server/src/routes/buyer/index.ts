@@ -4,7 +4,7 @@ import { Router } from "express";
 import { verifyJWT } from "../../middlewares/auth.middlewares";
 import orderRoutes from "../../routes/buyer/order.route";
 import wishlistRoutes from "../../routes/buyer/wishlist.route";
-
+import cartRoutes from "../../routes/buyer/cart.route";
 
 
 
@@ -22,6 +22,8 @@ router.route("/profile").put( verifyJWT, getSellerProfileController)
 router.use("/orders",verifyJWT,orderRoutes )
 // mount wishlist routes
 router.use("/wishlist",verifyJWT, wishlistRoutes)
+// mount cart routes
+router.use("/cart",verifyJWT, cartRoutes)
 
 
 
