@@ -31,10 +31,17 @@ export default function WishlistPage() {
     wishlistResMutate();
   };
 
-  const handleAddToCart = (id: string, quantity: number) => {
-    // Handle add to cart logic here
-    console.log("Adding to cart:", id, quantity);
-    // You could show a toast notification here
+  const handleAddToCart = async (productId: string, quantity: number) => {
+    try {
+      const res = await api.post(`/api/v1/${user?.role}/cart/add`, {
+        productId,
+        quantity,
+      });
+      if (res.data.success) toast.success("Added to cart");
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
   };
 
   return (
