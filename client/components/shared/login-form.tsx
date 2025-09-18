@@ -11,7 +11,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 interface SellerLoginFormProps {
   formDescription?: string;
@@ -22,7 +21,6 @@ export function LoginForm({
   formDescription = "Login to your account",
   showBackButton = false,
 }: SellerLoginFormProps) {
-  const router = useRouter();
   const { login } = useAuth(); // useAuth from context
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -38,8 +36,6 @@ export function LoginForm({
       await login(email, password);
 
       toast.success("Logged in successfully!");
-      // redirect to dashboard
-      router.push("/dashboard");
     } catch (err) {
       toast.error("Login failed! Please check your credentials.");
       console.error(err);

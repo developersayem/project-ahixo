@@ -20,14 +20,20 @@ api.interceptors.response.use(
 
       try {
         // Call refresh endpoint
-        await api.get("/api/v1/auth/refresh-token");
+        await api.post("/api/v1/auth/refresh-token");
 
         // Retry original request
         return api(originalRequest);
-      } catch (refreshError) {
-        console.error("Refresh token expired or invalid", refreshError);
-        // Optional: redirect to login page
-        window.location.href = "/login";
+      } catch (refreshError: unknown) {
+        if (refreshError instanceof AxiosError) {
+          console.error("Refresh token expired or invalid", refreshError);
+
+          // Only redirect if refresh ALSO failed with 401
+          if (refreshError.response?.status === 401) {
+            window.location.href = "/login";
+          }
+        }
+        return Promise.reject(refreshError);
       }
     }
 

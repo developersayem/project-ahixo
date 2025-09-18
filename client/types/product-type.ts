@@ -13,7 +13,7 @@ export interface IProduct {
   warranty?: string;
   colors?: string[];
   stock: number;
-  isInHouseProduct: boolean;
+  isInHouseProduct?: boolean;
   inHouseProduct?: boolean;
   images: string[];
   tags: string[];

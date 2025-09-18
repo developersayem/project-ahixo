@@ -55,6 +55,33 @@ export function TopNavbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+          {/* <div className="flex items-center space-x-4">
+            <Link
+              href="/register/seller"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-gray-600 hover:text-gray-900"
+              >
+                Become a Seller !
+              </Button>
+            </Link>
+            <span className="text-gray-600">|</span>
+            <Link
+              href="/login/seller"
+              className="text-gray-600 hover:text-gray-900"
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-gray-600 hover:text-gray-900"
+              >
+                Login to Seller
+              </Button>
+            </Link>
+          </div> */}
 
           {/* Right side - Seller links */}
           {user?.role === "buyer" && (

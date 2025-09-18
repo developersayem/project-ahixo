@@ -1,6 +1,5 @@
-// Timeline entry interface
 export interface ITimelineEntry {
-  status: "processing" | "completed" | "on-hold" | "canceled" | "refunded";
+  status: "processing" | "delivered" | "on-hold" | "canceled";
   timestamp: string; // ISO string
   note?: string;
   updatedBy?: {
@@ -16,10 +15,13 @@ export interface IOrderBuyer {
 }
 
 export interface IOrderProduct {
-  _id: string; // product ID
+    images: string[];
+  _id:string;
   quantity: number;
-  price: number; // price per item
-  name: string; // product name/title
+  name: string
+  price:number
+  brand:string
+
 }
 
 export interface IOrder {
@@ -30,7 +32,7 @@ export interface IOrder {
   products: IOrderProduct[];
   totalItems?:number; // total number of items in the order
   total: number;
-  status: "processing" | "completed" | "on-hold" | "canceled" | "refunded";
+  status: "processing" | "delivered" | "on-hold" | "canceled";
   shippingAddress: string;
   date: string; // ISO string
   timeline?: ITimelineEntry[]; // Timeline entries

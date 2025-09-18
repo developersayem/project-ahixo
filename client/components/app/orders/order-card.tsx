@@ -1,0 +1,162 @@
+"use client";
+
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Truck, CheckCircle, Clock, XCircle, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { IOrder } from "@/types/order-type";
+
+interface OrderCardProps {
+  order: IOrder;
+  onRemoveItem: (orderId: string, itemId: string) => void;
+  onCancelOrder: (orderId: string) => void;
+}
+
+export function OrderCard({
+  order,
+  onRemoveItem,
+  onCancelOrder,
+}: OrderCardProps) {
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      "on-hold": {
+        label: "On Hold",
+        color: "bg-orange-100 text-orange-600",
+        icon: Truck,
+      },
+      delivered: {
+        label: "Delivered",
+        color: "bg-green-100 text-green-600",
+        icon: CheckCircle,
+      },
+      processing: {
+        label: "Processing",
+        color: "bg-blue-100 text-blue-600",
+        icon: Clock,
+      },
+      canceled: {
+        label: "canceled",
+        color: "bg-red-100 text-red-600",
+        icon: XCircle,
+      },
+    };
+
+    // Normalize status
+    const normalizedStatus = status === "canceled" ? "canceled" : status;
+    const config = statusConfig[
+      normalizedStatus as keyof typeof statusConfig
+    ] || {
+      label: status,
+      color: "bg-gray-100 text-gray-600",
+      icon: Clock,
+    };
+
+    const Icon = config.icon;
+
+    return (
+      <Badge className={`${config.color} font-medium px-3 py-1 rounded-full`}>
+        <Icon className="w-3 h-3 mr-1" />
+        {config.label}
+      </Badge>
+    );
+  };
+
+  return (
+    <Card className="overflow-hidden rounded-none shadow-none">
+      <CardHeader className="bg-muted/50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div>
+              <h3 className="text-lg font-medium">Order {order._id}</h3>
+              <p className="text-sm text-muted-foreground">
+                Order Placed: {order.date}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            {getStatusBadge(order.status)}
+            {order.status === "processing" && (
+              <Button
+                variant="outline"
+                onClick={() => onCancelOrder(order._id)}
+                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <XCircle className="w-4 h-4 mr-2" />
+                CANCEL ORDER
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-6">
+        <div className="space-y-4">
+          {order.products.map((product) => (
+            <div
+              key={product._id}
+              className="flex items-center space-x-4 p-4 border border-border"
+            >
+              <div className="w-20 h-20 bg-muted overflow-hidden flex-shrink-0">
+                <Image
+                  src={product.images?.[0] || "/placeholder.svg"}
+                  alt={product.name}
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="flex-1">
+                <h4 className="font-medium text-foreground">{product.name}</h4>
+                <p className="text-sm text-muted-foreground">{product.brand}</p>
+                <div className="flex items-center space-x-4 mt-1">
+                  <span className="text-sm text-muted-foreground">
+                    Qty: {product.quantity}
+                  </span>
+                  <span className="font-medium">
+                    ${product.price.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <div className="mb-2">
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  {getStatusBadge(order.status)}
+                </div>
+              </div>
+              {order.status === "processing" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onRemoveItem(order._id, product._id)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 "
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <Separator className="my-4" />
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-muted-foreground">
+              Fast return within 7 days
+            </span>
+          </div>
+
+          <div className="text-right">
+            <p className="text-lg font-bold text-foreground">
+              ${order.total.toLocaleString()}
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

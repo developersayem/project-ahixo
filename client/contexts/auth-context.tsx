@@ -134,7 +134,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const user = res.data.data;
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({ type: "LOGIN_SUCCESS", payload: user });
-      router.push("/");
+      if (user.role === "buyer") {
+        router.push("/");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err) {
       const error = err as AxiosError<ApiError>;
       toast.error(error.response?.data?.message || "Login failed");
