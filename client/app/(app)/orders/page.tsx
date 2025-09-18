@@ -22,21 +22,20 @@ export default function OrdersPage() {
   } = useSWR(`/api/v1/${user?.role}/orders/`, fetcher);
   const orders = orderRes?.data || [];
 
-  console.log(orderRes);
-
   const removeItemFromOrder = async (orderId: string, productId: string) => {
     // /api/v1/buyer/orders/:orderId/product/:productId
-    await api.delete(
+    const res = await api.delete(
       `/api/v1/${user?.role}/orders/${orderId}/product/${productId}`
     );
+    if (res.data.success)
+      toast.success("Product removed from order successfully");
     ordersResMutate();
-    toast.success("Product removed from order successfully");
   };
 
   const cancelOrder = async (orderId: string) => {
-    await api.put(`/api/v1/${user?.role}/orders/${orderId}/cancel`);
+    const res = await api.put(`/api/v1/${user?.role}/orders/${orderId}/cancel`);
+    if (res.data.success) toast.success("Order canceled successfully");
     ordersResMutate();
-    toast.success("Order canceled successfully");
   };
 
   const filteredOrders = orders.filter((order: IOrder) => {

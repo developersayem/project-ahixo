@@ -96,8 +96,9 @@ export function OrderCard({
           {order.products.map((product) => (
             <div
               key={product._id}
-              className="flex items-center space-x-4 p-4 border border-border"
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-border gap-4"
             >
+              {/* Product Image */}
               <div className="w-20 h-20 bg-muted overflow-hidden flex-shrink-0">
                 <Image
                   src={product.images?.[0] || "/placeholder.svg"}
@@ -108,35 +109,39 @@ export function OrderCard({
                 />
               </div>
 
-              <div className="flex-1">
-                <h4 className="font-medium text-foreground">{product.name}</h4>
-                <p className="text-sm text-muted-foreground">{product.brand}</p>
-                <div className="flex items-center space-x-4 mt-1">
-                  <span className="text-sm text-muted-foreground">
-                    Qty: {product.quantity}
-                  </span>
-                  <span className="font-medium">
-                    ${product.price.toLocaleString()}
-                  </span>
+              {/* Product Info */}
+              <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2">
+                <div>
+                  <h4 className="font-medium text-foreground">
+                    {product.name}
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    {product.brand}
+                  </p>
+                  <div className="flex items-center space-x-4 mt-1">
+                    <span className="text-sm text-muted-foreground">
+                      Qty: {product.quantity}
+                    </span>
+                    <span className="font-medium">
+                      ${product.price.toLocaleString()}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              <div className="text-right">
-                <div className="mb-2">
-                  <p className="text-sm text-muted-foreground">Status</p>
-                  {getStatusBadge(order.status)}
-                </div>
+                {/* Delete Button */}
+                {order.status === "processing" && (
+                  <div className="mt-2 sm:mt-0 flex-shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onRemoveItem(order._id, product._id)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
-              {order.status === "processing" && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onRemoveItem(order._id, product._id)}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10 "
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              )}
             </div>
           ))}
         </div>

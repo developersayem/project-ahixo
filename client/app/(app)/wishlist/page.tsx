@@ -1,34 +1,40 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { WishlistTable } from "@/components/app/wishlist/wishlist-table";
-import { WishlistItem } from "@/types/wishlist.type";
-import { demoWishlistItems } from "./data";
+import { WishlistCards } from "@/components/app/wishlist/wishlist-cards";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
+import { useAuth } from "@/contexts/auth-context";
+import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
+import { toast } from "sonner";
 
 export default function WishlistPage() {
-  const [wishlistItems, setWishlistItems] =
-    useState<WishlistItem[]>(demoWishlistItems);
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const {
+    data: wishlistRes,
+    // error,
+    mutate: wishlistResMutate,
+  } = useSWR(`/api/v1/${user?.role}/wishlist/`, fetcher);
+  const wishlistItems = wishlistRes?.data || [];
 
   const handleUpdateQuantity = (id: string, quantity: number) => {
-    setWishlistItems((items) =>
-      items.map((item) => (item.id === id ? { ...item, quantity } : item))
-    );
+    console.log(id, quantity);
   };
 
-  const handleRemoveItem = (id: string) => {
-    setWishlistItems((items) => items.filter((item) => item.id !== id));
+  const handleRemoveItem = async (id: string) => {
+    const res = await api.delete(`/api/v1/${user?.role}/wishlist/${id}`);
+    if (res.data.success)
+      toast.success("Product removed from order successfully");
+    wishlistResMutate();
   };
 
-  const handleAddToCart = (id: string) => {
+  const handleAddToCart = (id: string, quantity: number) => {
     // Handle add to cart logic here
-    console.log("Adding to cart:", id);
+    console.log("Adding to cart:", id, quantity);
     // You could show a toast notification here
-  };
-
-  const handleContinueShopping = () => {
-    // Navigate to products page
-    console.log("Continue shopping");
   };
 
   return (
@@ -52,11 +58,11 @@ export default function WishlistPage() {
 
         {/* Wishlist Table */}
         <div className="mb-8">
-          <WishlistTable
+          <WishlistCards
             items={wishlistItems}
             onUpdateQuantity={handleUpdateQuantity}
             onRemoveItem={handleRemoveItem}
-            onAddToCart={handleAddToCart}
+            onAddToCart={handleAddToCart} // <-- pass the function itself, do NOT call it
           />
         </div>
 
@@ -70,7 +76,10 @@ export default function WishlistPage() {
                 </h3>
               </div>
               <div className="flex space-x-3">
-                <Button variant="outline" onClick={handleContinueShopping}>
+                <Button
+                  variant="outline"
+                  onClick={() => router.push("/products")}
+                >
                   Continue Shopping
                 </Button>
               </div>
