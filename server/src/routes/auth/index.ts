@@ -8,7 +8,7 @@ const router = Router()
 
 router.post("/login", loginController);
 
-router.post("/refresh", refreshAccessTokenController);
+router.post("/refresh-token", refreshAccessTokenController);
 
 //Routes for verify user
 router.post("/verify-email", verifyEmail);

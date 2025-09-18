@@ -1,8 +1,10 @@
 import {buyerRegistrationController } from "../../controller/buyer/auth.controller";
-import { getBuyerProfileController } from "../../controller/buyer/profile.controller";
 import { getSellerProfileController } from "../../controller/seller/profile.controller";
 import { Router } from "express";
 import { verifyJWT } from "../../middlewares/auth.middlewares";
+import orderRoutes from "../../routes/buyer/order.route";
+
+
 
 
 const router = Router()
@@ -11,10 +13,11 @@ const router = Router()
 router.route("/register").post(
     buyerRegistrationController,
 )
-// Route For seller buyer
-router.route("/profile").get(verifyJWT,getBuyerProfileController)
 // Route For seller profile update
 router.route("/profile").put( verifyJWT, getSellerProfileController)
+
+// mount order routes
+router.use("/orders",verifyJWT,orderRoutes )
 
 
 

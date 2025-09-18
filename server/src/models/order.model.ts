@@ -9,7 +9,7 @@ export const Counter = mongoose.model("Counter", CounterSchema);
 
 // Timeline entry interface
 interface ITimelineEntry {
-  status: "processing" | "completed" | "on-hold" | "canceled" | "refunded";
+  status: "processing" | "completed" | "on-hold" | "canceled";
   timestamp: Date;
   note?: string;
   updatedBy?: mongoose.Types.ObjectId; // User who made the change
@@ -22,7 +22,7 @@ export interface IOrder extends Document {
   buyer: mongoose.Types.ObjectId;
   products: { product: mongoose.Types.ObjectId; quantity: number; price: number; name: string }[];
   total: number;
-  status: "processing" | "completed" | "on-hold" | "canceled" | "refunded";
+  status: "processing" | "delivered" | "on-hold" | "canceled";
   shippingAddress: string;
   date: Date;
   timeline: ITimelineEntry[];
@@ -47,7 +47,7 @@ const OrderSchema: Schema = new Schema(
     total: { type: Number, required: true },
     status: {
       type: String,
-      enum: ["processing", "completed", "on-hold", "canceled", "refunded"],
+      enum: ["processing", "delivered", "on-hold", "canceled"],
       default: "processing",
     },
     shippingAddress: { type: String, required: true },
@@ -56,7 +56,7 @@ const OrderSchema: Schema = new Schema(
       {
         status: {
           type: String,
-          enum: ["processing", "completed", "on-hold", "canceled", "refunded"],
+          enum: ["processing", "delivered", "on-hold", "canceled"],
           required: true,
         },
         timestamp: { type: Date, default: Date.now },
