@@ -1,6 +1,7 @@
 export interface ICartItem {
   _id: string; // product _id
   name: string;
+  sellerId:string;
   price: number;
   salePrice?: number;
   stock?: number;
@@ -9,7 +10,7 @@ export interface ICartItem {
   inHouseProduct?: boolean;
   quantity: number;
   total: number;
-  ShoppingCost: number;
+  shippingCost: number;
   image: string;
   category: string;
 

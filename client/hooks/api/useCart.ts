@@ -26,45 +26,45 @@ export const useCart = () => {
       return acc;
     }, {});
   }, [cartItems]);
+// ---------------- FIXED CALCULATIONS ----------------
 
-  // ---------------- FIXED CALCULATIONS ----------------
-  
-  // Calculate subtotal using sale price (or regular price if no sale price)
-  const subtotal = useMemo(
-    () => cartItems.reduce((acc, item) => {
-      const effectivePrice = item.salePrice || item.price;
-      return acc + (effectivePrice * item.quantity);
+// Calculate subtotal using sale price (or regular price if no sale price)
+const subtotal = useMemo(
+  () => cartItems.reduce((acc, item) => {
+    const effectivePrice = item.salePrice ?? item.price;
+    return acc + (effectivePrice * item.quantity);
+  }, 0),
+  [cartItems]
+);
+
+// Fix shipping cost calculation
+const totalShippingCost = useMemo(
+  () => cartItems.reduce((acc, item) => acc + (item.shippingCost ?? 0), 0),
+  [cartItems]
+);
+
+const totalCartItems = useMemo(
+  () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
+  [cartItems]
+);
+
+// Calculate total discount (difference between original and sale price)
+const totalDiscount = useMemo(
+  () =>
+    cartItems.reduce((acc, item) => {
+      if (item.salePrice && item.salePrice < item.price) {
+        return acc + (item.price - item.salePrice) * item.quantity;
+      }
+      return acc;
     }, 0),
-    [cartItems]
-  );
+  [cartItems]
+);
 
-  const totalShippingCost = useMemo(
-    () => cartItems.reduce((acc, item) => acc + item.ShoppingCost, 0),
-    [cartItems]
-  );
+const tax = 0;
 
-  const totalCartItems = useMemo(
-    () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
-    [cartItems]
-  );
+// Final total: subtotal + shipping + tax
+const total = subtotal + totalShippingCost + tax;
 
-  // Calculate total discount (difference between original and sale price)
-  const totalDiscount = useMemo(
-    () =>
-      cartItems.reduce((acc, item) => {
-        if (item.salePrice && item.salePrice < item.price) {
-          return acc + (item.price - item.salePrice) * item.quantity;
-        }
-        return acc;
-      }, 0),
-    [cartItems]
-  );
-
-  const tax = 0;
-  
-  // Final total should be: subtotal + shipping + tax
-  // (discount is already applied in subtotal calculation)
-  const total = subtotal + totalShippingCost + tax;
 
   const updateQuantity = async (itemId: string, quantity: number) => {
     if (quantity < 1) return;

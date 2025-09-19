@@ -1,26 +1,36 @@
 import { Request, Response } from "express";
-import { Cart } from "../../models/cart.model";
+import { Cart, ICartItem } from "../../models/cart.model";
 import asyncHandler from "../../utils/asyncHandler";
 import mongoose from "mongoose";
+import { Product } from "../../models/product.model";
 
 // ---------------- Add or update item in cart ----------------
 export const addToCart = asyncHandler(async (req: Request, res: Response) => {
-  const buyerId = (req as any).user?._id;
+  const buyerId = (req as any).user?._id as mongoose.Types.ObjectId;
   const { productId, quantity, selectedColor, selectedSize, warranty, customOptions } = req.body;
 
   if (!productId) throw new Error("ProductId is required");
 
-  const qty = quantity && quantity > 0 ? quantity : 1;
+  const qty: number = quantity && quantity > 0 ? quantity : 1;
+
+  // Get product info to get sellerId
+  const product = await Product.findById(productId);
+  if (!product) throw new Error("Product not found");
 
   let cart = await Cart.findOne({ buyer: buyerId });
 
+  const newItem: ICartItem = {
+    product: productId,
+    sellerId: product.seller as mongoose.Types.ObjectId,
+    quantity: qty,
+    selectedColor,
+    selectedSize,
+    warranty,
+    customOptions: customOptions || {},
+  };
+
   if (!cart) {
-    cart = await Cart.create({
-      buyer: buyerId,
-      items: [
-        { product: productId, quantity: qty, selectedColor, selectedSize, warranty, customOptions },
-      ],
-    });
+    cart = await Cart.create({ buyer: buyerId, items: [newItem] });
   } else {
     // Check if same product with same options already exists
     const itemIndex = cart.items.findIndex(
@@ -28,52 +38,51 @@ export const addToCart = asyncHandler(async (req: Request, res: Response) => {
         item.product.toString() === productId &&
         item.selectedColor === selectedColor &&
         item.selectedSize === selectedSize &&
-        item.warranty === warranty
+        item.warranty === warranty &&
+        JSON.stringify(item.customOptions || {}) === JSON.stringify(customOptions || {})
     );
 
     if (itemIndex > -1) {
       cart.items[itemIndex].quantity += qty;
     } else {
-      cart.items.push({ product: productId, quantity: qty, selectedColor, selectedSize, warranty, customOptions });
+      cart.items.push(newItem);
     }
+
     await cart.save();
   }
 
-  // Return updated cart with populated product info
   const updatedCart = await getPopulatedCart(buyerId);
   res.status(200).json({ success: true, data: updatedCart });
 });
 
 // ---------------- Remove item from cart ----------------
 export const removeFromCart = asyncHandler(async (req: Request, res: Response) => {
-  const buyerId = (req as any).user?._id;
+  const buyerId = (req as any).user?._id as mongoose.Types.ObjectId;
   const { itemId } = req.params;
 
   const cart = await Cart.findOne({ buyer: buyerId });
   if (!cart) throw new Error("Cart not found");
 
-  cart.items = cart.items.filter((item) => item.product.toString() !== itemId);
+  cart.items = cart.items.filter((item) => item._id?.toString() !== itemId);
   await cart.save();
 
   const updatedCart = await getPopulatedCart(buyerId);
   res.status(200).json({ success: true, data: updatedCart });
 });
 
-// ---------------- Update quantity of an item in cart ----------------
+// ---------------- Update quantity of an item ----------------
 export const updateCartQuantity = asyncHandler(async (req: Request, res: Response) => {
-  const buyerId = (req as any).user?._id;
+  const buyerId = (req as any).user?._id as mongoose.Types.ObjectId;
   const { itemId } = req.params;
-  const { quantity } = req.body;
+  const { quantity } = req.body as { quantity: number };
 
-  if (!quantity || quantity < 1) {
-    return res.status(400).json({ success: false, message: "Quantity must be at least 1" });
-  }
+  if (!quantity || quantity < 1) throw new Error("Quantity must be at least 1");
 
   const cart = await Cart.findOne({ buyer: buyerId });
-  if (!cart) return res.status(404).json({ success: false, message: "Cart not found" });
+  if (!cart) throw new Error("Cart not found");
 
-  const itemIndex = cart.items.findIndex((item) => item.product.toString() === itemId);
-  if (itemIndex === -1) return res.status(404).json({ success: false, message: "Item not found in cart" });
+  const itemIndex = cart.items.findIndex((item) => item._id?.toString() === itemId);
+  if (itemIndex === -1) throw new Error("Item not found in cart");
 
   cart.items[itemIndex].quantity = quantity;
   await cart.save();
@@ -84,15 +93,15 @@ export const updateCartQuantity = asyncHandler(async (req: Request, res: Respons
 
 // ---------------- Get buyer's cart ----------------
 export const getCart = asyncHandler(async (req: Request, res: Response) => {
-  const buyerId = (req as any).user?._id;
+  const buyerId = (req as any).user?._id as mongoose.Types.ObjectId;
   const cartData = await getPopulatedCart(buyerId);
   res.status(200).json({ success: true, data: cartData });
 });
 
-// ---------------- Helper function to populate cart items ----------------
-const getPopulatedCart = async (buyerId: string) => {
+// ---------------- Helper: populate cart items ----------------
+const getPopulatedCart = async (buyerId: mongoose.Types.ObjectId) => {
   const cartData = await Cart.aggregate([
-    { $match: { buyer: new mongoose.Types.ObjectId(buyerId) } },
+    { $match: { buyer: buyerId } },
     { $unwind: "$items" },
     {
       $lookup: {
@@ -105,25 +114,44 @@ const getPopulatedCart = async (buyerId: string) => {
     { $unwind: "$productDetails" },
     {
       $project: {
-        _id: "$productDetails._id",
+        _id: "$items._id",
+        productId: "$productDetails._id",
         name: "$productDetails.title",
         price: "$productDetails.price",
         salePrice: "$productDetails.salePrice",
         stock: "$productDetails.stock",
         colors: "$productDetails.colors",
         warranty: "$productDetails.warranty",
-        inHouseProduct: "$productDetails.inHouseProduct",
+        sellerId: "$productDetails.seller",
         quantity: "$items.quantity",
         selectedColor: "$items.selectedColor",
         selectedSize: "$items.selectedSize",
         customOptions: "$items.customOptions",
         total: { $multiply: ["$productDetails.price", "$items.quantity"] },
-        ShoppingCost: "$productDetails.shippingCost",
+        shippingCost: "$productDetails.shippingCost",
         image: { $arrayElemAt: ["$productDetails.images", 0] },
         category: "$productDetails.category",
       },
     },
   ]);
 
-  return cartData;
+  return cartData as Array<{
+    _id: mongoose.Types.ObjectId;
+    productId: mongoose.Types.ObjectId;
+    name: string;
+    price: number;
+    salePrice?: number;
+    stock: number;
+    colors?: string[];
+    warranty?: boolean;
+    sellerId: mongoose.Types.ObjectId;
+    quantity: number;
+    selectedColor?: string;
+    selectedSize?: string;
+    customOptions?: Record<string, string>;
+    total: number;
+    shippingCost?: number;
+    image?: string;
+    category?: string;
+  }>;
 };

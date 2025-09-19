@@ -4,6 +4,9 @@ import { Order } from "../../models/order.model";
 import { ApiError } from "../../utils/ApiError";
 import mongoose from "mongoose";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { Product } from "../../models/product.model";
+
+
 
 // ---------------- Get buyer Order Stats ----------------
 export const getBuyerOrderStats = asyncHandler(async (req: Request, res: Response) => {
@@ -302,3 +305,67 @@ export const removeOrderItem = asyncHandler(async (req: Request, res: Response) 
   res.json(new ApiResponse(200, order, "Product removed from order successfully"));
 });
 
+// ---------------- Create new Orders for multi-vendor ----------------
+export const createOrder = asyncHandler(async (req: Request, res: Response) => {
+  const buyerId = (req as any).user?._id;
+  const { products, shippingAddress, note } = req.body;
+
+  if (!buyerId) throw new ApiError(401, "Unauthorized");
+  if (!products || !Array.isArray(products) || products.length === 0) {
+    throw new ApiError(400, "Products are required");
+  }
+  if (!shippingAddress) throw new ApiError(400, "Shipping address is required");
+
+  const createdOrders = [];
+
+  // Step 1: Populate each product with sellerId from DB
+  const productsWithSeller = await Promise.all(
+    products.map(async (p: any) => {
+      const productFromDB = await Product.findById(p.product);
+      if (!productFromDB) throw new ApiError(400, `Product not found: ${p.product}`);
+      return {
+        ...p,
+        seller: productFromDB.seller.toString(),
+      };
+    })
+  );
+
+  // Step 2: Group products by seller
+  const itemsBySeller: Record<string, typeof productsWithSeller> = {};
+  productsWithSeller.forEach((item) => {
+    if (!itemsBySeller[item.seller]) itemsBySeller[item.seller] = [];
+    itemsBySeller[item.seller].push(item);
+  });
+
+  // Step 3: Create one order per seller
+  for (const [sellerId, items] of Object.entries(itemsBySeller)) {
+    const total = items.reduce((sum, p) => sum + p.price * p.quantity, 0);
+
+    const order = new Order({
+      seller: sellerId,
+      buyer: buyerId,
+      products: items.map((p: any) => ({
+        product: p.product,
+        quantity: p.quantity,
+        price: p.price,
+        name: p.name,
+      })),
+      total,
+      shippingAddress,
+      status: "processing",
+      timeline: [
+        {
+          status: "processing",
+          timestamp: new Date(),
+          note: note || "Order created",
+          updatedBy: buyerId,
+        },
+      ],
+    });
+
+    await order.save();
+    createdOrders.push(order);
+  }
+
+  res.json(new ApiResponse(201, createdOrders, "Orders created successfully"));
+});

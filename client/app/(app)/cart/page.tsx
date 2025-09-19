@@ -5,9 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useCart } from "@/hooks/api/useCart";
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const CartPage = () => {
+  const router = useRouter();
+
   const {
     isLoading,
     isError,
@@ -175,7 +178,10 @@ const CartPage = () => {
                 <span>You Saved</span>
                 <span>-${totalDiscount.toFixed(2)}</span>
               </div>
-              <Button className="w-full bg-red-600 hover:bg-red-700 text-white mt-4 py-2">
+              <Button
+                className="w-full bg-red-500 hover:bg-red-600 text-white mt-2"
+                onClick={() => router.push("/checkout")} // ✅ Redirect to checkout
+              >
                 Proceed to Checkout ({totalCartItems})
               </Button>
             </div>

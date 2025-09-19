@@ -1,5 +1,5 @@
 import { verifyJWT } from "middlewares/auth.middlewares";
-import { cancelOrder, getBuyerOrderDetails, getBuyerOrders, getBuyerOrderStats, removeOrderItem, updateBuyerOrderStatusWithTimeline } from "../../controller/buyer/order.controller";
+import { cancelOrder, createOrder, getBuyerOrderDetails, getBuyerOrders, getBuyerOrderStats, removeOrderItem, updateBuyerOrderStatusWithTimeline } from "../../controller/buyer/order.controller";
 import { Router } from "express";
 
 
@@ -11,6 +11,9 @@ router.get("/stats", getBuyerOrderStats);
 
 // GET /api/v1/Buyer/orders - get all orders
 router.get("/", getBuyerOrders);
+
+// Create a new order - POST /api/v1/Buyer/orders
+router.post("/", createOrder);
 
 // GET /api/v1/Buyer/orders/:orderId - get details of a single order
 router.get("/:orderId", getBuyerOrderDetails);
