@@ -16,7 +16,10 @@ export const loginController = asyncHandler(async (req: Request, res: Response) 
 
   if (!email || !password) throw new ApiError(400, "Email and password required");
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({
+  email,
+  role: { $in: ["buyer", "seller"] },
+});
   if (!user) throw new ApiError(404, "User not found");
 
   const isValid = await user.isPasswordCorrect(password);

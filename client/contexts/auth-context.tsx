@@ -30,6 +30,7 @@ interface RegisterData {
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<void>;
+  adminLogin: (email: string, password: string) => Promise<void>;
   registerAsBuyer: (data: RegisterData) => Promise<ApiResponse<IUser>>;
   registerAsSeller: (data: RegisterData) => Promise<ApiResponse<IUser>>;
   verifyEmail: (payload: {
@@ -146,6 +147,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       throw error.response?.data;
     }
   };
+  const adminLogin = async (email: string, password: string) => {
+    dispatch({ type: "LOGIN_START" });
+    try {
+      const res = await api.post<ApiResponse<IUser>>("/api/v1/admin/login", {
+        email,
+        password,
+      });
+      const user = res.data.data;
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({ type: "LOGIN_SUCCESS", payload: user });
+      if (user.role === "buyer") {
+        router.push("/");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      const error = err as AxiosError<ApiError>;
+      toast.error(error.response?.data?.message || "Login failed");
+      dispatch({ type: "LOGIN_FAILURE" });
+      throw error.response?.data;
+    }
+  };
 
   // Seller
   const registerAsSeller = async (data: RegisterData) => {
@@ -198,6 +221,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         ...state,
         login,
+        adminLogin,
         registerAsBuyer,
         registerAsSeller,
         verifyEmail,
