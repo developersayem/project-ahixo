@@ -25,8 +25,6 @@ import {
   Package,
   Truck,
   CheckCircle,
-  XCircle,
-  Clock,
 } from "lucide-react";
 import { OrderDetailsModal } from "./order-details-modal";
 import { fetcher } from "@/lib/fetcher";
@@ -67,8 +65,8 @@ export function OrderList({
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
+  const getStatusBadge = (status?: string) => {
+    const statusConfig: Record<string, { label: string; color: string }> = {
       processing: {
         label: "Processing",
         color: "bg-yellow-100 text-yellow-800",
@@ -77,19 +75,13 @@ export function OrderList({
       "on-hold": { label: "On Hold", color: "bg-orange-100 text-orange-800" },
       canceled: { label: "Canceled", color: "bg-red-100 text-red-800" },
     };
-    const config = statusConfig[status as keyof typeof statusConfig];
-    return <Badge className={config.color}>{config.label}</Badge>;
-  };
 
-  const getStatusIcon = (status: string) => {
-    const icons = {
-      processing: Clock,
-      completed: CheckCircle,
-      "on-hold": Package,
-      canceled: XCircle,
-    };
-    const Icon = icons[status as keyof typeof icons];
-    return Icon ? <Icon className="h-4 w-4" /> : null;
+    const config = status ? statusConfig[status] : undefined;
+    if (!config) {
+      return <Badge className="bg-gray-100 text-gray-800">Unknown</Badge>;
+    }
+
+    return <Badge className={config.color}>{config.label}</Badge>;
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -171,7 +163,6 @@ export function OrderList({
                   className="flex items-center justify-between p-4 border border-border"
                 >
                   <div className="flex items-center space-x-4">
-                    {getStatusIcon(order.status)}
                     <div>
                       <h3 className="text-lg">
                         <span>Order-</span>

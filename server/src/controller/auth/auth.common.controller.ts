@@ -10,30 +10,46 @@ import { sendVerificationEmailByGMAIL } from "../../email-templates/sendVerifica
 import { generateAccessTokenAndRefreshToken } from "../../helper/generateAccessTokenAndRefreshToken";
 
 
-// *---------------- Buyer ----------------
+// ---------------- Buyer Login Controller ----------------
 export const loginController = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
+
   if (!email || !password) throw new ApiError(400, "Email and password required");
 
-  const user = await User.findOne({ email});
+  const user = await User.findOne({ email });
   if (!user) throw new ApiError(404, "User not found");
 
   const isValid = await user.isPasswordCorrect(password);
   if (!isValid) throw new ApiError(401, "Invalid credentials");
 
-  if (!user.emailVerified) {
-    throw new ApiError(401, "Email not verified");
-  }
+  if (!user.emailVerified) throw new ApiError(401, "Email not verified");
 
+  // Generate tokens
   const { accessToken, refreshToken } = await generateAccessTokenAndRefreshToken(user._id as string);
 
-  return res.status(200)
-  .cookie("accessToken", accessToken, cookieOptions)
-  .cookie("refreshToken", refreshToken, cookieOptions)
-  .json(
-    new ApiResponse(200, user, "Login successful")
-  );
+  // Save refresh token
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  // Prepare user data without sensitive fields
+  const safeUser = {
+    _id: user._id,
+    fullName: user.fullName,
+    email: user.email,
+    role: user.role,
+    emailVerified: user.emailVerified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
+
+  // Send response with cookies
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, cookieOptions)
+    .json(new ApiResponse(200, safeUser, "Login successful"));
 });
+
 
 
 // *---------------- Get Current User ----------------
