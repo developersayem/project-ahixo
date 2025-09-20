@@ -25,17 +25,31 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { isAuthenticated, isLoading } = useAuth(); //use auth context
+  const { isAuthenticated, isLoading, user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const breadcrumbs = generateBreadcrumbs(pathname);
 
-  // Redirect to login page if user is not authenticated
+  // Redirect logic
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/login/seller");
+    if (isLoading) return;
+
+    if (!isAuthenticated) {
+      // 👇 Different redirects by role if needed
+      if (pathname.startsWith("/dashboard/admin")) {
+        router.push("/login/admin");
+      } else if (pathname.startsWith("/dashboard/seller")) {
+        router.push("/login/seller");
+      } else {
+        router.push("/login");
+      }
     }
-  }, [isAuthenticated, isLoading, router]);
+
+    // Example: block buyers from accessing dashboard
+    if (isAuthenticated && user?.role === "buyer") {
+      router.push("/"); // send buyers back to home
+    }
+  }, [isAuthenticated, isLoading, user, pathname, router]);
 
   if (isLoading) {
     return (
@@ -45,8 +59,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     );
   }
 
-  // Don't render anything if user is not authenticated
-  if (!isAuthenticated) return null;
+  if (
+    !isAuthenticated ||
+    (user?.role === "buyer" && pathname.startsWith("/dashboard"))
+  ) {
+    return null; // prevent flicker
+  }
 
   return (
     <SidebarProvider>

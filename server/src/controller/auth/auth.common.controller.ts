@@ -20,6 +20,7 @@ export const loginController = asyncHandler(async (req: Request, res: Response) 
   email,
   role: { $in: ["buyer", "seller"] },
 });
+
   if (!user) throw new ApiError(404, "User not found");
 
   const isValid = await user.isPasswordCorrect(password);
@@ -43,6 +44,11 @@ export const loginController = asyncHandler(async (req: Request, res: Response) 
     emailVerified: user.emailVerified,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    address:user.address ,
+    sellerInfo: user.sellerInfo,
+    wishlist: user.wishlist,
+    cart: user.cart,
+    orders: user.orders
   };
 
   // Send response with cookies

@@ -7,6 +7,7 @@ import {
   Layers,
   LayoutDashboard,
   List,
+  MessageCircle,
   Users,
   UserStar,
 } from "lucide-react";
@@ -92,52 +93,67 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
         ],
       },
+      {
+        title: "Messages",
+        url: `${mainRoute}/messages`,
+        icon: MessageCircle,
+        isActive: false,
+        items: [],
+      },
     ],
   };
 
   const SellerRoutes = {
     navMain: [
+      {
+        title: "Application",
+        url: `${mainRoute}/application`,
+        icon: LayoutDashboard,
+        isActive: false,
+        items: [],
+      },
+      // if user is verified seller then show those menu
       ...(user?.role === "seller"
         ? [
             {
-              title: "Application",
-              url: `${mainRoute}/application`,
+              title: "Dashboard",
+              url: `${mainRoute}`,
               icon: LayoutDashboard,
+              isActive: false,
+              items: [],
+            },
+            {
+              title: "Orders",
+              url: `${mainRoute}/orders`,
+              icon: Layers,
+              isActive: false,
+              items: [],
+            },
+            {
+              title: "Products",
+              url: "#",
+              icon: Blocks,
+              isActive: true,
+              items: [
+                {
+                  title: "Add Products",
+                  url: `${mainRoute}/products/add`,
+                },
+                {
+                  title: "Products",
+                  url: `${mainRoute}/products`,
+                },
+              ],
+            },
+            {
+              title: "Messages",
+              url: `${mainRoute}/messages`,
+              icon: MessageCircle,
               isActive: false,
               items: [],
             },
           ]
         : []),
-      {
-        title: "Dashboard",
-        url: `${mainRoute}`,
-        icon: LayoutDashboard,
-        isActive: false,
-        items: [],
-      },
-      {
-        title: "Orders",
-        url: `${mainRoute}/orders`,
-        icon: Layers,
-        isActive: false,
-        items: [],
-      },
-      {
-        title: "Products",
-        url: "#",
-        icon: Blocks,
-        isActive: true,
-        items: [
-          {
-            title: "Add Products",
-            url: `${mainRoute}/products/add`,
-          },
-          {
-            title: "Products",
-            url: `${mainRoute}/products`,
-          },
-        ],
-      },
     ],
   };
 

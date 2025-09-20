@@ -53,9 +53,6 @@ export function UserNav() {
           {user?.role === "buyer" ? (
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Link href="/dashboard">Profile</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
                 <Link href="/orders">My Orders</Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
@@ -64,9 +61,6 @@ export function UserNav() {
             </DropdownMenuGroup>
           ) : (
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Link href="/dashboard">Manage account</Link>
-              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Link href="/dashboard">Dashboard</Link>
               </DropdownMenuItem>
