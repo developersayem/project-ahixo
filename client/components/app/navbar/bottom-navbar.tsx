@@ -101,8 +101,9 @@ export function BottomNavbar() {
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Always open on certain routes
+  // Always open or always closed logic
   const shouldStayOpen = pathname === "/";
+  const shouldStayClosed = pathname === "/products";
 
   useEffect(() => {
     if (shouldStayOpen) setIsOpen(true);
@@ -144,9 +145,13 @@ export function BottomNavbar() {
             {/* Categories Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => !shouldStayOpen && setIsOpen(!isOpen)}
+                onClick={() => {
+                  if (!shouldStayOpen && !shouldStayClosed) {
+                    setIsOpen(!isOpen);
+                  }
+                }}
                 className="bg-brand-600 hover:bg-brand-700 text-white h-12 px-4 rounded-none flex items-center justify-between w-64 font-medium"
-                disabled={shouldStayOpen}
+                disabled={shouldStayOpen || shouldStayClosed}
               >
                 <div className="flex items-center space-x-2">
                   <span>Categories</span>
@@ -160,7 +165,7 @@ export function BottomNavbar() {
               </button>
 
               {/* Dropdown Content */}
-              {isOpen && (
+              {isOpen && !shouldStayClosed && (
                 <div className="absolute top-full left-0 w-64 h-[490px] bg-white border border-gray-200 shadow-none z-10">
                   {categories.map((cat, idx) => (
                     <div
