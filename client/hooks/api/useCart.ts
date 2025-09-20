@@ -1,4 +1,4 @@
-// hooks/useCart.ts (Fixed calculations section)
+// hooks/useCart.ts
 import { useMemo } from "react";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
@@ -10,12 +10,15 @@ import { toast } from "sonner";
 export const useCart = () => {
   const { user } = useAuth();
 
+  // ❌ If not logged in or not buyer → skip API call
+  const isBuyer = user?.role === "buyer";
+
   const { data, error, mutate } = useSWR<{ success: boolean; data: ICartItem[] }>(
-    user ? `/api/v1/${user.role}/cart` : null,
+    isBuyer ? `/api/v1/buyer/cart` : null,
     fetcher
   );
 
-  const cartItems = useMemo(() => data?.data || [], [data]);
+  const cartItems = useMemo(() => (isBuyer ? data?.data || [] : []), [data, isBuyer]);
 
   // ---------------- Group items by category ----------------
   const groupedItems = useMemo(() => {
@@ -26,50 +29,45 @@ export const useCart = () => {
       return acc;
     }, {});
   }, [cartItems]);
-// ---------------- FIXED CALCULATIONS ----------------
 
-// Calculate subtotal using sale price (or regular price if no sale price)
-const subtotal = useMemo(
-  () => cartItems.reduce((acc, item) => {
-    const effectivePrice = item.salePrice ?? item.price;
-    return acc + (effectivePrice * item.quantity);
-  }, 0),
-  [cartItems]
-);
+  // ---------------- FIXED CALCULATIONS ----------------
+  const subtotal = useMemo(
+    () =>
+      cartItems.reduce((acc, item) => {
+        const effectivePrice = item.salePrice ?? item.price;
+        return acc + effectivePrice * item.quantity;
+      }, 0),
+    [cartItems]
+  );
 
-// Fix shipping cost calculation
-const totalShippingCost = useMemo(
-  () => cartItems.reduce((acc, item) => acc + (item.shippingCost ?? 0), 0),
-  [cartItems]
-);
+  const totalShippingCost = useMemo(
+    () => cartItems.reduce((acc, item) => acc + (item.shippingCost ?? 0), 0),
+    [cartItems]
+  );
 
-const totalCartItems = useMemo(
-  () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
-  [cartItems]
-);
+  const totalCartItems = useMemo(
+    () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
+    [cartItems]
+  );
 
-// Calculate total discount (difference between original and sale price)
-const totalDiscount = useMemo(
-  () =>
-    cartItems.reduce((acc, item) => {
-      if (item.salePrice && item.salePrice < item.price) {
-        return acc + (item.price - item.salePrice) * item.quantity;
-      }
-      return acc;
-    }, 0),
-  [cartItems]
-);
+  const totalDiscount = useMemo(
+    () =>
+      cartItems.reduce((acc, item) => {
+        if (item.salePrice && item.salePrice < item.price) {
+          return acc + (item.price - item.salePrice) * item.quantity;
+        }
+        return acc;
+      }, 0),
+    [cartItems]
+  );
 
-const tax = 0;
-
-// Final total: subtotal + shipping + tax
-const total = subtotal + totalShippingCost + tax;
-
+  const tax = 0;
+  const total = subtotal + totalShippingCost + tax;
 
   const updateQuantity = async (itemId: string, quantity: number) => {
-    if (quantity < 1) return;
+    if (!isBuyer || quantity < 1) return;
     try {
-      const res = await api.put(`/api/v1/${user?.role}/cart/update/${itemId}`, {
+      const res = await api.put(`/api/v1/buyer/cart/update/${itemId}`, {
         quantity,
       });
       if (res.data.success) mutate();
@@ -80,11 +78,9 @@ const total = subtotal + totalShippingCost + tax;
   };
 
   const removeItem = async (itemId: string) => {
-    console.log(itemId);
+    if (!isBuyer) return;
     try {
-      const res = await api.delete(
-        `/api/v1/${user?.role}/cart/remove/${itemId}`
-      );
+      const res = await api.delete(`/api/v1/buyer/cart/remove/${itemId}`);
       if (res.data.success) {
         mutate();
         toast.success("Item removed from cart");
@@ -98,7 +94,7 @@ const total = subtotal + totalShippingCost + tax;
   return {
     cartItems,
     groupedItems,
-    isLoading: !error && !data,
+    isLoading: isBuyer && !error && !data,
     isError: !!error,
     mutateCart: mutate,
     subtotal,
@@ -108,6 +104,6 @@ const total = subtotal + totalShippingCost + tax;
     tax,
     total,
     updateQuantity,
-    removeItem
+    removeItem,
   };
 };

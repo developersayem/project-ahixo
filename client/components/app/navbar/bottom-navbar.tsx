@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import clsx from "clsx";
 import { useCart } from "@/hooks/api/useCart";
+import { useAuth } from "@/contexts/auth-context";
 
 interface INav {
   name: string;
@@ -94,6 +95,7 @@ const categories = [
 ];
 
 export function BottomNavbar() {
+  const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -205,16 +207,18 @@ export function BottomNavbar() {
           </div>
 
           {/* Shopping Cart */}
-          <div className="flex items-center">
-            <Link href="/cart">
-              <div className="bg-brand-600 flex items-center text-white hover:bg-brand-700 h-12 capitalize space-x-3 m-0 px-4 py-2 transition-all">
-                <ShoppingCart className="w-5 h-5" />
-                <span className="text-sm font-bold">
-                  ${total.toFixed(2)} ({totalCartItems})
-                </span>
-              </div>
-            </Link>
-          </div>
+          {user?.role === "buyer" && (
+            <div className="flex items-center">
+              <Link href="/cart">
+                <div className="bg-brand-600 flex items-center text-white hover:bg-brand-700 h-12 capitalize space-x-3 m-0 px-4 py-2 transition-all">
+                  <ShoppingCart className="w-5 h-5" />
+                  <span className="text-sm font-bold">
+                    ${total.toFixed(2)} ({totalCartItems})
+                  </span>
+                </div>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>
