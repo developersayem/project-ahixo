@@ -6,6 +6,7 @@ import { verifyJWT } from "../../middlewares/auth.middlewares";
 import overviewRoutes from "../../routes/admin/overview.route"; // all overview routes
 import orderRoutes from "../../routes/admin/order.route"; // all order routes
 import productsRoutes from "../../routes/admin/product.route"; // all product routes
+import applicationRoutes from "../../routes/admin/application.routes"; // all application routes
 
 
 
@@ -33,6 +34,11 @@ router.use("/orders", verifyJWT, orderRoutes);
 
 // Mount products routes
 router.use("/products", verifyJWT, productsRoutes);
+
+// Mount application routes
+router.use("/application", verifyJWT, applicationRoutes);
+
+
 
 
 export default router
