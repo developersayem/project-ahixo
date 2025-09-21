@@ -1,14 +1,18 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Upload, FileText, CheckCircle } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { FileText, CheckCircle, Upload } from "lucide-react";
+import api from "@/lib/axios";
+import { toast } from "sonner";
 
-export function ApplicationForm() {
+export function ApplicationForm(
+  { mutate }: { mutate: () => void } = { mutate: () => {} }
+) {
   const [formData, setFormData] = useState({
     businessName: "",
     businessType: "",
@@ -17,65 +21,179 @@ export function ApplicationForm() {
     phone: "",
     email: "",
     description: "",
-  })
+    identityType: "nid", // "nid" | "passport"
+  });
 
-  const [uploadedDocs, setUploadedDocs] = useState({
-    businessLicense: false,
-    taxCertificate: false,
-    identityProof: false,
-    bankStatement: false,
-  })
-
-  const requiredDocuments = [
-    { key: "businessLicense", label: "Business License", required: true },
-    { key: "taxCertificate", label: "Tax Certificate", required: true },
-    { key: "identityProof", label: "Identity Proof (ID/Passport)", required: true },
-    { key: "bankStatement", label: "Bank Statement", required: false },
-  ]
+  const [uploadedDocs, setUploadedDocs] = useState<{
+    nidFront?: File | null;
+    nidBack?: File | null;
+    passport?: File | null;
+  }>({});
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-  const handleFileUpload = (docType: string) => {
-    // Simulate file upload
-    setUploadedDocs((prev) => ({ ...prev, [docType]: true }))
-  }
+  const handleFileUpload = (
+    docType: "nidFront" | "nidBack" | "passport",
+    file: File
+  ) => {
+    setUploadedDocs((prev) => ({ ...prev, [docType]: file }));
+  };
 
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log("Application submitted:", formData, uploadedDocs)
-  }
+  const handleSubmit = async () => {
+    try {
+      // Create FormData object
+      const data = new FormData();
+      data.append("businessName", formData.businessName);
+      data.append("businessType", formData.businessType);
+      data.append("taxId", formData.taxId);
+      data.append("address", formData.address);
+      data.append("phone", formData.phone);
+      data.append("email", formData.email);
+      data.append("description", formData.description || "");
+      data.append(
+        "idType",
+        formData.identityType === "nid" ? "national_id" : "passport"
+      );
+
+      // Append files
+      if (formData.identityType === "nid") {
+        if (uploadedDocs.nidFront)
+          data.append("nidFront", uploadedDocs.nidFront);
+        if (uploadedDocs.nidBack) data.append("nidBack", uploadedDocs.nidBack);
+      } else if (
+        formData.identityType === "passport" &&
+        uploadedDocs.passport
+      ) {
+        data.append("passport", uploadedDocs.passport);
+      }
+
+      // Send request
+      const response = await api.post("/api/v1/seller/application", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      if (response.status === 200) {
+        toast.success("Application submitted successfully!");
+        mutate();
+        // Optional: reset form
+        setFormData({
+          businessName: "",
+          businessType: "",
+          taxId: "",
+          address: "",
+          phone: "",
+          email: "",
+          description: "",
+          identityType: "nid",
+        });
+        setUploadedDocs({});
+      }
+    } catch (error: unknown) {
+      const err = error as Error;
+      toast.error(err.message);
+      console.error("Error submitting application:", err);
+    }
+  };
+
+  const isIdentityUploaded =
+    (formData.identityType === "nid" &&
+      uploadedDocs.nidFront &&
+      uploadedDocs.nidBack) ||
+    (formData.identityType === "passport" && uploadedDocs.passport);
+
+  // Reusable Upload Box
+  const UploadBox = ({
+    label,
+    required,
+    file,
+    onChange,
+  }: {
+    label: string;
+    required?: boolean;
+    file?: File | null;
+    onChange: (file: File) => void;
+  }) => (
+    <div className="flex flex-col space-y-2">
+      <p className="font-medium">{label}</p>
+      {required && <p className="text-xs text-muted-foreground">Required</p>}
+
+      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 flex items-center justify-between hover:border-primary transition cursor-pointer relative">
+        {file ? (
+          <div className="flex items-center justify-between w-full">
+            <div className="flex flex-col">
+              <span className="text-sm font-medium text-green-600 flex items-center gap-1">
+                <CheckCircle className="h-4 w-4" /> Uploaded
+              </span>
+              <span className="text-xs text-muted-foreground truncate">
+                {file.name}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onChange(file)}
+              className="ml-4"
+            >
+              Replace
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center gap-3 text-muted-foreground">
+              <Upload className="h-5 w-5" />
+              <span className="text-sm">Click to upload or drag file here</span>
+            </div>
+            <Input
+              type="file"
+              accept="image/*,.pdf"
+              className="absolute inset-0 opacity-0 cursor-pointer"
+              onChange={(e) => {
+                if (e.target.files?.[0]) onChange(e.target.files[0]);
+              }}
+            />
+          </>
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div>
       <Card>
         <CardHeader>
           <CardTitle>Business Information</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
+          {/* ---------------- Business Info ---------------- */}
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="businessName">Business Name *</Label>
               <Input
                 id="businessName"
                 value={formData.businessName}
-                onChange={(e) => handleInputChange("businessName", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("businessName", e.target.value)
+                }
                 placeholder="Enter your business name"
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="businessType">Business Type *</Label>
               <Input
                 id="businessType"
                 value={formData.businessType}
-                onChange={(e) => handleInputChange("businessType", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("businessType", e.target.value)
+                }
                 placeholder="e.g., LLC, Corporation"
               />
             </div>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="taxId">Tax ID Number *</Label>
             <Input
               id="taxId"
@@ -85,7 +203,7 @@ export function ApplicationForm() {
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="address">Business Address *</Label>
             <Textarea
               id="address"
@@ -97,7 +215,7 @@ export function ApplicationForm() {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="phone">Phone Number *</Label>
               <Input
                 id="phone"
@@ -106,7 +224,7 @@ export function ApplicationForm() {
                 placeholder="Enter phone number"
               />
             </div>
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="email">Email Address *</Label>
               <Input
                 id="email"
@@ -118,7 +236,7 @@ export function ApplicationForm() {
             </div>
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="description">Business Description</Label>
             <Textarea
               id="description"
@@ -128,57 +246,86 @@ export function ApplicationForm() {
               rows={4}
             />
           </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Required Documents</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {requiredDocuments.map((doc) => (
-            <div key={doc.key} className="flex items-center justify-between p-4 border border-border rounded-lg">
-              <div className="flex items-center space-x-3">
-                <FileText className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">{doc.label}</p>
-                  <p className="text-sm text-muted-foreground">{doc.required ? "Required" : "Optional"}</p>
-                </div>
+          {/* ---------------- Identity Proof ---------------- */}
+          <div className="p-4 border border-border rounded-lg space-y-4">
+            <div className="flex items-center space-x-3">
+              <FileText className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="font-medium">Identity Proof</p>
+                <p className="text-sm text-muted-foreground">
+                  Upload your National ID (Front & Back) or Passport
+                </p>
               </div>
-
-              {uploadedDocs[doc.key as keyof typeof uploadedDocs] ? (
-                <div className="flex items-center space-x-2 text-primary">
-                  <CheckCircle className="h-5 w-5" />
-                  <span className="text-sm font-medium">Uploaded</span>
-                </div>
-              ) : (
-                <Button variant="outline" size="sm" onClick={() => handleFileUpload(doc.key)}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload
-                </Button>
-              )}
             </div>
-          ))}
 
+            {/* Identity type selection */}
+            <div className="flex space-x-4">
+              <Button
+                variant={
+                  formData.identityType === "nid" ? "default" : "outline"
+                }
+                onClick={() => handleInputChange("identityType", "nid")}
+              >
+                National ID
+              </Button>
+              <Button
+                variant={
+                  formData.identityType === "passport" ? "default" : "outline"
+                }
+                onClick={() => handleInputChange("identityType", "passport")}
+              >
+                Passport
+              </Button>
+            </div>
+
+            {formData.identityType === "nid" && (
+              <div className="grid gap-4 md:grid-cols-2">
+                <UploadBox
+                  label="NID Front"
+                  required
+                  file={uploadedDocs.nidFront || null}
+                  onChange={(file) => handleFileUpload("nidFront", file)}
+                />
+                <UploadBox
+                  label="NID Back"
+                  required
+                  file={uploadedDocs.nidBack || null}
+                  onChange={(file) => handleFileUpload("nidBack", file)}
+                />
+              </div>
+            )}
+
+            {formData.identityType === "passport" && (
+              <UploadBox
+                label="Passport"
+                required
+                file={uploadedDocs.passport || null}
+                onChange={(file) => handleFileUpload("passport", file)}
+              />
+            )}
+          </div>
+
+          {/* ---------------- Application Process ---------------- */}
           <div className="mt-6 p-4 bg-muted rounded-lg">
             <h4 className="font-medium mb-2">Application Process</h4>
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>• Submit application with required documents</li>
-              <li>• Email verification will be sent</li>
-              <li>• Admin review (2-5 business days)</li>
-              <li>• Approval notification and dashboard access</li>
+              <li>• Admin review (2-7 business days)</li>
+              <li>• Approval notification email</li>
+              <li>• Dashboard access</li>
             </ul>
           </div>
 
           <Button
             onClick={handleSubmit}
             className="w-full"
-            disabled={!uploadedDocs.businessLicense || !uploadedDocs.taxCertificate || !uploadedDocs.identityProof}
+            disabled={!isIdentityUploaded}
           >
             Submit Application
           </Button>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

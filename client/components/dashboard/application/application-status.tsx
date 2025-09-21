@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Clock, XCircle, Mail, FileText } from "lucide-react";
+import { CheckCircle, Clock, XCircle, Mail } from "lucide-react";
 
 interface ApplicationStatusProps {
   status: "pending" | "approved" | "rejected";
@@ -17,14 +17,6 @@ export function ApplicationStatus({ status }: ApplicationStatusProps) {
           title: "Application Under Review",
           description: "Your application is being reviewed by our team.",
         };
-      case "approved":
-        return {
-          icon: CheckCircle,
-          color: "bg-green-100 text-green-800",
-          title: "Application Approved",
-          description:
-            "Congratulations! Your seller application has been approved.",
-        };
       case "rejected":
         return {
           icon: XCircle,
@@ -33,17 +25,49 @@ export function ApplicationStatus({ status }: ApplicationStatusProps) {
           description:
             "Your application needs revision. Please check the feedback below.",
         };
+      case "approved":
+        return {
+          icon: CheckCircle,
+          color: "bg-green-100 text-green-800",
+          title: "Application Approved",
+          description: "Congratulations! Your application has been approved.",
+        };
+      default:
+        // Fallback for invalid status
+        return {
+          icon: Clock,
+          color: "bg-gray-100 text-gray-800",
+          title: "Application Status Unknown",
+          description: "Unable to determine application status.",
+        };
     }
   };
 
+  // Early return if status is not valid
+  if (!status || !["pending", "approved", "rejected"].includes(status)) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Invalid Application Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Unable to load application status. Please try refreshing the page.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const config = getStatusConfig();
+  const IconComponent = config.icon;
 
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <div className="flex items-center space-x-4">
-            <config.icon className="h-8 w-8 text-primary" />
+            <IconComponent className="h-8 w-8 text-primary" />
             <div>
               <CardTitle>{config.title}</CardTitle>
               <p className="text-muted-foreground">{config.description}</p>
@@ -52,59 +76,6 @@ export function ApplicationStatus({ status }: ApplicationStatusProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <h4 className="font-medium mb-3">Application Timeline</h4>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  <span className="text-sm">Application Submitted</span>
-                  <span className="text-xs text-muted-foreground ml-auto">
-                    Jan 15, 2025
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  <span className="text-sm">Email Verified</span>
-                  <span className="text-xs text-muted-foreground ml-auto">
-                    Jan 15, 2025
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  {status === "pending" ? (
-                    <Clock className="h-4 w-4 text-yellow-600" />
-                  ) : (
-                    <CheckCircle className="h-4 w-4 text-primary" />
-                  )}
-                  <span className="text-sm">Admin Review</span>
-                  {status !== "pending" && (
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      Jan 17, 2025
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="font-medium mb-3">Submitted Documents</h4>
-              <div className="space-y-2">
-                {[
-                  "Business License",
-                  "Tax Certificate",
-                  "Identity Proof",
-                  "Bank Statement",
-                ].map((doc) => (
-                  <div key={doc} className="flex items-center space-x-2">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{doc}</span>
-                    <CheckCircle className="h-4 w-4 text-primary ml-auto" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
           {status === "pending" && (
             <div className="mt-6 p-4 bg-muted rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
@@ -113,7 +84,7 @@ export function ApplicationStatus({ status }: ApplicationStatusProps) {
               </div>
               <p className="text-sm text-muted-foreground">
                 We&apos;ll send you an email notification once the review is
-                complete. This typically takes 2-5 business days.
+                complete. This typically takes 2-7 business days.
               </p>
             </div>
           )}
