@@ -12,8 +12,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   onSendMessage,
 }) => {
   const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollToBottom();
@@ -65,12 +65,12 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-white h-80">
-      {/* Header */}
-      <div className="px-4 py-3 pt-0 border-b border-gray-200 bg-white">
+    <div className="flex-1 flex flex-col bg-white h-full">
+      {/* Fixed Header */}
+      <div className="px-4 py-3 pt-0 border-b border-gray-200 bg-white sticky top-0 z-10">
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <div className="w-10 h-10  border rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 border rounded-full flex items-center justify-center">
               <User className="w-5 h-5" />
             </div>
           </div>
@@ -80,7 +80,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
             </h2>
             <div className="flex items-center space-x-2">
               <div
-                className={` w-3 h-3 rounded-full border-2 border-white ${
+                className={`w-3 h-3 rounded-full border-2 border-white ${
                   conversation.user.status === "online"
                     ? "bg-green-500"
                     : conversation.user.status === "away"
@@ -96,7 +96,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         </div>
       </div>
 
-      {/* Messages */}
+      {/* Scrollable Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
         {conversation.messages.map((message) => (
           <div
@@ -126,8 +126,8 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      <div className="p-4 border-t border-gray-200 bg-white">
+      {/* Fixed Input Area */}
+      <div className="p-4 border-t border-gray-200 bg-white sticky bottom-0 z-10">
         <div className="flex items-center space-x-4">
           <div className="flex-1 relative">
             <input

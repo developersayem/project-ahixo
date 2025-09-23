@@ -97,7 +97,7 @@ function Messages() {
   };
 
   return (
-    <div className="flex  bg-gray-100 w-full h-full">
+    <div className="flex bg-white w-full h-[calc(100vh-64px)] overflow-hidden">
       <Sidebar
         conversations={conversations}
         selectedConversationId={selectedConversationId}
