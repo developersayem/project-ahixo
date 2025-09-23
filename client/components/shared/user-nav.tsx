@@ -27,7 +27,7 @@ export function UserNav() {
                 src={user?.avatar || "/default-avatar.png"}
                 alt={user?.fullName || "User"}
               />
-              <AvatarFallback>
+              <AvatarFallback className="">
                 {user?.fullName
                   ? user.fullName.split(" ")[0].charAt(0).toUpperCase()
                   : "U"}

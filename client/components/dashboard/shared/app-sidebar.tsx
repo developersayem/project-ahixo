@@ -27,6 +27,8 @@ import Link from "next/link";
 import { NavUser } from "./nav-user";
 import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
+// import { UserCard } from "./user-card";
+// import { StoreCard } from "./store-card";
 
 const mainRoute = "/dashboard";
 
@@ -191,6 +193,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} logout={logout} />
+        {/* <StoreCard user={user} logout={logout} /> */}
+        {/* <UserCard user={user} logout={logout} /> */}
       </SidebarFooter>
     </Sidebar>
   );
