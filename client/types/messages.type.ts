@@ -1,22 +1,23 @@
-export interface IUser {
-  id: string;
-  name: string;
-  avatar: string;
-  status: 'online' | 'offline' | 'away';
-}
+import { IUser } from "./user-type";
 
+// Message type
 export interface IMessage {
-  id: string;
-  senderId: string;
-  content: string;
-  timestamp: Date;
-  type: 'sent' | 'received';
+  _id: string;                 // MongoDB ObjectId
+  conversationId: string;      // Conversation ID
+  senderId: string;            // User ID of sender
+  content: string;             // Message text
+  createdAt: string;           // ISO string (from backend)
+  updatedAt?: string;          // optional
+  type?: "sent" | "received";  // frontend-only, optional
+  readBy?: string[]; // Array of user IDs who have read the message
 }
 
+// Conversation type
 export interface IConversation {
-  id: string;
-  user: IUser;
+  _id: string;
+  participants: IUser[];      // Array of all users in the conversation
+  otherUser?: IUser;          // The participant who is NOT the current user
   messages: IMessage[];
-  lastMessage?: IMessage;
+  lastMessage: IMessage | null;
   unreadCount: number;
 }

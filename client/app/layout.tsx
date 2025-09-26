@@ -1,12 +1,14 @@
+// app/layout.tsx (server component)
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "sonner";
+import SocketInitializer from "./SocketInitializer";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "600", "700"], // Light, Regular, Bold, Black
+  weight: ["300", "400", "600", "700"],
   variable: "--font-poppins",
   display: "swap",
 });
@@ -18,14 +20,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body className={poppins.className}>
         <AuthProvider>
-          {children}
+          <SocketInitializer>{children}</SocketInitializer>
           <Toaster richColors position="top-right" />
         </AuthProvider>
       </body>

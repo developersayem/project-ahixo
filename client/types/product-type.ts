@@ -19,6 +19,7 @@ export interface IProduct {
   tags: string[];
   features?: string[];
   category: string;
+  subCategory:string;
   brand?: string;
   shippingCost?: number;
   ratings?: Rating[];

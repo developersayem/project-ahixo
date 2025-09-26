@@ -9,8 +9,11 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { products } from "@/app/data/products";
 import { ProductCard } from "./product-card";
+import useSWR from "swr";
+import { fetcher } from "@/lib/fetcher";
+import { IProduct } from "@/types/product-type";
+// import { IProduct } from "@/types/product.type";
 
 interface ProductGridProps {
   selectedCategory: string | null;
@@ -33,8 +36,17 @@ export function ProductGrid({
   currentPage,
   onPageChange,
 }: ProductGridProps) {
+  // ✅ Fetch products from backend
+  const {
+    data: products,
+    error,
+    isLoading,
+  } = useSWR<IProduct[]>(`/api/v1/products`, fetcher);
+
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = products;
+    if (!products) return [];
+
+    let filtered = [...products];
 
     if (selectedCategory) {
       filtered = filtered.filter(
@@ -46,37 +58,38 @@ export function ProductGrid({
     if (selectedSubcategory) {
       filtered = filtered.filter(
         (product) =>
-          product.subcategory.toLowerCase() ===
+          (product as IProduct).subCategory?.toLowerCase() ===
           selectedSubcategory.toLowerCase()
       );
     }
 
     if (selectedBrand) {
       filtered = filtered.filter(
-        (product) => product.brand.toLowerCase() === selectedBrand.toLowerCase()
+        (product) =>
+          product.brand?.toLowerCase() === selectedBrand.toLowerCase()
       );
     }
 
-    // Filter by availability
+    // Availability filters
     if (availabilityFilters.length > 0) {
       filtered = filtered.filter((product) => {
         if (
           availabilityFilters.includes("in-stock") &&
           availabilityFilters.includes("out-of-stock")
         ) {
-          return true; // Show all if both are selected
+          return true; // both selected, show all
         }
         if (availabilityFilters.includes("in-stock")) {
-          return product.inStock;
+          return product.stock > 0;
         }
         if (availabilityFilters.includes("out-of-stock")) {
-          return !product.inStock;
+          return product.stock === 0;
         }
         return true;
       });
     }
 
-    // Sort products
+    // Sorting
     const sorted = [...filtered].sort((a, b) => {
       switch (sortBy) {
         case "price-low":
@@ -84,9 +97,11 @@ export function ProductGrid({
         case "price-high":
           return b.price - a.price;
         case "rating":
-          return b.rating - a.rating;
+          return (b.rating || 0) - (a.rating || 0);
         case "newest":
-          return b.id - a.id;
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
         default:
           return 0;
       }
@@ -94,6 +109,7 @@ export function ProductGrid({
 
     return sorted;
   }, [
+    products,
     selectedCategory,
     selectedSubcategory,
     selectedBrand,
@@ -110,6 +126,7 @@ export function ProductGrid({
     startIndex + PRODUCTS_PER_PAGE
   );
 
+  // Reset to page 1 on filter change
   useEffect(() => {
     onPageChange(1);
   }, [
@@ -118,11 +135,24 @@ export function ProductGrid({
     selectedBrand,
     availabilityFilters,
     sortBy,
-    onPageChange, // ✅ include it here
+    onPageChange,
   ]);
+
+  if (isLoading) {
+    return <p className="text-center py-10">Loading products...</p>;
+  }
+
+  if (error) {
+    return (
+      <p className="text-center py-10 text-red-500">
+        Failed to load products ❌
+      </p>
+    );
+  }
 
   return (
     <div className="space-y-8">
+      {/* Empty State */}
       {paginatedProducts.length === 0 && (
         <div className="text-center py-16">
           <div className="max-w-md mx-auto">
@@ -132,7 +162,6 @@ export function ProductGrid({
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   strokeLinecap="round"
@@ -148,31 +177,8 @@ export function ProductGrid({
             <p className="text-muted-foreground mb-4">
               {selectedCategory || selectedBrand || selectedSubcategory
                 ? "No products match your current filters. Try adjusting your search criteria."
-                : "No products found matching your filters."}
+                : "No products found."}
             </p>
-            <div className="text-sm text-muted-foreground">
-              {selectedCategory && (
-                <p>
-                  Category:{" "}
-                  <span className="font-medium">
-                    {selectedCategory.replace("-", " ")}
-                  </span>
-                </p>
-              )}
-              {selectedBrand && (
-                <p>
-                  Brand: <span className="font-medium">{selectedBrand}</span>
-                </p>
-              )}
-              {selectedSubcategory && (
-                <p>
-                  Subcategory:{" "}
-                  <span className="font-medium">
-                    {selectedSubcategory.replace("-", " ")}
-                  </span>
-                </p>
-              )}
-            </div>
           </div>
         </div>
       )}
@@ -181,15 +187,17 @@ export function ProductGrid({
       {paginatedProducts.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {paginatedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
       )}
 
+      {/* Pagination */}
       {totalPages > 1 && paginatedProducts.length > 0 && (
         <div className="flex justify-center">
           <Pagination>
             <PaginationContent>
+              {/* Previous */}
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() =>
@@ -203,6 +211,7 @@ export function ProductGrid({
                 />
               </PaginationItem>
 
+              {/* Page Numbers */}
               {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                 const pageNum = i + 1;
                 return (
@@ -222,6 +231,7 @@ export function ProductGrid({
                 );
               })}
 
+              {/* Dots + Last Page */}
               {totalPages > 5 && (
                 <>
                   <PaginationItem>
@@ -238,6 +248,7 @@ export function ProductGrid({
                 </>
               )}
 
+              {/* Next */}
               <PaginationItem>
                 <PaginationNext
                   onClick={() =>
