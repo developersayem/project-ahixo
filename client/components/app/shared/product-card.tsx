@@ -4,6 +4,8 @@ import { Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { IProduct } from "@/types/product-type";
+import { useCart } from "@/hooks/api/useCart";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: IProduct;
@@ -23,10 +25,30 @@ export function ProductCard({ product }: ProductCardProps) {
     ));
   };
 
+  const inStock = product.stock > 0;
+
+  const { addItem } = useCart();
+
+  const handleAddToCart = async () => {
+    if (!inStock) return;
+    try {
+      const selectedColor = product?.colors?.[0] || undefined;
+      await addItem({
+        productId: product._id,
+        quantity: 1,
+        selectedColor,
+      });
+      toast.success("Product added to cart");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add product to cart");
+    }
+  };
+
   return (
-    <Link href={`/products/${product._id}`} className="flex-1">
-      <Card className="group hover:shadow-lg transition-shadow duration-200 rounded-none h-full w-full gap-0 p-0 m-0 border-gray-100 shadow-gray-100 hover:scale-102">
-        <CardContent className="p-4 flex flex-col h-full">
+    <Card className="group hover:shadow-lg transition-shadow duration-200 rounded-none h-full w-full gap-0 p-0 m-0 border-gray-100 shadow-gray-100 hover:scale-102">
+      <CardContent className="p-4 flex flex-col h-full">
+        <Link href={`/products/${product._id}`}>
           {/* Product Image */}
           <div className="relative aspect-square mb-4 bg-gray-50 overflow-hidden">
             <Image
@@ -55,26 +77,27 @@ export function ProductCard({ product }: ProductCardProps) {
                 ${product.price.toLocaleString()}
               </div>
             </div>
-
-            {/* Buttons at bottom (consistent height) */}
-            <div className="flex flex-col md:flex-row gap-2 mt-auto">
-              <Button
-                size="sm"
-                className="flex-1 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-none"
-              >
-                Buy Now
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="flex-1 py-2 border-brand-500 text-brand-500 hover:bg-brand-50 bg-transparent rounded-none"
-              >
-                Add to Cart
-              </Button>
-            </div>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+        </Link>
+        {/* Buttons at bottom (consistent height) */}
+        <div className="flex flex-col md:flex-row gap-2 mt-auto">
+          <Button
+            size="sm"
+            className="flex-1 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-none"
+          >
+            Buy Now
+          </Button>
+          <Button
+            disabled={!inStock}
+            onClick={handleAddToCart}
+            size="sm"
+            variant="outline"
+            className="flex-1 py-2 border-brand-500 text-brand-500 hover:bg-brand-50 bg-transparent rounded-none"
+          >
+            Add to Cart
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

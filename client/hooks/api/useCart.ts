@@ -9,15 +9,15 @@ import { toast } from "sonner";
 
 export const useCart = () => {
   const { user } = useAuth();
-
-  // ❌ If not logged in or not buyer → skip API call
   const isBuyer = user?.role === "buyer";
 
+  // Fetch cart only if logged in as buyer
   const { data, error, mutate } = useSWR<{ success: boolean; data: ICartItem[] }>(
     isBuyer ? `/api/v1/buyer/cart` : null,
     fetcher
   );
 
+  // ---------------- Cart Items ----------------
   const cartItems = useMemo(() => (isBuyer ? data?.data || [] : []), [data, isBuyer]);
 
   // ---------------- Group items by category ----------------
@@ -30,7 +30,7 @@ export const useCart = () => {
     }, {});
   }, [cartItems]);
 
-  // ---------------- FIXED CALCULATIONS ----------------
+  // ---------------- Calculations ----------------
   const subtotal = useMemo(
     () =>
       cartItems.reduce((acc, item) => {
@@ -61,33 +61,58 @@ export const useCart = () => {
     [cartItems]
   );
 
-  const tax = 0;
+  const tax = 0; // Add tax calculation logic if needed
   const total = subtotal + totalShippingCost + tax;
 
+  // ---------------- Update Quantity ----------------
   const updateQuantity = async (itemId: string, quantity: number) => {
     if (!isBuyer || quantity < 1) return;
     try {
-      const res = await api.put(`/api/v1/buyer/cart/update/${itemId}`, {
-        quantity,
-      });
-      if (res.data.success) mutate();
+      const res = await api.put(`/api/v1/buyer/cart/update/${itemId}`, { quantity });
+      if (res.data.success) {
+        mutate(); // refresh SWR cache
+        toast.success("Cart quantity updated");
+      }
     } catch (err) {
       console.error("Failed to update quantity:", err);
       toast.error("Failed to update quantity");
     }
   };
 
+  // ---------------- Remove Item ----------------
   const removeItem = async (itemId: string) => {
     if (!isBuyer) return;
     try {
       const res = await api.delete(`/api/v1/buyer/cart/remove/${itemId}`);
       if (res.data.success) {
-        mutate();
+        mutate(); // refresh SWR cache
         toast.success("Item removed from cart");
       }
     } catch (err) {
       console.error("Failed to remove item:", err);
       toast.error("Failed to remove item");
+    }
+  };
+
+  // ---------------- Add Item to Cart (optional helper) ----------------
+  const addItem = async (item: Partial<ICartItem> & { productId: string; quantity?: number }) => {
+    if (!isBuyer) return;
+    try {
+      const payload = {
+  productId: item.productId,
+  quantity: item.quantity && item.quantity > 0 ? item.quantity : 1,
+  selectedColor: item.selectedColor || null,
+  selectedSize: item.selectedSize || null,
+  customOptions: item.customOptions || {},
+};
+      const res = await api.post("/api/v1/buyer/cart/add", payload);
+      if (res.data.success) {
+        mutate();
+        toast.success("Item added to cart");
+      }
+    } catch (err) {
+      console.error("Failed to add item to cart:", err);
+      toast.error("Failed to add item to cart");
     }
   };
 
@@ -105,5 +130,6 @@ export const useCart = () => {
     total,
     updateQuantity,
     removeItem,
+    addItem,
   };
 };

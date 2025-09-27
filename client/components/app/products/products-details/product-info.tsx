@@ -4,8 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Heart,
-  Mail,
-  MessageCircle,
   MessagesSquare,
   Minus,
   Plus,
@@ -17,14 +15,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { IProduct } from "@/types/product-type";
 import { MessageSellerModal } from "./message-seller-modal";
-import api from "@/lib/axios";
 import { toast } from "sonner";
+import { useCart } from "@/hooks/api/useCart";
 
 interface ProductInfoProps {
   product: IProduct;
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
+  const { addItem } = useCart();
+
   const availableColors =
     product.colors && product.colors.length > 0 ? product.colors : ["white"];
   const [selectedColor, setSelectedColor] = useState(availableColors[0]);
@@ -45,18 +45,34 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const inStock = product.stock > 0;
 
-  // function to handle add to wishlist
-  const handleAddToWishlist = (productId: string) => {
-    console.log(productId);
+  // ---------------- Handlers ----------------
+
+  const handleAddToWishlist = async (productId: string) => {
     try {
-      api.post(`/api/v1/buyer/wishlist/${productId}`);
+      await fetch(`/api/v1/buyer/wishlist/${productId}`, { method: "POST" });
       toast.success("Product added to wishlist");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to add product to wishlist");
-      console.log(error);
     }
   };
 
+  const handleAddToCart = async () => {
+    if (!inStock) return;
+
+    try {
+      await addItem({
+        productId: product._id,
+        quantity,
+        selectedColor,
+      });
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to add product to cart");
+    }
+  };
+
+  // ---------------- JSX ----------------
   return (
     <div className="space-y-6 px-5 md:mx-0 mx-auto">
       <div className="space-y-4">
@@ -201,6 +217,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       <div className="space-y-6">
         <div className="flex gap-3 md:w-1/2">
           <Button
+            onClick={handleAddToCart}
             className="flex-1 bg-transparent hover:bg-brand-600 hover:text-white text-brand-500 border border-brand-500 font-semibold rounded-none py-5"
             disabled={!inStock}
           >
@@ -234,66 +251,9 @@ export function ProductInfo({ product }: ProductInfoProps) {
               </Link>
             </div>
           </div>
-
-          <div className="flex items-center gap-20">
-            <span className="text-sm text-gray-600">Share</span>
-            <div className="flex gap-2">
-              {/* Social Buttons */}
-              <Button
-                size="sm"
-                className="bg-blue-500 hover:bg-blue-600 text-white p-2 h-6 w-6 rounded-none"
-              >
-                <Mail className="w-4 h-4" />
-              </Button>
-              <Button
-                size="sm"
-                className="bg-sky-400 hover:bg-sky-500 text-white p-2 h-6 w-6 rounded-none"
-              >
-                {/* Twitter/X */}
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958..." />
-                </svg>
-              </Button>
-              <Button
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700 text-white p-2 h-6 w-6 rounded-none"
-              >
-                {/* Facebook */}
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s..." />
-                </svg>
-              </Button>
-              <Button
-                size="sm"
-                className="bg-blue-700 hover:bg-blue-800 text-white p-2 h-6 w-6 rounded-none"
-              >
-                {/* LinkedIn */}
-                <svg
-                  className="w-4 h-4"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M20.447 20.452h-3.554v-5.569..." />
-                </svg>
-              </Button>
-              <Button
-                size="sm"
-                className="bg-green-500 hover:bg-green-600 text-white p-2 h-6 w-6 rounded-none"
-              >
-                <MessageCircle className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
+
       {/* Modal */}
       <MessageSellerModal
         open={isModalOpen}

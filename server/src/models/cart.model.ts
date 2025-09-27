@@ -7,7 +7,6 @@ export interface ICartItem {
   quantity: number;
   selectedColor?: string;
   selectedSize?: string;
-  warranty?: boolean;
   customOptions?: Record<string, string>;
 }
 
@@ -26,10 +25,9 @@ const CartItemSchema = new Schema<ICartItem>(
      // Add extra fields selected by user
     selectedColor: { type: String },
     selectedSize: { type: String },
-    warranty: { type: Boolean, default: false },
     customOptions: { type: Map, of: String }, // for any other dynamic options
   },
-  { _id: false }
+  { _id: true }
 );
 
 const CartSchema = new Schema<ICart>(

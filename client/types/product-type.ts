@@ -10,7 +10,6 @@ export interface IProduct {
   description: string;
   price: number;
   salePrice?: number;
-  warranty?: string;
   colors?: string[];
   stock: number;
   isInHouseProduct?: boolean;
@@ -18,6 +17,8 @@ export interface IProduct {
   images: string[];
   tags: string[];
   features?: string[];
+  sizes?: string[];
+  warranty?: boolean;
   category: string;
   subCategory:string;
   brand?: string;
