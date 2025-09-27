@@ -16,8 +16,6 @@ export const getUserConversations = async (req: Request, res: Response) => {
       participants: userId 
     }).sort({ updatedAt: -1 });
 
-    console.log("Simple find result:", conversations);
-
     // Populate user data separately
     const data = await Promise.all(
       conversations.map(async (conv) => {
