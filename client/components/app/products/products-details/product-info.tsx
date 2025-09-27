@@ -17,6 +17,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { IProduct } from "@/types/product-type";
 import { MessageSellerModal } from "./message-seller-modal";
+import api from "@/lib/axios";
+import { toast } from "sonner";
 
 interface ProductInfoProps {
   product: IProduct;
@@ -43,6 +45,18 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const inStock = product.stock > 0;
 
+  // function to handle add to wishlist
+  const handleAddToWishlist = (productId: string) => {
+    console.log(productId);
+    try {
+      api.post(`/api/v1/buyer/wishlist/${productId}`);
+      toast.success("Product added to wishlist");
+    } catch (error) {
+      toast.error("Failed to add product to wishlist");
+      console.log(error);
+    }
+  };
+
   return (
     <div className="space-y-6 px-5 md:mx-0 mx-auto">
       <div className="space-y-4">
@@ -67,7 +81,12 @@ export function ProductInfo({ product }: ProductInfoProps) {
             </span>
           </div>
 
-          <Button variant="ghost" size="sm" className="cursor-pointer">
+          <Button
+            onClick={() => handleAddToWishlist(product._id)}
+            variant="ghost"
+            size="sm"
+            className="cursor-pointer"
+          >
             <Heart className="w-4 h-4 mr-2" />
             Add to wishlist
           </Button>
