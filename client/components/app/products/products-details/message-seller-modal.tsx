@@ -14,6 +14,7 @@ import api from "@/lib/axios";
 import { IConversation } from "@/types/messages.type";
 import { fetcher } from "@/lib/fetcher";
 import { Send } from "lucide-react";
+import { Socket } from "socket.io-client";
 
 interface MessageSellerModalProps {
   open: boolean;
@@ -40,7 +41,7 @@ export function MessageSellerModal({
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
 
-  const socket = initSocket();
+  const socketRef = useRef<Socket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -49,42 +50,43 @@ export function MessageSellerModal({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Initialize conversation and setup socket listeners
+  // Initialize socket & conversation
   useEffect(() => {
     if (!open || !user) return;
 
+    socketRef.current = initSocket();
+
     // Join conversation
-    socket.emit("joinConversation", {
+    socketRef.current.emit("joinConversation", {
       userId: user._id,
       otherUserId: sellerId,
     });
 
-    // Get conversation ID from backend
-    socket.on("conversationJoined", async (convId: string) => {
+    // Receive conversation ID and fetch messages
+    socketRef.current.on("conversationJoined", async (convId: string) => {
       setConversationId(convId);
 
       try {
         const data: IConversation[] = await fetcher(
-          `/api/v1/conversations/${user?._id}`
+          `/api/v1/conversations/${user._id}`
         );
+
         if (!data || data.length === 0) {
           setConversations([]);
-          return;
+        } else {
+          const processedConversations = data.map((c) => {
+            const messages = c.messages || [];
+            const unreadCount = messages.filter(
+              (m) => !m.readBy?.includes(user._id)
+            ).length;
+            return {
+              ...c,
+              messages,
+              unreadCount,
+            };
+          });
+          setConversations(processedConversations);
         }
-
-        const processedConversations = data.map((c) => {
-          const messages = c.messages || [];
-          const unreadCount = messages.filter(
-            (m) => !m.readBy?.includes(user._id)
-          ).length;
-          return {
-            ...c,
-            messages,
-            unreadCount,
-          };
-        });
-
-        setConversations(processedConversations);
 
         // Fetch previous messages
         const { data: msgs } = await api.get<IMessage[]>(
@@ -96,19 +98,32 @@ export function MessageSellerModal({
       }
     });
 
-    // Listen for incoming messages
-    socket.on("receiveMessage", (msg: IMessage) => {
+    // Receive new messages
+    socketRef.current.on("receiveMessage", (msg: IMessage) => {
       setMessages((prev) => {
-        if (prev.find((m) => m._id === msg._id)) return prev;
+        // Replace optimistic message if content & sender match
+        const optimistic = prev.find(
+          (m) =>
+            m._id.startsWith("temp-") &&
+            m.content === msg.content &&
+            m.senderId === msg.senderId
+        );
+
+        if (optimistic) {
+          return prev.map((m) => (m._id === optimistic._id ? msg : m));
+        }
+
+        // Otherwise, append new message
         return [...prev, msg];
       });
     });
 
     return () => {
-      socket.off("conversationJoined");
-      socket.off("receiveMessage");
+      socketRef.current?.off("conversationJoined");
+      socketRef.current?.off("receiveMessage");
+      socketRef.current?.disconnect();
     };
-  }, [open, sellerId, user, socket]);
+  }, [open, sellerId, user]);
 
   // Send message
   const handleSend = () => {
@@ -121,11 +136,12 @@ export function MessageSellerModal({
       createdAt: new Date().toISOString(),
     };
 
+    // Optimistic update
     setMessages((prev) => [...prev, tempMessage]);
     setMessage("");
     setSending(true);
 
-    socket.emit("sendMessage", {
+    socketRef?.current?.emit("sendMessage", {
       conversationId,
       senderId: user._id,
       content: tempMessage.content,
@@ -189,7 +205,7 @@ export function MessageSellerModal({
           <div ref={messagesEndRef}></div>
         </div>
 
-        {/* Input - WhatsApp style */}
+        {/* Input */}
         <div className="p-4 border-t rounded-b-2xl border-gray-200 bg-white sticky bottom-0 z-10 flex items-center gap-4">
           <div className="flex-1 relative">
             <input
