@@ -114,8 +114,6 @@ const CheckoutPage = () => {
     );
   }
 
-  console.log(cartItems);
-
   return (
     <div className="container mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Left: Address & Payment */}
