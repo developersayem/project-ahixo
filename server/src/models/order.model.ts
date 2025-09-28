@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { title } from "process";
 
 // Counter schema to track order numbers per seller
 const CounterSchema = new Schema({
@@ -20,11 +21,13 @@ export interface IOrder extends Document {
   orderNumber: number;
   seller: mongoose.Types.ObjectId;
   buyer: mongoose.Types.ObjectId;
-  products: { product: mongoose.Types.ObjectId; quantity: number; price: number; name: string }[];
+  products: { product: mongoose.Types.ObjectId; quantity: number; price: number; title: string }[];
   total: number;
   status: "processing" | "delivered" | "on-hold" | "canceled";
   shippingAddress: string;
   date: Date;
+  phone?: string;
+  paymentMethod?: string;
   timeline: ITimelineEntry[];
   createdAt: Date;
   updatedAt: Date;
@@ -41,7 +44,7 @@ const OrderSchema: Schema = new Schema(
         product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
-        name: { type: String, required: true },
+        title: { type: String, required: true },
       },
     ],
     total: { type: Number, required: true },
@@ -52,6 +55,8 @@ const OrderSchema: Schema = new Schema(
     },
     shippingAddress: { type: String, required: true },
     date: { type: Date, default: Date.now },
+    phone: { type: String },
+    paymentMethod: { type: String },
     timeline: [
       {
         status: {

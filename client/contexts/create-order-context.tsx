@@ -63,7 +63,8 @@ export const CreateOrderProvider = ({
   // ---------------- Actions ----------------
   const setCartFromCartPage = (items: ICartItem[]) => setCartItems(items);
 
-  const setCartFromBuyNow = (product: IProduct, quantity: number = 1) =>
+  const setCartFromBuyNow = (product: IProduct, quantity: number = 1) => {
+    console.log("setCartFromBuyNow", product, quantity);
     setCartItems([
       {
         _id: product._id,
@@ -84,6 +85,7 @@ export const CreateOrderProvider = ({
         total: (product.salePrice ?? product.price) * quantity,
       },
     ]);
+  };
 
   const clearOrder = () => setCartItems([]);
 

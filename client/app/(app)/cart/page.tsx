@@ -34,36 +34,48 @@ const CartPage = () => {
 
   // --- Handle Proceed to Checkout ---
   const handleProceedToCheckout = () => {
-    const items: ICartItem[] = Object.values(groupedItems)
+    const itemsForCheckout: ICartItem[] = Object.values(groupedItems)
       .flat()
       .map((item) => {
         const effectivePrice =
           item.salePrice && item.salePrice < item.price
             ? item.salePrice
             : item.price;
-        return {
-          _id: item._id,
-          title: item.name || item.name || "", // required
-          images: [item.image], // required array
+
+        const cleanedItem: ICartItem = {
+          _id: item.productId || "",
+          title: item.name || item.title || "",
+          images: [item.image],
           image: item.image,
           price: item.price,
           salePrice: item.salePrice,
           quantity: item.quantity,
-          total: effectivePrice * item.quantity, // required
-          shippingCost: item.shippingCost, // required, set default shipping cost
+          total: effectivePrice * item.quantity,
+          shippingCost: item.shippingCost,
           category: item.category,
           stock: item.stock,
           sellerId: item.sellerId,
           rating: item.rating || 0,
-          colors: item.colors || [],
-          sizes: item.sizes || [],
-          warranty: item.warranty || false,
-          customOptions: item.customOptions || {},
+          colors: item.colors?.length ? item.colors : undefined,
+          sizes: item.sizes?.length ? item.sizes : undefined,
+          warranty: item.warranty || undefined,
+          selectedColor: item.selectedColor || undefined,
+          selectedSize: item.selectedSize || undefined,
+          customOptions: Object.keys(item.customOptions || {}).length
+            ? item.customOptions
+            : undefined,
         };
+
+        // Remove undefined fields dynamically
+        return Object.fromEntries(
+          Object.entries(cleanedItem).filter(
+            ([v]) => v !== undefined && v !== null
+          )
+        ) as ICartItem;
       });
 
     clearOrder();
-    setCartFromCartPage(items);
+    setCartFromCartPage(itemsForCheckout);
 
     router.push("/checkout");
   };
@@ -105,8 +117,8 @@ const CartPage = () => {
                         <span className="text-green-600 ml-2">
                           You save $
                           {(
-                            (item.price - item.salePrice) *
-                            item.quantity
+                            item.price -
+                            item.salePrice * item.quantity
                           ).toFixed(2)}
                         </span>
                       )}
@@ -171,11 +183,9 @@ const CartPage = () => {
                   {/* Total Price */}
                   <p className="text-base font-semibold ml-4 mt-3 sm:mt-0">
                     $
-                    {(
-                      (item.salePrice && item.salePrice < item.price
-                        ? item.salePrice
-                        : item.price) * item.quantity
-                    ).toFixed(2)}
+                    {(item.salePrice && item.salePrice < item.price
+                      ? item.salePrice
+                      : item.price) * item.quantity}
                   </p>
 
                   {/* Remove Button */}

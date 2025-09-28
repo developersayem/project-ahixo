@@ -1,25 +1,25 @@
-
 export interface ICartItem {
-  _id: string;
-  title: string;
-  name?: string;
-  sellerId:string;
-  price: number;
-  salePrice?: number;
-  stock?: number;
-  colors?: string[];
-  images: string[];
-  warranty?: boolean;
-  inHouseProduct?: boolean;
-  quantity: number;
-  total: number;
-  shippingCost: number;
-  image: string;
-  sizes?: string[];
-  ratings?: { user: string; rating: number }[];
-  rating?: number;
-  category: string;
-  selectedColor?: string;
-  selectedSize?: string;
-  customOptions?: Record<string, string>;
+  _id: string;           // Cart item ID
+  title: string; 
+  productId?:string;        // Product title
+  name?: string;         
+  sellerId: string;      
+  price: number;         
+  salePrice?: number;    
+  stock?: number;        
+  colors?: string[];     
+  warranty?: boolean;    
+  quantity: number;      
+  total: number;         
+  shippingCost: number;  
+  image: string;         
+  images: string[];      
+  sizes?: string[];      
+  rating?: number;       
+  ratings?: { user: string; rating: number }[]; 
+  category: string;      
+  selectedColor?: string; 
+  selectedSize?: string;  
+  customOptions?: Record<string, string>; 
+  inHouseProduct?: boolean; 
 }

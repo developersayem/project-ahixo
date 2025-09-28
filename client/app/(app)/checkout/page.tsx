@@ -13,9 +13,11 @@ import api from "@/lib/axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
+import { useCart } from "@/hooks/api/useCart";
 
 const CheckoutPage = () => {
   const context = useCreateOrder();
+  const { mutateCart } = useCart();
 
   if (!context)
     throw new Error("CheckoutPage must be used inside CreateOrderProvider");
@@ -82,6 +84,8 @@ const CheckoutPage = () => {
         total,
       };
 
+      console.log(orderPayload);
+
       const res = await api.post("/api/v1/buyer/orders", orderPayload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -94,6 +98,7 @@ const CheckoutPage = () => {
 
       toast.success("Order placed successfully!");
       clearOrder(); // ✅ clear checkout items after success
+      mutateCart(); // refresh cart
       router.push("/orders");
     } catch (error: unknown) {
       console.error("Error placing order:", error);

@@ -17,8 +17,11 @@ export const useCart = () => {
     fetcher
   );
 
+
   // ---------------- Cart Items ----------------
   const cartItems = useMemo(() => (isBuyer ? data?.data || [] : []), [data, isBuyer]);
+
+  console.log("cartItems", cartItems)
 
   // ---------------- Group items by category ----------------
   const groupedItems = useMemo(() => {

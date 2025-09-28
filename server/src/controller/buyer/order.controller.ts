@@ -5,7 +5,7 @@ import { ApiError } from "../../utils/ApiError";
 import mongoose from "mongoose";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { Product } from "../../models/product.model";
-
+import { Cart } from "../../models/cart.model";
 
 
 // ---------------- Get buyer Order Stats ----------------
@@ -305,27 +305,33 @@ export const removeOrderItem = asyncHandler(async (req: Request, res: Response) 
   res.json(new ApiResponse(200, order, "Product removed from order successfully"));
 });
 
-// ---------------- Create new Orders for multi-vendor ----------------
 export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   const buyerId = (req as any).user?._id;
-  const { products, shippingAddress, note } = req.body;
+  const { products, shippingAddress, note, phone, paymentMethod } = req.body;
 
   if (!buyerId) throw new ApiError(401, "Unauthorized");
-  if (!products || !Array.isArray(products) || products.length === 0) {
+  if (!products || !Array.isArray(products) || products.length === 0)
     throw new ApiError(400, "Products are required");
-  }
   if (!shippingAddress) throw new ApiError(400, "Shipping address is required");
 
   const createdOrders = [];
 
-  // Step 1: Populate each product with sellerId from DB
+  // Step 1: Fetch product from DB and attach seller
   const productsWithSeller = await Promise.all(
     products.map(async (p: any) => {
       const productFromDB = await Product.findById(p.product);
       if (!productFromDB) throw new ApiError(400, `Product not found: ${p.product}`);
+      if (!productFromDB.seller) throw new ApiError(400, `Product missing seller: ${p.product}`);
+
       return {
-        ...p,
+        product: p.product,
+        quantity: p.quantity,
+        price: productFromDB.salePrice && productFromDB.salePrice < productFromDB.price
+          ? productFromDB.salePrice
+          : productFromDB.price, // use DB price to prevent tampering
+        title: p.title,
         seller: productFromDB.seller.toString(),
+        shippingCost: productFromDB.shippingCost || 0,
       };
     })
   );
@@ -337,18 +343,21 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     itemsBySeller[item.seller].push(item);
   });
 
-  // Step 3: Create one order per seller
+  // Step 3: Create order per seller
   for (const [sellerId, items] of Object.entries(itemsBySeller)) {
-    const total = items.reduce((sum, p) => sum + p.price * p.quantity, 0);
+    const total = items.reduce(
+      (sum, p) => sum + p.price * p.quantity + (p.shippingCost || 0),
+      0
+    );
 
     const order = new Order({
       seller: sellerId,
       buyer: buyerId,
-      products: items.map((p: any) => ({
+      products: items.map((p) => ({
         product: p.product,
         quantity: p.quantity,
         price: p.price,
-        name: p.name,
+        title: p.title,
       })),
       total,
       shippingAddress,
@@ -361,11 +370,17 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
           updatedBy: buyerId,
         },
       ],
+      phone,
+      paymentMethod,
     });
 
     await order.save();
     createdOrders.push(order);
   }
 
-  res.json(new ApiResponse(201, createdOrders, "Orders created successfully"));
+  // ✅ Step 4: Delete cart items for this buyer
+  await Cart.deleteMany({ buyer: buyerId });
+
+  res.status(201).json(new ApiResponse(201, createdOrders, "Orders created successfully"));
 });
+

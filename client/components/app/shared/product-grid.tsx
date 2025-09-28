@@ -42,6 +42,7 @@ export function ProductGrid({
     error,
     isLoading,
   } = useSWR<IProduct[]>(`/api/v1/products`, fetcher);
+  console.log(products);
 
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
