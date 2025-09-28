@@ -1,34 +1,40 @@
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
 
+// Extend Axios config to mark retries
 interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
   _retry?: boolean;
 }
 
+// Create Axios instance
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL, // e.g. http://localhost:5001
-  withCredentials: true, // send cookies (important for refresh tokens)
+  withCredentials: true, // send cookies automatically
 });
 
+// Response interceptor for handling 401 (access token expired)
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfigWithRetry;
 
-    // If access token expired
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // Call refresh endpoint
-        await api.post("/api/v1/auth/refresh-token");
+        // Call refresh endpoint; cookies are sent automatically
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh-token`,
+          {},
+          { withCredentials: true }
+        );
 
-        // Retry original request
+        // Retry the original request
         return api(originalRequest);
       } catch (refreshError: unknown) {
         if (refreshError instanceof AxiosError) {
           console.error("Refresh token expired or invalid", refreshError);
 
-          // Only redirect if refresh ALSO failed with 401
+          // Redirect to login if refresh token failed
           if (refreshError.response?.status === 401) {
             window.location.href = "/login";
           }

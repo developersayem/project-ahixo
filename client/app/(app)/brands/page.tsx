@@ -31,8 +31,6 @@ export default function BrandsPage() {
     // isLoading,
   } = useSWR<IBrand[]>(`/api/v1/products/brands`, fetcher);
 
-  console.log(brandsData);
-
   // Filter brands based on search term
   const filteredBrands = brandsData?.filter((brand) =>
     brand.name.toLowerCase().includes(searchTerm.toLowerCase())

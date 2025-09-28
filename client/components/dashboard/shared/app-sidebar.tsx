@@ -59,8 +59,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [],
       },
       {
-        title: "Users",
-        url: `${mainRoute}/users`,
+        title: "Buyers",
+        url: `${mainRoute}/buyers`,
         icon: Users,
         isActive: false,
         items: [],

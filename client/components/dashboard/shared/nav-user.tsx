@@ -120,54 +120,58 @@ export function NavUser({ user, logout }: INavBarProps) {
             <DropdownMenuSeparator />
 
             {/* Seller Info */}
-            <DropdownMenuGroup className="px-4 py-2 space-y-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Shop Name
-                  </p>
-                  <p className="text-sm font-medium capitalize">
-                    {currentUser.sellerInfo?.shopName || "No Shop Name"}
-                  </p>
+            {currentUser.role === "seller" && (
+              <>
+                <DropdownMenuGroup className="px-4 py-2 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Shop Name
+                      </p>
+                      <p className="text-sm font-medium capitalize">
+                        {currentUser.sellerInfo?.shopName || "No Shop Name"}
+                      </p>
 
-                  <p className="mt-1 text-xs font-medium text-muted-foreground">
-                    Address
-                  </p>
-                  <p className="text-sm capitalize">
-                    {currentUser.sellerInfo?.shopAddress || "No Address"}
-                  </p>
-                </div>
-
-                {/* Seller Verification */}
-                <div className="flex flex-col items-end">
-                  {currentUser.sellerInfo?.isVerified ? (
-                    <div className="flex items-center gap-1 text-xs text-green-600 font-medium">
-                      <ShieldCheck className="h-4 w-4" />
-                      Verified
+                      <p className="mt-1 text-xs font-medium text-muted-foreground">
+                        Address
+                      </p>
+                      <p className="text-sm capitalize">
+                        {currentUser.sellerInfo?.shopAddress || "No Address"}
+                      </p>
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-1 text-xs text-red-600 font-medium">
-                      <ShieldCheck className="h-4 w-4" />
-                      Not Verified
+
+                    {/* Seller Verification */}
+                    <div className="flex flex-col items-end">
+                      {currentUser.sellerInfo?.isVerified ? (
+                        <div className="flex items-center gap-1 text-xs text-green-600 font-medium">
+                          <ShieldCheck className="h-4 w-4" />
+                          Verified
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-xs text-red-600 font-medium">
+                          <ShieldCheck className="h-4 w-4" />
+                          Not Verified
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
 
-              {/* Stats Row */}
-              <div className="flex items-center justify-between pt-2 border-t text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 text-yellow-500" />
-                  {currentUser.sellerInfo?.rating ?? 0} ★
-                </div>
-                <div className="flex items-center gap-1">
-                  <ShoppingBag className="h-4 w-4 text-blue-500" />
-                  {currentUser.sellerInfo?.totalSales ?? 0} Sales
-                </div>
-              </div>
-            </DropdownMenuGroup>
+                  {/* Stats Row */}
+                  <div className="flex items-center justify-between pt-2 border-t text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 text-yellow-500" />
+                      {currentUser.sellerInfo?.rating ?? 0} ★
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <ShoppingBag className="h-4 w-4 text-blue-500" />
+                      {currentUser.sellerInfo?.totalSales ?? 0} Sales
+                    </div>
+                  </div>
+                </DropdownMenuGroup>
 
-            <DropdownMenuSeparator />
+                <DropdownMenuSeparator />
+              </>
+            )}
 
             {/* Logout */}
             <DropdownMenuItem
