@@ -8,9 +8,7 @@ import { ApiResponse } from "../../utils/ApiResponse";
 
 // ---------------- Add or update item in cart ----------------
 export const addToCart = asyncHandler(async (req: Request, res: Response) => {
-  console.log("req.body", req.body);
   const buyerId = (req as any).user?._id as mongoose.Types.ObjectId;
-  console.log("buyerId", buyerId);
   const {
     productId,
     quantity,
@@ -29,9 +27,6 @@ export const addToCart = asyncHandler(async (req: Request, res: Response) => {
   if (!product) throw new ApiError(404, "Product not found");
 
   let cart = await Cart.findOne({ buyer: buyerId });
-
-
-  console.log("cart", cart);
 
   // Build the new cart item safely
   const newItem: ICartItem = {
@@ -58,18 +53,14 @@ export const addToCart = asyncHandler(async (req: Request, res: Response) => {
       );
     });
 
-
-
     if (itemIndex > -1) {
       // Increment quantity if item exists
       cart.items[itemIndex].quantity += qty;
     } else {
       cart.items.push(newItem);
     }
-    console.log("testing1")
 
     await cart.save();
-    console.log("testing2")
 
   }
 
