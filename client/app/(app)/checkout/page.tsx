@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import { useCart } from "@/hooks/api/useCart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,8 +12,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import api from "@/lib/axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useCreateOrder } from "@/contexts/create-order-context";
 
 const CheckoutPage = () => {
+  const context = useCreateOrder();
+
+  if (!context)
+    throw new Error("CheckoutPage must be used inside CreateOrderProvider");
+
   const {
     cartItems,
     subtotal,
@@ -23,7 +28,8 @@ const CheckoutPage = () => {
     tax,
     total,
     totalCartItems,
-  } = useCart();
+    clearOrder,
+  } = context;
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -36,6 +42,7 @@ const CheckoutPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -43,8 +50,6 @@ const CheckoutPage = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
-  const router = useRouter();
 
   const handlePlaceOrder = async () => {
     try {
@@ -60,7 +65,6 @@ const CheckoutPage = () => {
 
       setLoading(true);
 
-      // Prepare products for backend (no sellerId required)
       const orderPayload = {
         shippingAddress: `${formData.address}, ${formData.city}, ${formData.postalCode}`,
         phone: formData.phone,
@@ -73,7 +77,7 @@ const CheckoutPage = () => {
             item.salePrice && item.salePrice < item.price
               ? item.salePrice
               : item.price,
-          name: item.name,
+          title: item.title || item.title,
         })),
         total,
       };
@@ -89,7 +93,8 @@ const CheckoutPage = () => {
       }
 
       toast.success("Order placed successfully!");
-      router.push("/orders"); // Redirect to orders page
+      clearOrder(); // ✅ clear checkout items after success
+      router.push("/orders");
     } catch (error: unknown) {
       console.error("Error placing order:", error);
       toast.error("Something went wrong while placing order");
@@ -98,11 +103,23 @@ const CheckoutPage = () => {
     }
   };
 
+  if (cartItems.length === 0) {
+    return (
+      <div className="container mx-auto p-8 text-center">
+        <p className="text-lg font-semibold">Your cart is empty.</p>
+        <Button className="mt-4" onClick={() => router.push("/")}>
+          Continue Shopping
+        </Button>
+      </div>
+    );
+  }
+
+  console.log(cartItems);
+
   return (
     <div className="container mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Left: Address & Payment */}
       <div className="lg:col-span-2 space-y-6">
-        {/* Shipping Address */}
         <Card>
           <CardHeader>
             <CardTitle>Shipping Address</CardTitle>
@@ -167,7 +184,6 @@ const CheckoutPage = () => {
           </CardContent>
         </Card>
 
-        {/* Payment Method */}
         <Card>
           <CardHeader>
             <CardTitle>Payment Method</CardTitle>
@@ -196,7 +212,6 @@ const CheckoutPage = () => {
             <CardTitle>Order Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Items */}
             <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
               {cartItems.map((item) => (
                 <div
@@ -205,13 +220,13 @@ const CheckoutPage = () => {
                 >
                   <div className="flex items-center gap-2">
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.image || item.images?.[0] || "/placeholder.svg"}
+                      alt={item.title || item.title}
                       className="w-12 h-12 object-cover rounded"
                     />
                     <div>
-                      <p className="text-sm font-medium">{item.name}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="text-xs text-gray-700 pt-1 text-end">
                         {item.quantity} × $
                         {item.salePrice && item.salePrice < item.price
                           ? item.salePrice.toFixed(2)
@@ -219,21 +234,12 @@ const CheckoutPage = () => {
                       </p>
                     </div>
                   </div>
-                  <p className="text-sm font-semibold">
-                    $
-                    {(
-                      (item.salePrice && item.salePrice < item.price
-                        ? item.salePrice
-                        : item.price) * item.quantity
-                    ).toFixed(2)}
-                  </p>
                 </div>
               ))}
             </div>
 
             <Separator />
 
-            {/* Summary */}
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
@@ -258,7 +264,7 @@ const CheckoutPage = () => {
             <Button
               className="w-full bg-red-500 hover:bg-red-600 text-white mt-4"
               onClick={handlePlaceOrder}
-              disabled={loading}
+              disabled={loading || cartItems.length === 0}
             >
               {loading
                 ? "Placing Order..."

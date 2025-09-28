@@ -3,14 +3,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useCreateOrder } from "@/contexts/create-order-context";
 import { useCart } from "@/hooks/api/useCart";
+import { ICartItem } from "@/types/cart.type";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 const CartPage = () => {
   const router = useRouter();
-
   const {
     isLoading,
     isError,
@@ -24,6 +25,51 @@ const CartPage = () => {
     updateQuantity,
     removeItem,
   } = useCart();
+
+  const context = useCreateOrder();
+  if (!context)
+    throw new Error("CartPage must be used inside CreateOrderProvider");
+
+  const { setCartFromCartPage, clearOrder } = context;
+
+  console.log("groupedItems", groupedItems);
+
+  // --- Handle Proceed to Checkout ---
+  const handleProceedToCheckout = () => {
+    const items: ICartItem[] = Object.values(groupedItems)
+      .flat()
+      .map((item) => {
+        const effectivePrice =
+          item.salePrice && item.salePrice < item.price
+            ? item.salePrice
+            : item.price;
+        return {
+          _id: item._id,
+          title: item.name || item.name || "", // required
+          images: [item.image], // required array
+          image: item.image,
+          price: item.price,
+          salePrice: item.salePrice,
+          quantity: item.quantity,
+          total: effectivePrice * item.quantity, // required
+          shippingCost: item.shippingCost, // required, set default shipping cost
+          category: item.category,
+          stock: item.stock,
+          sellerId: item.sellerId,
+          rating: item.rating || 0,
+          colors: item.colors || [],
+          sizes: item.sizes || [],
+          warranty: item.warranty || false,
+          customOptions: item.customOptions || {},
+        };
+      });
+
+    clearOrder();
+    console.log("items", items);
+    setCartFromCartPage(items);
+
+    router.push("/checkout");
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading cart</div>;
@@ -45,11 +91,12 @@ const CartPage = () => {
                 >
                   <img
                     src={item.image}
-                    alt={item.name}
+                    alt={item.title}
                     className="w-24 h-24 object-cover rounded-md shadow-sm mr-4"
                   />
+
                   <div className="flex-1 flex flex-col gap-1">
-                    <p className="text-base font-medium">{item.name}</p>
+                    <p className="text-base font-medium">{item.title}</p>
                     <div className="flex items-center gap-2 text-sm">
                       <span className="line-through text-gray-400">
                         ${item.price.toFixed(2)}
@@ -180,7 +227,7 @@ const CartPage = () => {
               </div>
               <Button
                 className="w-full bg-red-500 hover:bg-red-600 text-white mt-2"
-                onClick={() => router.push("/checkout")} // ✅ Redirect to checkout
+                onClick={handleProceedToCheckout}
               >
                 Proceed to Checkout ({totalCartItems})
               </Button>

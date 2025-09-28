@@ -17,12 +17,16 @@ import { IProduct } from "@/types/product-type";
 import { MessageSellerModal } from "./message-seller-modal";
 import { toast } from "sonner";
 import { useCart } from "@/hooks/api/useCart";
+import { useRouter } from "next/navigation";
+import { useCreateOrder } from "@/contexts/create-order-context";
 
 interface ProductInfoProps {
   product: IProduct;
 }
 
 export function ProductInfo({ product }: ProductInfoProps) {
+  const router = useRouter();
+  const { setCartFromBuyNow } = useCreateOrder(); // ✅ use context
   const { addItem } = useCart();
 
   const availableColors =
@@ -69,6 +73,17 @@ export function ProductInfo({ product }: ProductInfoProps) {
     } catch (err) {
       console.error(err);
       toast.error("Failed to add product to cart");
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (!inStock) return;
+    try {
+      setCartFromBuyNow(product, 1); // ✅ set single product in order context
+      router.push("/checkout"); // ✅ go to checkout page
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to process Buy Now");
     }
   };
 
@@ -225,6 +240,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
             Add to cart
           </Button>
           <Button
+            onClick={handleBuyNow}
             className="flex-1 bg-brand-600 border border-brand-600 hover:bg-brand-700 text-white py-5 rounded-none font-semibold"
             disabled={!inStock}
           >

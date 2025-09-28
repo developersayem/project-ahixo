@@ -1,21 +1,25 @@
+
 export interface ICartItem {
-  _id: string; // product _id
-  name: string;
+  _id: string;
+  title: string;
+  name?: string;
   sellerId:string;
   price: number;
   salePrice?: number;
   stock?: number;
   colors?: string[];
+  images: string[];
   warranty?: boolean;
   inHouseProduct?: boolean;
   quantity: number;
   total: number;
   shippingCost: number;
   image: string;
+  sizes?: string[];
+  ratings?: { user: string; rating: number }[];
+  rating?: number;
   category: string;
-
-  // --- New Fields ---
-  selectedColor?: string; // chosen color
-  selectedSize?: string;  // chosen size/variant
-  customOptions?: Record<string, string>; // e.g. { RAM: "16GB", Storage: "512GB" }
+  selectedColor?: string;
+  selectedSize?: string;
+  customOptions?: Record<string, string>;
 }

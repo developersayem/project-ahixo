@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
@@ -6,12 +8,24 @@ import Link from "next/link";
 import { IProduct } from "@/types/product-type";
 import { useCart } from "@/hooks/api/useCart";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useCreateOrder } from "@/contexts/create-order-context";
 
 interface ProductCardProps {
   product: IProduct;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const router = useRouter();
+  const { addItem } = useCart();
+  const { setCartFromBuyNow } = useCreateOrder(); // ✅ use context
+
+  if (!setCartFromBuyNow)
+    throw new Error("ProductCard must be used inside CreateOrderProvider");
+
+  const inStock = product.stock > 0;
+
+  // --- Render stars ---
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
@@ -25,10 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
     ));
   };
 
-  const inStock = product.stock > 0;
-
-  const { addItem } = useCart();
-
+  // --- Add to Cart ---
   const handleAddToCart = async () => {
     if (!inStock) return;
     try {
@@ -42,6 +53,18 @@ export function ProductCard({ product }: ProductCardProps) {
     } catch (err) {
       console.error(err);
       toast.error("Failed to add product to cart");
+    }
+  };
+
+  // --- Buy Now ---
+  const handleBuyNow = () => {
+    if (!inStock) return;
+    try {
+      setCartFromBuyNow(product, 1); // ✅ set single product in order context
+      router.push("/checkout"); // ✅ go to checkout page
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to process Buy Now");
     }
   };
 
@@ -62,7 +85,6 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Product Info */}
           <div className="flex flex-col flex-1 justify-between">
             <div className="space-y-2">
-              {/* Product Name (truncate with ...) */}
               <h3 className="text-sm font-medium text-foreground leading-tight line-clamp-2">
                 {product.title}
               </h3>
@@ -79,11 +101,14 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
         </Link>
-        {/* Buttons at bottom (consistent height) */}
+
+        {/* Buttons */}
         <div className="flex flex-col md:flex-row gap-2 mt-auto">
           <Button
             size="sm"
             className="flex-1 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-none"
+            onClick={handleBuyNow} // ✅ buy now action
+            disabled={!inStock}
           >
             Buy Now
           </Button>
