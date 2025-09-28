@@ -15,6 +15,7 @@ export interface IProduct extends Document {
   features?: string[];
   category: string;
   brand?: string;
+  isFlashSale?: boolean;
   shippingCost?: number;
   ratings?: { user: mongoose.Types.ObjectId; rating: number }[]; // new
   rating?: number; // average rating
@@ -25,6 +26,7 @@ export interface IProduct extends Document {
 const ProductSchema: Schema<IProduct> = new Schema(
   {
     seller: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    isFlashSale: { type: Boolean, default: false },
     title: { type: String, required: true, trim: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },

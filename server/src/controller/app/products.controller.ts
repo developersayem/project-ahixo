@@ -127,3 +127,68 @@ export const getSingleProduct = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// ---------------- Get All Flash Sale Products ----------------
+export const getFlashSaleProducts = async (req: Request, res: Response) => {
+  try {
+    const { page = 1, limit = 10, category, search } = req.query;
+
+    const filters: any = { isFlashSale: true };
+
+    if (category) filters.category = category;
+    if (search) filters.title = { $regex: search as string, $options: "i" };
+
+    const products = await Product.aggregate([
+      { $match: filters },
+      {
+        $addFields: {
+          averageRating: { $avg: "$ratings.rating" },
+          totalRatings: { $size: "$ratings" },
+        },
+      },
+      { $sort: { createdAt: -1 } }, // latest first
+      { $skip: (Number(page) - 1) * Number(limit) },
+      { $limit: Number(limit) },
+      {
+        $lookup: {
+          from: "users",
+          localField: "seller",
+          foreignField: "_id",
+          as: "seller",
+        },
+      },
+      { $unwind: "$seller" },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          price: 1,
+          salePrice: 1,
+          stock: 1,
+          category: 1,
+          brand: 1,
+          images: 1,
+          tags: 1,
+          features: 1,
+          colors: 1,
+          shippingCost: 1,
+          warranty: 1,
+          inHouseProduct: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          averageRating: 1,
+          totalRatings: 1,
+          ratings: 1,
+          "seller._id": 1,
+          "seller.fullName": 1,
+          "seller.email": 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching flash sale products:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
