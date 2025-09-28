@@ -18,8 +18,6 @@ const SellersPage: React.FC = () => {
 
   const sellers = sellersRes?.data || [];
 
-  console.log(sellers);
-
   if (isLoading) {
     return <p className="p-4">Loading sellers...</p>;
   }
