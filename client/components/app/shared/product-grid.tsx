@@ -13,9 +13,9 @@ import { ProductCard } from "./product-card";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { IProduct } from "@/types/product-type";
-// import { IProduct } from "@/types/product.type";
 
 interface ProductGridProps {
+  pageName: string;
   selectedCategory: string | null;
   selectedSubcategory?: string | null;
   selectedBrand?: string | null;
@@ -28,6 +28,7 @@ interface ProductGridProps {
 const PRODUCTS_PER_PAGE = 12;
 
 export function ProductGrid({
+  pageName,
   selectedCategory,
   selectedSubcategory,
   selectedBrand,
@@ -36,13 +37,20 @@ export function ProductGrid({
   currentPage,
   onPageChange,
 }: ProductGridProps) {
+  let apiUrl = ``;
+
+  if (pageName === "products") {
+    apiUrl = `/api/v1/products`;
+  } else {
+    apiUrl = `/api/v1/products/flash-sale`;
+  }
+
   // ✅ Fetch products from backend
   const {
     data: products,
     error,
     isLoading,
-  } = useSWR<IProduct[]>(`/api/v1/products`, fetcher);
-  console.log(products);
+  } = useSWR<IProduct[]>(apiUrl, fetcher);
 
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];

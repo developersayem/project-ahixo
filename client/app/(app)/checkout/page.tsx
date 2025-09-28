@@ -84,8 +84,6 @@ const CheckoutPage = () => {
         total,
       };
 
-      console.log(orderPayload);
-
       const res = await api.post("/api/v1/buyer/orders", orderPayload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

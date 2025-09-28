@@ -170,6 +170,7 @@ function ProductsContent() {
             </div>
 
             <ProductGrid
+              pageName="products"
               selectedCategory={selectedCategory}
               selectedSubcategory={selectedSubcategory}
               selectedBrand={selectedBrand}

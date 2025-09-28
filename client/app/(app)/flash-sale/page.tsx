@@ -170,6 +170,7 @@ function ProductsContent() {
             </div>
 
             <ProductGrid
+              pageName="flash-sale"
               selectedCategory={selectedCategory}
               selectedSubcategory={selectedSubcategory}
               selectedBrand={selectedBrand}
