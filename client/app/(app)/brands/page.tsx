@@ -11,13 +11,30 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { brandsData } from "@/app/data/brands";
+import { fetcher } from "@/lib/fetcher";
+import useSWR from "swr";
+
+interface IBrand {
+  name: string;
+  logo: string;
+  fallbackLogo: string;
+  domain: string;
+}
 
 export default function BrandsPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Fetch brands from backend
+  const {
+    data: brandsData,
+    // error,
+    // isLoading,
+  } = useSWR<IBrand[]>(`/api/v1/products/brands`, fetcher);
+
+  console.log(brandsData);
+
   // Filter brands based on search term
-  const filteredBrands = brandsData.filter((brand) =>
+  const filteredBrands = brandsData?.filter((brand) =>
     brand.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -59,7 +76,7 @@ export default function BrandsPage() {
 
         {/* Brands Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-0">
-          {filteredBrands.map((brand, index) => (
+          {filteredBrands?.map((brand, index) => (
             <Link
               key={index}
               href={`/products?brand=${encodeURIComponent(brand.name)}`}
@@ -69,8 +86,12 @@ export default function BrandsPage() {
                 {/* Brand Logo */}
                 <div className="flex items-center justify-center mb-4 h-16">
                   <img
-                    src={brand.logo || "/images/placeholders/placeholder.svg"}
+                    src={brand.logo}
                     alt={`${brand.name} logo`}
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src =
+                        brand.fallbackLogo;
+                    }}
                     className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-200"
                   />
                 </div>
@@ -80,6 +101,9 @@ export default function BrandsPage() {
                   <h3 className="text-sm font-medium text-gray-900 group-hover:text-brand-600 transition-colors duration-200">
                     {brand.name}
                   </h3>
+                  <h4 className="text-sm font-medium text-gray-900 group-hover:text-brand-600 transition-colors duration-200">
+                    {brand.domain}
+                  </h4>
                 </div>
               </div>
             </Link>
@@ -87,7 +111,7 @@ export default function BrandsPage() {
         </div>
 
         {/* No Results Message */}
-        {filteredBrands.length === 0 && searchTerm && (
+        {filteredBrands?.length === 0 && searchTerm && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">
               No brands found matching &quot;{searchTerm}&quot;
@@ -98,7 +122,7 @@ export default function BrandsPage() {
         {/* Total Brands Count */}
         <div className="mt-8 text-center text-gray-600">
           <p>
-            Showing {filteredBrands.length} of {brandsData.length} brands
+            Showing {filteredBrands?.length} of {brandsData?.length} brands
           </p>
         </div>
       </div>
