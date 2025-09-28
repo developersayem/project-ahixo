@@ -32,8 +32,6 @@ const CartPage = () => {
 
   const { setCartFromCartPage, clearOrder } = context;
 
-  console.log("groupedItems", groupedItems);
-
   // --- Handle Proceed to Checkout ---
   const handleProceedToCheckout = () => {
     const items: ICartItem[] = Object.values(groupedItems)
@@ -65,7 +63,6 @@ const CartPage = () => {
       });
 
     clearOrder();
-    console.log("items", items);
     setCartFromCartPage(items);
 
     router.push("/checkout");
