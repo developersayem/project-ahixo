@@ -1,7 +1,7 @@
 // routes/application.routes.ts
 import { Router } from "express";
 import { applicationDocsUpload } from "../../middlewares/applicationUpload";
-import { createApplication, getApplicationStatus, getMyApplication } from "../../controller/seller/application.controller";
+import { createApplication, getApplicationStatus, getMyApplication, resubmitApplication } from "../../controller/seller/application.controller";
 
 const router = Router();
 
@@ -22,6 +22,10 @@ router.get("/my", getMyApplication);
 
 // route for application status
 router.get("/status", getApplicationStatus);
+
+// route for resubmitting application
+router.delete("/resubmit", resubmitApplication);
+
 
 
 export default router;

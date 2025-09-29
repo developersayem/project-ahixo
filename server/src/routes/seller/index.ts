@@ -31,7 +31,7 @@ router.use("/orders", verifyJWT, orderRoutes);
 router.use("/products", verifyJWT, productsRoutes);
 
 // Mount application routes
-router.use("/applications", verifyJWT, applicationRoutes);
+router.use("/application", verifyJWT, applicationRoutes);
 
 
 export default router

@@ -8,6 +8,7 @@ const router = Router();
 /**
  * Admin routes
  */
+
 router.get("/", getAllApplications);
 router.patch(
   "/:id/review",
