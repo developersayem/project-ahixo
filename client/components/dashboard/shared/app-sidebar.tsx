@@ -105,17 +105,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ],
   };
 
+  const isVerified = user?.sellerInfo?.isVerified;
+
   const SellerRoutes = {
     navMain: [
-      {
-        title: "Application",
-        url: `${mainRoute}/application`,
-        icon: LayoutDashboard,
-        isActive: false,
-        items: [],
-      },
+      ...(user?.role === "seller" && !isVerified
+        ? [
+            {
+              title: "Application",
+              url: `${mainRoute}/application`,
+              icon: LayoutDashboard,
+              isActive: false,
+              items: [],
+            },
+          ]
+        : []),
       // if user is verified seller then show those menu
-      ...(user?.role === "seller"
+      ...(user?.role === "seller" && isVerified
         ? [
             {
               title: "Dashboard",

@@ -2,12 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Clock, XCircle, Mail } from "lucide-react";
+import api from "@/lib/axios";
+import { toast } from "sonner";
+import { KeyedMutator } from "swr";
 
 interface ApplicationStatusProps {
   status: "pending" | "approved" | "rejected";
+  mutate?: KeyedMutator<"pending" | "approved" | "rejected" | null>;
 }
 
-export function ApplicationStatus({ status }: ApplicationStatusProps) {
+export function ApplicationStatus({ status, mutate }: ApplicationStatusProps) {
   const getStatusConfig = () => {
     switch (status) {
       case "pending":
@@ -62,6 +66,16 @@ export function ApplicationStatus({ status }: ApplicationStatusProps) {
   const config = getStatusConfig();
   const IconComponent = config.icon;
 
+  const handleResubmit = async () => {
+    const res = await api.delete(`/api/v1/seller/application/resubmit`);
+    if (res.status === 200) {
+      toast.success("Application resubmitted successfully");
+      mutate?.();
+    } else {
+      toast.error("Failed to resubmit application");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -82,10 +96,14 @@ export function ApplicationStatus({ status }: ApplicationStatusProps) {
                 <Mail className="h-4 w-4 text-primary" />
                 <span className="font-medium">Next Steps</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                We&apos;ll send you an email notification once the review is
-                complete. This typically takes 2-7 business days.
-              </p>
+              {/* ---------------- Application Process ---------------- */}
+              <div className="mt-6 p-4 bg-muted rounded-lg">
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Admin review (2-7 business days)</li>
+                  <li>• Approval notification email</li>
+                  <li>• Dashboard access</li>
+                </ul>
+              </div>
             </div>
           )}
 
@@ -94,12 +112,15 @@ export function ApplicationStatus({ status }: ApplicationStatusProps) {
               <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
                 <h4 className="font-medium text-destructive mb-2">Feedback</h4>
                 <p className="text-sm text-muted-foreground">
-                  Please provide clearer images of your business license and
-                  update your business address to match the registered address
-                  on file.
+                  Please provide clearer images of your documents and Provide
+                  valid information to help us review your application.
                 </p>
               </div>
-              <Button variant="outline" className="w-full bg-transparent">
+              <Button
+                onClick={handleResubmit}
+                variant="outline"
+                className="w-full bg-transparent"
+              >
                 Resubmit Application
               </Button>
             </div>

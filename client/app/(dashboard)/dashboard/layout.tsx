@@ -1,11 +1,7 @@
 "use client";
 
 import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import React, { useEffect } from "react";
 import {
   Breadcrumb,
@@ -35,7 +31,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     if (isLoading) return;
 
     if (!isAuthenticated) {
-      // 👇 Different redirects by role if needed
+      // Redirect by role
       if (pathname.startsWith("/dashboard/admin")) {
         router.push("/login/admin");
       } else if (pathname.startsWith("/dashboard/seller")) {
@@ -43,11 +39,23 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       } else {
         router.push("/login");
       }
+      return;
     }
 
-    // Example: block buyers from accessing dashboard
-    if (isAuthenticated && user?.role === "buyer") {
+    // Block buyers from dashboard
+    if (user?.role === "buyer" && pathname.startsWith("/dashboard")) {
       router.push("/"); // send buyers back to home
+      return;
+    }
+
+    // 🔒 Block unverified sellers from any dashboard page except application page
+    if (
+      user?.role === "seller" &&
+      !user.sellerInfo?.isVerified &&
+      pathname !== "/dashboard/application"
+    ) {
+      router.replace("/dashboard/application");
+      return;
     }
   }, [isAuthenticated, isLoading, user, pathname, router]);
 
@@ -61,7 +69,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   if (
     !isAuthenticated ||
-    (user?.role === "buyer" && pathname.startsWith("/dashboard"))
+    (user?.role === "buyer" && pathname.startsWith("/dashboard")) ||
+    (user?.role === "seller" &&
+      !user.sellerInfo?.isVerified &&
+      pathname !== "/dashboard/application")
   ) {
     return null; // prevent flicker
   }
@@ -72,7 +83,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <SidebarInset>
         <header className="flex justify-between h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
             <Separator
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,11 @@ import { FileText, CheckCircle, Upload } from "lucide-react";
 import api from "@/lib/axios";
 import { toast } from "sonner";
 
-export function ApplicationForm(
-  { mutate }: { mutate: () => void } = { mutate: () => {} }
-) {
+interface ApplicationFormProps {
+  mutate?: () => void;
+}
+
+export function ApplicationForm({ mutate }: ApplicationFormProps) {
   const [formData, setFormData] = useState({
     businessName: "",
     businessType: "",
@@ -21,7 +23,7 @@ export function ApplicationForm(
     phone: "",
     email: "",
     description: "",
-    identityType: "nid", // "nid" | "passport"
+    identityType: "nid" as "nid" | "passport",
   });
 
   const [uploadedDocs, setUploadedDocs] = useState<{
@@ -30,8 +32,21 @@ export function ApplicationForm(
     passport?: File | null;
   }>({});
 
+  const [loading, setLoading] = useState(false);
+
+  //  handleInputChange to handle identityType reset
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      if (field === "identityType") {
+        // clear opposite docs when switching
+        if (value === "nid") {
+          setUploadedDocs({ nidFront: null, nidBack: null });
+        } else {
+          setUploadedDocs({ passport: null });
+        }
+      }
+      return { ...prev, [field]: value };
+    });
   };
 
   const handleFileUpload = (
@@ -43,58 +58,48 @@ export function ApplicationForm(
 
   const handleSubmit = async () => {
     try {
-      // Create FormData object
+      setLoading(true);
       const data = new FormData();
-      data.append("businessName", formData.businessName);
-      data.append("businessType", formData.businessType);
-      data.append("taxId", formData.taxId);
-      data.append("address", formData.address);
-      data.append("phone", formData.phone);
-      data.append("email", formData.email);
-      data.append("description", formData.description || "");
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key !== "identityType") data.append(key, value);
+      });
       data.append(
         "idType",
         formData.identityType === "nid" ? "national_id" : "passport"
       );
 
-      // Append files
       if (formData.identityType === "nid") {
         if (uploadedDocs.nidFront)
           data.append("nidFront", uploadedDocs.nidFront);
         if (uploadedDocs.nidBack) data.append("nidBack", uploadedDocs.nidBack);
-      } else if (
-        formData.identityType === "passport" &&
-        uploadedDocs.passport
-      ) {
+      } else if (uploadedDocs.passport) {
         data.append("passport", uploadedDocs.passport);
       }
 
-      // Send request
+      console.log(data);
       const response = await api.post("/api/v1/seller/application", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
-      if (response.status === 200) {
-        toast.success("Application submitted successfully!");
-        mutate();
-        // Optional: reset form
-        setFormData({
-          businessName: "",
-          businessType: "",
-          taxId: "",
-          address: "",
-          phone: "",
-          email: "",
-          description: "",
-          identityType: "nid",
-        });
-        setUploadedDocs({});
-      }
-    } catch (error: unknown) {
-      const err = error as Error;
-      toast.error(err.message);
-      console.error("Error submitting application:", err);
+      if (response.data.status === "pending")
+        toast.success("Application submitted successfully");
+      mutate?.();
+
+      setFormData({
+        businessName: "",
+        businessType: "",
+        taxId: "",
+        address: "",
+        phone: "",
+        email: "",
+        description: "",
+        identityType: "nid",
+      });
+      setUploadedDocs({});
+    } catch (error) {
+      toast.error("Submission failed");
+      console.error("Error submitting application:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,7 +109,7 @@ export function ApplicationForm(
       uploadedDocs.nidBack) ||
     (formData.identityType === "passport" && uploadedDocs.passport);
 
-  // Reusable Upload Box
+  // Upload Box
   const UploadBox = ({
     label,
     required,
@@ -115,50 +120,70 @@ export function ApplicationForm(
     required?: boolean;
     file?: File | null;
     onChange: (file: File) => void;
-  }) => (
-    <div className="flex flex-col space-y-2">
-      <p className="font-medium">{label}</p>
-      {required && <p className="text-xs text-muted-foreground">Required</p>}
+  }) => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 flex items-center justify-between hover:border-primary transition cursor-pointer relative">
-        {file ? (
-          <div className="flex items-center justify-between w-full">
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-green-600 flex items-center gap-1">
-                <CheckCircle className="h-4 w-4" /> Uploaded
-              </span>
-              <span className="text-xs text-muted-foreground truncate">
-                {file.name}
-              </span>
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files?.[0]) {
+        onChange(e.target.files[0]);
+        e.target.value = ""; // reset file input so it can re-upload same file
+      }
+    };
+
+    const triggerFilePicker = () => {
+      fileInputRef.current?.click();
+    };
+
+    return (
+      <div className="flex flex-col space-y-2">
+        <p className="font-medium">{label}</p>
+        {required && <p className="text-xs text-muted-foreground">Required</p>}
+
+        <div
+          className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 flex items-center justify-between hover:border-primary transition cursor-pointer relative"
+          onClick={triggerFilePicker}
+        >
+          {file ? (
+            <div className="flex items-center justify-between w-full">
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-green-600 flex items-center gap-1">
+                  <CheckCircle className="h-4 w-4" /> Uploaded
+                </span>
+                <span className="text-xs text-muted-foreground truncate">
+                  {file.name}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-4"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation(); // stop parent click
+                  triggerFilePicker();
+                }}
+              >
+                Replace
+              </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onChange(file)}
-              className="ml-4"
-            >
-              Replace
-            </Button>
-          </div>
-        ) : (
-          <>
+          ) : (
             <div className="flex items-center gap-3 text-muted-foreground">
               <Upload className="h-5 w-5" />
               <span className="text-sm">Click to upload or drag file here</span>
             </div>
-            <Input
-              type="file"
-              accept="image/*,.pdf"
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              onChange={(e) => {
-                if (e.target.files?.[0]) onChange(e.target.files[0]);
-              }}
-            />
-          </>
-        )}
+          )}
+
+          <Input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*,.pdf"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div>
@@ -262,6 +287,7 @@ export function ApplicationForm(
             {/* Identity type selection */}
             <div className="flex space-x-4">
               <Button
+                type="button"
                 variant={
                   formData.identityType === "nid" ? "default" : "outline"
                 }
@@ -270,6 +296,7 @@ export function ApplicationForm(
                 National ID
               </Button>
               <Button
+                type="button"
                 variant={
                   formData.identityType === "passport" ? "default" : "outline"
                 }
@@ -320,9 +347,9 @@ export function ApplicationForm(
           <Button
             onClick={handleSubmit}
             className="w-full"
-            disabled={!isIdentityUploaded}
+            disabled={!isIdentityUploaded || loading}
           >
-            Submit Application
+            {loading ? "Submitting..." : "Submit Application"}
           </Button>
         </CardContent>
       </Card>

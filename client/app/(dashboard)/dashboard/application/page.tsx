@@ -12,7 +12,7 @@ export default function ApplicationPage() {
     data,
     // error,
     mutate,
-  } = useSWR(`/api/v1/${user?.role}/applications/status`, fetcher);
+  } = useSWR(`/api/v1/${user?.role}/application/status`, fetcher);
 
   return (
     <div className="space-y-6">
@@ -24,7 +24,11 @@ export default function ApplicationPage() {
           Apply to become a verified seller on the Ahixo marketplace.
         </p>
       </div>
-      {data?.data === "pending" && <ApplicationStatus status={data?.data} />}
+
+      {data?.data === "pending" && <ApplicationStatus status="pending" />}
+      {data?.data === "rejected" && (
+        <ApplicationStatus status="rejected" mutate={mutate} />
+      )}
       {data?.data === null && <ApplicationForm mutate={mutate} />}
     </div>
   );
