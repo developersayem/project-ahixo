@@ -9,6 +9,7 @@ import productsRoutes from "../../routes/admin/product.route"; // all product ro
 import applicationRoutes from "../../routes/admin/application.routes"; // all application routes
 import sellersRoutes from "../../routes/admin/sellers.route"; // all sellers routes
 import buyersRoutes from "../../routes/admin/buyers.route"; // all buyers routes
+import categoriesRoutes from "../../routes/admin/category.route"; // all categories routes
 
 
 
@@ -45,6 +46,9 @@ router.use("/sellers", verifyJWT, sellersRoutes);
 
 // Mount buyers routes
 router.use("/buyers", verifyJWT, buyersRoutes);
+
+// Mount buyers routes
+router.use("/categories", verifyJWT, categoriesRoutes);
 
 
 
