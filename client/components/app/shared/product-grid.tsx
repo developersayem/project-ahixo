@@ -52,30 +52,36 @@ export function ProductGrid({
     isLoading,
   } = useSWR<IProduct[]>(apiUrl, fetcher);
 
+  console.log(products);
+
+  // Normalization function
+  const normalize = (str?: string) =>
+    str ? str.toLowerCase().replace(/-/g, " ").trim() : "";
+
   const filteredAndSortedProducts = useMemo(() => {
     if (!products) return [];
 
     let filtered = [...products];
 
+    // Category filtering (case-insensitive)
     if (selectedCategory) {
       filtered = filtered.filter(
-        (product) =>
-          product.category.toLowerCase() === selectedCategory.toLowerCase()
+        (product) => normalize(product.category) === normalize(selectedCategory)
       );
     }
 
+    // Subcategory filtering (case-insensitive)
     if (selectedSubcategory) {
       filtered = filtered.filter(
         (product) =>
-          (product as IProduct).subCategory?.toLowerCase() ===
-          selectedSubcategory.toLowerCase()
+          normalize(product.subCategory) === normalize(selectedSubcategory)
       );
     }
 
+    // Brand filtering (case-insensitive)
     if (selectedBrand) {
       filtered = filtered.filter(
-        (product) =>
-          product.brand?.toLowerCase() === selectedBrand.toLowerCase()
+        (product) => normalize(product.brand) === normalize(selectedBrand)
       );
     }
 
@@ -85,15 +91,11 @@ export function ProductGrid({
         if (
           availabilityFilters.includes("in-stock") &&
           availabilityFilters.includes("out-of-stock")
-        ) {
-          return true; // both selected, show all
-        }
-        if (availabilityFilters.includes("in-stock")) {
-          return product.stock > 0;
-        }
-        if (availabilityFilters.includes("out-of-stock")) {
+        )
+          return true;
+        if (availabilityFilters.includes("in-stock")) return product.stock > 0;
+        if (availabilityFilters.includes("out-of-stock"))
           return product.stock === 0;
-        }
         return true;
       });
     }

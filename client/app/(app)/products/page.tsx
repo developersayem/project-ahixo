@@ -25,9 +25,10 @@ function ProductsContent() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const selectedCategory = searchParams.get("category");
-  const selectedSubcategory = searchParams.get("subcategory");
-  const selectedBrand = searchParams.get("brand");
+  const selectedCategory = searchParams.get("category")?.toLowerCase() || null;
+  const selectedSubcategory =
+    searchParams.get("subcategory")?.toLowerCase() || null;
+  const selectedBrand = searchParams.get("brand")?.toLowerCase() || null;
 
   const [availabilityFilters, setAvailabilityFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("newest");

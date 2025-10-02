@@ -1,42 +1,44 @@
-import type { Request, Response } from "express";
-import { Category } from "../../models/category.model";
-import { ApiError } from "../../utils/ApiError";
-import { ApiResponse } from "../../utils/ApiResponse";
+import { Request, Response } from "express";
 import asyncHandler from "../../utils/asyncHandler";
+import { Category } from "../../models/category.model";
+import { ApiResponse } from "../../utils/ApiResponse";
+import { ApiError } from "../../utils/ApiError";
 
-
-
-// Get All Categories (with parent + subcategories populated)
 export const getAllCategories = asyncHandler(async (req: Request, res: Response) => {
   try {
     const categories = await Category.aggregate([
+      // Step 1: Match top-level categories
+      { $match: { parentCategory: null } },
+
+      // Step 2: Recursive lookup to get all subcategories
       {
-        $lookup: {
+        $graphLookup: {
           from: "categories",
-          localField: "parentCategory",
-          foreignField: "_id",
-          as: "parentCategory",
+          startWith: "$_id",
+          connectFromField: "_id",
+          connectToField: "parentCategory",
+          as: "subCategoriesRecursive",
+          depthField: "level",
         },
       },
-      { $unwind: { path: "$parentCategory", preserveNullAndEmptyArrays: true } },
+
+      // Step 3: Project main fields and nested subcategories
       {
-        $lookup: {
-          from: "categories",
-          localField: "subCategories",
-          foreignField: "_id",
-          as: "subCategories",
+        $project: {
+          _id: 1,
+          name: 1,
+          description: 1,
+          createdAt: 1,
+          subCategories: "$subCategoriesRecursive",
         },
       },
-      { $sort: { createdAt: -1 } },
     ]);
 
     res.status(200).json(
-        new ApiResponse(200, categories, "Categories fetched successfully")
+      new ApiResponse(200, categories, "Categories fetched successfully")
     );
   } catch (error) {
     console.error("Error fetching categories:", error);
-    res.status(500).json(
-        new ApiError(500, "Server Error")
-    );
+    res.status(500).json(new ApiError(500, "Server Error"));
   }
 });

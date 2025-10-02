@@ -20,7 +20,7 @@ export const createCategory = asyncHandler(async (req: Request, res: Response) =
 
     // Create new category
     const newCategory = await Category.create({
-      name,
+      name:name.toLowerCase(),
       description,
       parentCategory: parent || null,
       subCategories: [],
