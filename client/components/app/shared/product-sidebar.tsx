@@ -6,45 +6,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { fetcher } from "@/lib/fetcher";
 import { ChevronDown } from "lucide-react";
+import useSWR from "swr";
 
-const categories = [
-  "Women Clothing & Fashion",
-  "Men Clothing & Fashion",
-  "Computer & Accessories",
-  "Automobile & Motorcycle",
-  "Kids & toy",
-  "Sports & outdoor",
-  "Jewelry & Watches",
-  "Cellphones & Tabs",
-  "Beauty, Health & Hair",
-  "Home Improvement & Tools",
-  "Home decoration & Appliance",
-  "Toy",
-  "Software",
-];
-
-const mapCategoryToProductValue = (displayCategory: string): string => {
-  const categoryMap: { [key: string]: string } = {
-    "Women Clothing & Fashion": "women-clothing",
-    "Men Clothing & Fashion": "men-clothing",
-    "Computer & Accessories": "computer-accessories",
-    "Automobile & Motorcycle": "automobile-motorcycle",
-    "Kids & toy": "kids-toy",
-    "Sports & outdoor": "sports-outdoor",
-    "Jewelry & Watches": "jewelry-watches",
-    "Cellphones & Tabs": "cellphones-tabs",
-    "Beauty, Health & Hair": "beauty-health-hair",
-    "Home Improvement & Tools": "home-improvement-tools",
-    "Home decoration & Appliance": "home-decoration-appliance",
-    Toy: "toy",
-    Software: "software",
-  };
-  return (
-    categoryMap[displayCategory] ||
-    displayCategory.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "")
-  );
-};
+interface ICat {
+  _id: string;
+  name: string;
+}
 
 interface ProductSidebarProps {
   selectedCategory: string | null;
@@ -59,6 +28,12 @@ export function ProductSidebar({
   availabilityFilters = [],
   onAvailabilityChange,
 }: ProductSidebarProps) {
+  // Fetch top categories from backend
+  const { data: categoriesRes } = useSWR("/api/v1/categories/top", fetcher);
+
+  const categories = categoriesRes?.data || [];
+  console.log(categories);
+
   const handleAvailabilityChange = (filter: string, checked: boolean) => {
     if (checked) {
       onAvailabilityChange([...availabilityFilters, filter]);
@@ -67,9 +42,9 @@ export function ProductSidebar({
     }
   };
 
-  const handleCategoryClick = (displayCategory: string) => {
-    const mappedCategory = mapCategoryToProductValue(displayCategory);
-    onCategoryChange(mappedCategory);
+  const handleCategoryClick = (categoryName: string) => {
+    // Use category name as filter directly
+    onCategoryChange(categoryName.toLowerCase());
   };
 
   return (
@@ -98,17 +73,18 @@ export function ProductSidebar({
                 >
                   All Categories
                 </button>
-                {categories.map((category) => (
+
+                {categories.map((cat: ICat) => (
                   <button
-                    key={category}
-                    onClick={() => handleCategoryClick(category)}
+                    key={cat._id}
+                    onClick={() => handleCategoryClick(cat.name)}
                     className={`block w-full text-left text-sm transition-colors py-1 ${
-                      selectedCategory === mapCategoryToProductValue(category)
+                      selectedCategory === cat.name.toLowerCase()
                         ? "text-brand-500 font-medium"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {category}
+                    {cat.name.charAt(0).toUpperCase() + cat.name.slice(1)}
                   </button>
                 ))}
               </div>
