@@ -32,7 +32,6 @@ export function ProductSidebar({
   const { data: categoriesRes } = useSWR("/api/v1/categories/top", fetcher);
 
   const categories = categoriesRes?.data || [];
-  console.log(categories);
 
   const handleAvailabilityChange = (filter: string, checked: boolean) => {
     if (checked) {
