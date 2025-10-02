@@ -52,8 +52,6 @@ export function ProductGrid({
     isLoading,
   } = useSWR<IProduct[]>(apiUrl, fetcher);
 
-  console.log(products);
-
   // Normalization function
   const normalize = (str?: string) =>
     str ? str.toLowerCase().replace(/-/g, " ").trim() : "";
