@@ -42,3 +42,19 @@ export const getAllCategories = asyncHandler(async (req: Request, res: Response)
     res.status(500).json(new ApiError(500, "Server Error"));
   }
 });
+
+
+// GET Top 13 Categories
+export const getTopCategories = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    const categories = await Category.find()
+      .sort({ createdAt: -1 }) // latest first
+      .limit(13)
+      .select("_id name"); // select only necessary fields
+
+    res.status(200).json(
+      new ApiResponse(200, categories, "Top categories fetched successfully"));
+  } catch (error) {
+    res.status(500).json(new ApiError(500, "Server Error"));
+  }
+});
