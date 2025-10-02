@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -29,7 +28,7 @@ export default function BrandsPage() {
     data: brandsData,
     // error,
     // isLoading,
-  } = useSWR<IBrand[]>(`/api/v1/products/brands`, fetcher);
+  } = useSWR<IBrand[]>(`/api/v1/brands`, fetcher);
 
   // Filter brands based on search term
   const filteredBrands = brandsData?.filter((brand) =>
@@ -82,7 +81,7 @@ export default function BrandsPage() {
             >
               <div className="bg-white p-6 border-spacing-0.5 border-[1px] border-gray-100  hover:shadow-2xl hover:scale-101 transition-all duration-200">
                 {/* Brand Logo */}
-                <div className="flex items-center justify-center mb-4 h-16">
+                {/* <div className="flex items-center justify-center mb-4 h-16">
                   <img
                     src={brand.logo}
                     alt={`${brand.name} logo`}
@@ -92,7 +91,7 @@ export default function BrandsPage() {
                     }}
                     className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-200"
                   />
-                </div>
+                </div> */}
 
                 {/* Brand Name */}
                 <div className="text-center">
