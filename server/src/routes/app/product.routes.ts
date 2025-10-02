@@ -1,11 +1,10 @@
 import express from "express";
-import { getAllBrands, getAllProducts, getFlashSaleProducts, getSingleProduct } from "../../controller/app/products.controller";
+import {  getAllProducts, getFlashSaleProducts, getSingleProduct } from "../../controller/app/products.controller";
 
 const router = express.Router();
 
 router.get("/", getAllProducts);
 router.get("/flash-sale", getFlashSaleProducts);
-router.get("/brands", getAllBrands);
 router.get("/:id", getSingleProduct);
 
 
