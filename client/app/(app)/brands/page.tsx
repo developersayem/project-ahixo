@@ -13,25 +13,23 @@ import {
 import { fetcher } from "@/lib/fetcher";
 import useSWR from "swr";
 
+interface IBrandRes {
+  data: IBrand[];
+}
 interface IBrand {
+  _id: string;
   name: string;
-  logo: string;
-  fallbackLogo: string;
-  domain: string;
 }
 
 export default function BrandsPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch brands from backend
-  const {
-    data: brandsData,
-    // error,
-    // isLoading,
-  } = useSWR<IBrand[]>(`/api/v1/brands`, fetcher);
+  const { data: brandsRes } = useSWR<IBrandRes>(`/api/v1/brands`, fetcher);
+  const brandsData = brandsRes?.data || [];
 
   // Filter brands based on search term
-  const filteredBrands = brandsData?.filter((brand) =>
+  const filteredBrands = brandsData?.filter((brand: IBrand) =>
     brand.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -98,9 +96,6 @@ export default function BrandsPage() {
                   <h3 className="text-sm font-medium text-gray-900 group-hover:text-brand-600 transition-colors duration-200">
                     {brand.name}
                   </h3>
-                  <h4 className="text-sm font-medium text-gray-900 group-hover:text-brand-600 transition-colors duration-200">
-                    {brand.domain}
-                  </h4>
                 </div>
               </div>
             </Link>
