@@ -1,0 +1,75 @@
+[
+  {
+    "_id": { "$oid": "652a1b1f1c9d440000000001" },
+    "name": "Electronics",
+    "description": "Devices and gadgets",
+    "parentCategory": null,
+    "subCategories": [
+      { "$oid": "652a1b1f1c9d440000000002" },
+      { "$oid": "652a1b1f1c9d440000000003" }
+    ],
+    "createdAt": { "$date": "2025-09-30T00:00:00Z" }
+  },
+  {
+    "_id": { "$oid": "652a1b1f1c9d440000000002" },
+    "name": "Mobile Phones",
+    "description": "Smartphones and accessories",
+    "parentCategory": { "$oid": "652a1b1f1c9d440000000001" },
+    "subCategories": [
+      { "$oid": "652a1b1f1c9d440000000004" },
+      { "$oid": "652a1b1f1c9d440000000005" }
+    ],
+    "createdAt": { "$date": "2025-09-30T00:00:00Z" }
+  },
+  {
+    "_id": { "$oid": "652a1b1f1c9d440000000003" },
+    "name": "Laptops",
+    "description": "Laptops and notebooks",
+    "parentCategory": { "$oid": "652a1b1f1c9d440000000001" },
+    "subCategories": [],
+    "createdAt": { "$date": "2025-09-30T00:00:00Z" }
+  },
+  {
+    "_id": { "$oid": "652a1b1f1c9d440000000004" },
+    "name": "Android Phones",
+    "description": "Android devices",
+    "parentCategory": { "$oid": "652a1b1f1c9d440000000002" },
+    "subCategories": [],
+    "createdAt": { "$date": "2025-09-30T00:00:00Z" }
+  },
+  {
+    "_id": { "$oid": "652a1b1f1c9d440000000005" },
+    "name": "iPhones",
+    "description": "Apple iPhones",
+    "parentCategory": { "$oid": "652a1b1f1c9d440000000002" },
+    "subCategories": [],
+    "createdAt": { "$date": "2025-09-30T00:00:00Z" }
+  },
+  {
+    "_id": { "$oid": "652a1b1f1c9d440000000006" },
+    "name": "Clothing",
+    "description": "Men and Women fashion",
+    "parentCategory": null,
+    "subCategories": [
+      { "$oid": "652a1b1f1c9d440000000007" },
+      { "$oid": "652a1b1f1c9d440000000008" }
+    ],
+    "createdAt": { "$date": "2025-09-30T00:00:00Z" }
+  },
+  {
+    "_id": { "$oid": "652a1b1f1c9d440000000007" },
+    "name": "Men",
+    "description": "Men’s fashion",
+    "parentCategory": { "$oid": "652a1b1f1c9d440000000006" },
+    "subCategories": [],
+    "createdAt": { "$date": "2025-09-30T00:00:00Z" }
+  },
+  {
+    "_id": { "$oid": "652a1b1f1c9d440000000008" },
+    "name": "Women",
+    "description": "Women’s fashion",
+    "parentCategory": { "$oid": "652a1b1f1c9d440000000006" },
+    "subCategories": [],
+    "createdAt": { "$date": "2025-09-30T00:00:00Z" }
+  }
+]
