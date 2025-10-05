@@ -9,15 +9,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import api from "@/lib/axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
+import { useCurrency } from "@/contexts/currency-context";
+import api from "@/lib/axios";
 import { useCart } from "@/hooks/api/useCart";
 
 const CheckoutPage = () => {
   const context = useCreateOrder();
   const { mutateCart } = useCart();
+  const { currency, symbolMap, convertPrice } = useCurrency();
+  const router = useRouter();
 
   if (!context)
     throw new Error("CheckoutPage must be used inside CreateOrderProvider");
@@ -44,7 +47,6 @@ const CheckoutPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,19 +56,19 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
+    if (!formData.fullName || !formData.phone || !formData.address) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      if (!formData.fullName || !formData.phone || !formData.address) {
-        toast.error("Please fill all required fields");
-        return;
-      }
-
-      if (cartItems.length === 0) {
-        toast.error("Your cart is empty");
-        return;
-      }
-
-      setLoading(true);
-
       const orderPayload = {
         shippingAddress: `${formData.address}, ${formData.city}, ${formData.postalCode}`,
         phone: formData.phone,
@@ -75,31 +77,29 @@ const CheckoutPage = () => {
         products: cartItems.map((item) => ({
           product: item._id,
           quantity: item.quantity,
-          price:
-            item.salePrice && item.salePrice < item.price
-              ? item.salePrice
-              : item.price,
-          title: item.title || item.title,
+          price: convertPrice
+            ? convertPrice(item.salePrice ?? item.price, item.currency || "USD")
+            : item.salePrice ?? item.price,
+          shippingCost: convertPrice
+            ? convertPrice(item.shippingCost || 0, item.currency || "USD")
+            : item.shippingCost || 0,
+          title: item.title,
         })),
-        total,
+        total: total,
+        totalShippingCost: totalShippingCost,
+        currency,
       };
 
-      const res = await api.post("/api/v1/buyer/orders", orderPayload, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (!res.data.success) {
+      const res = await api.post("/api/v1/buyer/orders", orderPayload);
+      if (!res.data.success)
         throw new Error(res.data.message || "Failed to place order");
-      }
 
       toast.success("Order placed successfully!");
-      clearOrder(); // ✅ clear checkout items after success
-      mutateCart(); // refresh cart
+      clearOrder();
+      mutateCart();
       router.push("/orders");
-    } catch (error: unknown) {
-      console.error("Error placing order:", error);
+    } catch (err) {
+      console.error("Order error:", err);
       toast.error("Something went wrong while placing order");
     } finally {
       setLoading(false);
@@ -150,7 +150,7 @@ const CheckoutPage = () => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                placeholder="Street address, house, apartment, etc."
+                placeholder="Street address..."
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -179,7 +179,7 @@ const CheckoutPage = () => {
                 name="note"
                 value={formData.note}
                 onChange={handleChange}
-                placeholder="Any special instruction for delivery..."
+                placeholder="Special instructions..."
               />
             </div>
           </CardContent>
@@ -214,52 +214,79 @@ const CheckoutPage = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
-              {cartItems.map((item) => (
-                <div
-                  key={item._id}
-                  className="flex justify-between items-center border-b pb-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={item.image || item.images?.[0] || "/placeholder.svg"}
-                      alt={item.title || item.title}
-                      className="w-12 h-12 object-cover rounded"
-                    />
-                    <div>
-                      <p className="text-sm font-medium">{item.title}</p>
-                      <p className="text-xs text-gray-700 pt-1 text-end">
-                        {item.quantity} × $
-                        {item.salePrice && item.salePrice < item.price
-                          ? item.salePrice.toFixed(2)
-                          : item.price.toFixed(2)}
-                      </p>
+              {cartItems.map((item) => {
+                const effectivePrice = item.salePrice ?? item.price;
+                const convertedPrice = convertPrice
+                  ? convertPrice(effectivePrice, item.currency || "USD")
+                  : effectivePrice;
+                const convertedShipping = convertPrice
+                  ? convertPrice(item.shippingCost || 0, item.currency || "USD")
+                  : item.shippingCost || 0;
+
+                return (
+                  <div
+                    key={item._id}
+                    className="flex justify-between items-center border-b pb-2"
+                  >
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={
+                          item.image || item.images?.[0] || "/placeholder.svg"
+                        }
+                        alt={item.title}
+                        className="w-12 h-12 object-cover rounded"
+                      />
+                      <div>
+                        <p className="text-sm font-medium">{item.title}</p>
+                        <p className="text-xs text-gray-700 pt-1 text-end">
+                          {item.quantity} × {symbolMap[currency]}
+                          {convertedPrice?.toFixed(2)} + Ship:{" "}
+                          {symbolMap[currency]}
+                          {convertedShipping?.toFixed(2)}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <Separator />
 
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>
+                {symbolMap[currency]}
+                {subtotal.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Shipping</span>
-              <span>${totalShippingCost.toFixed(2)}</span>
+              <span>
+                {symbolMap[currency]}
+                {totalShippingCost.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Tax</span>
-              <span>${tax.toFixed(2)}</span>
+              <span>
+                {symbolMap[currency]}
+                {tax.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between text-sm text-green-600">
               <span>You Saved</span>
-              <span>- ${totalDiscount.toFixed(2)}</span>
+              <span>
+                -{symbolMap[currency]}
+                {totalDiscount.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between font-bold border-t pt-2">
               <span>Total</span>
-              <span>${total.toFixed(2)}</span>
+              <span>
+                {symbolMap[currency]}
+                {total.toFixed(2)}
+              </span>
             </div>
 
             <Button

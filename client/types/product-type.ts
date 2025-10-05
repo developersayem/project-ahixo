@@ -4,6 +4,7 @@ export interface Rating {
 }
 
 export interface IProduct {
+  currency?: string;
   _id: string;
   seller: string; // seller._id
   title: string;

@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "sonner";
 import SocketInitializer from "./SocketInitializer";
+import { CurrencyProvider } from "@/contexts/currency-context";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -26,10 +27,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <AuthProvider>
-          <SocketInitializer>{children}</SocketInitializer>
-          <Toaster richColors position="top-right" />
-        </AuthProvider>
+        <CurrencyProvider>
+          <AuthProvider>
+            <SocketInitializer>{children}</SocketInitializer>
+            <Toaster richColors position="top-right" />
+          </AuthProvider>
+        </CurrencyProvider>
       </body>
     </html>
   );

@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { title } from "process";
 
 // Counter schema to track order numbers per seller
 const CounterSchema = new Schema({
@@ -9,11 +8,21 @@ const CounterSchema = new Schema({
 export const Counter = mongoose.model("Counter", CounterSchema);
 
 // Timeline entry interface
-interface ITimelineEntry {
-  status: "processing" | "completed" | "on-hold" | "canceled";
+export interface ITimelineEntry {
+  status: "processing" | "delivered" | "on-hold" | "canceled" | "completed";
   timestamp: Date;
   note?: string;
   updatedBy?: mongoose.Types.ObjectId; // User who made the change
+}
+
+// Product entry interface
+export interface IOrderProduct {
+  product: mongoose.Types.ObjectId;
+  quantity: number;
+  price: number;
+  title: string;
+  currency?: string; // Optional for multi-currency
+  shippingCost?: number;
 }
 
 // Order interface
@@ -21,13 +30,16 @@ export interface IOrder extends Document {
   orderNumber: number;
   seller: mongoose.Types.ObjectId;
   buyer: mongoose.Types.ObjectId;
-  products: { product: mongoose.Types.ObjectId; quantity: number; price: number; title: string }[];
+  products: IOrderProduct[];
+  subtotal: number;
+  totalShippingCost: number;
   total: number;
-  status: "processing" | "delivered" | "on-hold" | "canceled";
+  status: "processing" | "delivered" | "on-hold" | "canceled" | "completed";
   shippingAddress: string;
   date: Date;
   phone?: string;
   paymentMethod?: string;
+  currency?: string;
   timeline: ITimelineEntry[];
   createdAt: Date;
   updatedAt: Date;
@@ -45,23 +57,28 @@ const OrderSchema: Schema = new Schema(
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
         title: { type: String, required: true },
+        currency: { type: String, default: "USD" },
+        shippingCost: { type: Number, default: 0 },
       },
     ],
+    subtotal: { type: Number, required: true },
+    totalShippingCost: { type: Number, required: true },
     total: { type: Number, required: true },
     status: {
       type: String,
-      enum: ["processing", "delivered", "on-hold", "canceled"],
+      enum: ["processing", "delivered", "on-hold", "canceled", "completed"],
       default: "processing",
     },
     shippingAddress: { type: String, required: true },
     date: { type: Date, default: Date.now },
     phone: { type: String },
-    paymentMethod: { type: String },
+    paymentMethod: { type: String, default: "cod" },
+    currency: { type: String, default: "USD" },
     timeline: [
       {
         status: {
           type: String,
-          enum: ["processing", "delivered", "on-hold", "canceled"],
+          enum: ["processing", "delivered", "on-hold", "canceled", "completed"],
           required: true,
         },
         timestamp: { type: Date, default: Date.now },
@@ -73,8 +90,8 @@ const OrderSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-// Pre-save hook for order number assignment only
-OrderSchema.pre("save", async function (next) {
+// Pre-save hook for order number assignment and timeline initialization
+OrderSchema.pre<IOrder>("save", async function (next) {
   if (this.isNew) {
     const counter = await Counter.findOneAndUpdate(
       { seller: this.seller },
@@ -83,8 +100,16 @@ OrderSchema.pre("save", async function (next) {
     );
     this.orderNumber = counter.seq;
 
-    // Initial timeline entry
-    this.timeline = [{ status: this.status, timestamp: new Date(), note: "Order created" }];
+    // Initialize timeline if empty
+    if (!this.timeline || this.timeline.length === 0) {
+      this.timeline = [
+        {
+          status: this.status,
+          timestamp: new Date(),
+          note: "Order created",
+        },
+      ];
+    }
   }
   next();
 });

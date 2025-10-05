@@ -142,6 +142,7 @@ const getPopulatedCart = async (buyerId: mongoose.Types.ObjectId) => {
         selectedColor: "$items.selectedColor",
         selectedSize: "$items.selectedSize",
         customOptions: "$items.customOptions",
+        currency: "$productDetails.currency",
         total: { $multiply: ["$productDetails.price", "$items.quantity"] },
         shippingCost: "$productDetails.shippingCost",
         image: { $arrayElemAt: ["$productDetails.images", 0] },

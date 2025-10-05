@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import { useCart } from "@/hooks/api/useCart";
 import { useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
+import { useCurrency } from "@/contexts/currency-context";
+import api from "@/lib/axios";
 
 interface ProductInfoProps {
   product: IProduct;
@@ -26,11 +28,11 @@ interface ProductInfoProps {
 
 export function ProductInfo({ product }: ProductInfoProps) {
   const router = useRouter();
-  const { setCartFromBuyNow } = useCreateOrder(); // ✅ use context
-  const { addItem } = useCart();
+  const { setCartFromBuyNow } = useCreateOrder();
+  const { addItem, mutateCart } = useCart();
+  const { convertPrice, symbolMap, currency } = useCurrency();
 
-  const availableColors =
-    product.colors && product.colors.length > 0 ? product.colors : ["white"];
+  const availableColors = product.colors?.length ? product.colors : ["white"];
   const [selectedColor, setSelectedColor] = useState(availableColors[0]);
   const [quantity, setQuantity] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,12 +51,30 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const inStock = product.stock > 0;
 
-  // ---------------- Handlers ----------------
+  // ==========================
+  // Price Conversion
+  // ==========================
+  const productCurrency = product.currency || "USD";
 
+  const convertedPrice =
+    convertPrice(product.price, productCurrency) ?? product.price;
+  const convertedSalePrice =
+    product.salePrice != null
+      ? convertPrice(product.salePrice, productCurrency) ?? product.salePrice
+      : null;
+
+  const finalPrice =
+    convertedSalePrice && convertedSalePrice < convertedPrice
+      ? convertedSalePrice
+      : convertedPrice;
+
+  const totalPrice = finalPrice * quantity;
+
+  // ---------------- Handlers ----------------
   const handleAddToWishlist = async (productId: string) => {
     try {
-      await fetch(`/api/v1/buyer/wishlist/${productId}`, { method: "POST" });
-      toast.success("Product added to wishlist");
+      const res = await api.post(`/api/v1/buyer/wishlist/${productId}`);
+      if (res.data.success) toast.success("Product added to wishlist");
     } catch (error) {
       console.error(error);
       toast.error("Failed to add product to wishlist");
@@ -63,13 +83,17 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const handleAddToCart = async () => {
     if (!inStock) return;
-
     try {
       await addItem({
         productId: product._id,
         quantity,
         selectedColor,
       });
+
+      // Wait for SWR to refresh
+      await mutateCart();
+      router.push("/cart");
+      toast.success("Added to cart!");
     } catch (err) {
       console.error(err);
       toast.error("Failed to add product to cart");
@@ -79,8 +103,8 @@ export function ProductInfo({ product }: ProductInfoProps) {
   const handleBuyNow = () => {
     if (!inStock) return;
     try {
-      setCartFromBuyNow(product, 1); // ✅ set single product in order context
-      router.push("/checkout"); // ✅ go to checkout page
+      setCartFromBuyNow(product, 1);
+      router.push("/checkout");
     } catch (err) {
       console.error(err);
       toast.error("Failed to process Buy Now");
@@ -164,13 +188,13 @@ export function ProductInfo({ product }: ProductInfoProps) {
       <div className="flex items-center gap-20">
         <span className="text-sm text-gray-600">Price</span>
         <div className="flex items-center gap-2">
-          {product.salePrice && product.salePrice < product.price && (
+          {convertedSalePrice && convertedSalePrice < convertedPrice && (
             <span className="text-md text-gray-500 line-through">
-              ${product.price.toLocaleString()}
+              {symbolMap[currency]} {convertedPrice.toLocaleString()}
             </span>
           )}
           <div className="text-md font-bold text-brand-600">
-            ${(product.salePrice || product.price).toLocaleString()}
+            {symbolMap[currency]} {finalPrice.toLocaleString()}
             <sub className="text-sm text-gray-400 font-light">/pc</sub>
           </div>
         </div>
@@ -224,7 +248,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
       <div className="flex items-center gap-10">
         <span className="text-sm text-gray-600">Total Price</span>
         <div className="text-xl font-bold text-brand-600">
-          ${((product.salePrice || product.price) * quantity).toLocaleString()}
+          {symbolMap[currency]} {totalPrice.toLocaleString()}
         </div>
       </div>
 

@@ -30,6 +30,7 @@ interface Product {
   category: string;
   images: string[];
   sales?: number;
+  currency?: string;
 }
 
 export function ProductList() {
@@ -41,7 +42,6 @@ export function ProductList() {
     fetcher
   );
 
-  //  Extract products array correctly
   const products: Product[] = data?.data?.products || [];
 
   const handleDelete = async (productId: string) => {
@@ -51,6 +51,7 @@ export function ProductList() {
       mutate();
     } catch (error) {
       console.error("Delete failed", error);
+      toast.error("Failed to delete product");
     }
   };
 
@@ -58,9 +59,22 @@ export function ProductList() {
     if (stock === 0) {
       return <Badge variant="destructive">Out of Stock</Badge>;
     } else if (stock <= 5) {
-      return <Badge variant="destructive">Low Stock</Badge>;
+      return <Badge variant="secondary">Low Stock</Badge>;
     } else {
-      return <p className="font-medium">{stock} in stock</p>;
+      return <Badge variant="outline">{stock} in stock</Badge>;
+    }
+  };
+
+  const formatCurrency = (amount: number, currency = "USD") => {
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency,
+        minimumFractionDigits: 0,
+      }).format(amount);
+    } catch {
+      // fallback if invalid currency code
+      return `${currency} ${amount}`;
     }
   };
 
@@ -105,16 +119,18 @@ export function ProductList() {
           </div>
         </div>
       </CardHeader>
+
       <CardContent>
         <div className="space-y-4">
           {filteredProducts.map((product: Product) => (
             <div
               key={product._id}
-              className="flex items-center justify-between p-2 border border-border"
+              className="flex items-center justify-between p-3 border border-border"
             >
+              {/* Product info */}
               <div className="flex items-center space-x-4">
                 <Image
-                  src={product.images[0] || "/placeholder.svg"}
+                  src={product.images?.[0] || "/placeholder.svg"}
                   alt={product.title}
                   width={60}
                   height={60}
@@ -128,22 +144,25 @@ export function ProductList() {
                 </div>
               </div>
 
+              {/* Price and Stock */}
               <div className="flex items-center space-x-6">
                 <div className="text-right">
-                  <p className="font-medium">
-                    ${product.salePrice || product.price}
+                  <p className="font-semibold">
+                    {formatCurrency(
+                      product.salePrice || product.price,
+                      product.currency
+                    )}
                   </p>
                   {product.salePrice && (
                     <p className="text-sm line-through text-muted-foreground">
-                      ${product.price}
+                      {formatCurrency(product.price, product.currency)}
                     </p>
                   )}
                 </div>
 
-                <div className="text-right flex justify-center gap-2">
-                  {getStockBadge(product.stock)}
-                </div>
+                <div>{getStockBadge(product.stock)}</div>
 
+                {/* Actions */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">

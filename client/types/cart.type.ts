@@ -1,4 +1,5 @@
 export interface ICartItem {
+  currency?: string;      // ✅ Add currency field
   _id: string;           // Cart item ID
   title: string; 
   productId?:string;        // Product title

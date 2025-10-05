@@ -9,9 +9,11 @@ import { ICartItem } from "@/types/cart.type";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useCurrency } from "@/contexts/currency-context";
 
 const CartPage = () => {
   const router = useRouter();
+  const { currency, convertPrice, symbolMap } = useCurrency(); // ✅ Currency context
   const {
     isLoading,
     isError,
@@ -42,6 +44,10 @@ const CartPage = () => {
             ? item.salePrice
             : item.price;
 
+        const convertedPrice = convertPrice
+          ? convertPrice(effectivePrice, item.currency || "USD")
+          : effectivePrice;
+
         const cleanedItem: ICartItem = {
           _id: item.productId || "",
           title: item.name || item.title || "",
@@ -50,10 +56,11 @@ const CartPage = () => {
           price: item.price,
           salePrice: item.salePrice,
           quantity: item.quantity,
-          total: effectivePrice * item.quantity,
+          total: (convertedPrice ?? effectivePrice) * item.quantity,
           shippingCost: item.shippingCost,
           category: item.category,
           stock: item.stock,
+          currency: item.currency || "USD",
           sellerId: item.sellerId,
           rating: item.rating || 0,
           colors: item.colors?.length ? item.colors : undefined,
@@ -66,7 +73,6 @@ const CartPage = () => {
             : undefined,
         };
 
-        // Remove undefined fields dynamically
         return Object.fromEntries(
           Object.entries(cleanedItem).filter(
             ([v]) => v !== undefined && v !== null
@@ -93,110 +99,132 @@ const CartPage = () => {
               <h2 className="text-xl font-semibold mb-4 capitalize border-b pb-2">
                 {category} ({items.length})
               </h2>
-              {items.map((item) => (
-                <div
-                  key={item._id}
-                  className="flex flex-col sm:flex-row items-center sm:items-start py-4 border-b hover:bg-gray-100 transition rounded-md px-2"
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-24 h-24 object-cover rounded-md shadow-sm mr-4"
-                  />
+              {items.map((item) => {
+                const effectivePrice =
+                  item.salePrice && item.salePrice < item.price
+                    ? item.salePrice
+                    : item.price;
 
-                  <div className="flex-1 flex flex-col gap-1">
-                    <p className="text-base font-medium">{item.title}</p>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="line-through text-gray-400">
-                        ${item.price.toFixed(2)}
-                      </span>
-                      <span className="text-red-600 font-semibold">
-                        ${item.salePrice?.toFixed(2) || item.price.toFixed(2)}
-                      </span>
-                      {item.salePrice && item.salePrice < item.price && (
-                        <span className="text-green-600 ml-2">
-                          You save $
-                          {(
-                            item.price -
-                            item.salePrice * item.quantity
-                          ).toFixed(2)}
-                        </span>
-                      )}
-                    </div>
+                const convertedPrice = convertPrice
+                  ? convertPrice(effectivePrice, item.currency || "USD")
+                  : effectivePrice;
 
-                    {/* Selected Options */}
-                    <div className="flex flex-wrap gap-2 mt-1 text-sm">
-                      {item.selectedColor && (
-                        <div className="flex items-center gap-1">
-                          <span className="font-medium">Color:</span>
-                          <span
-                            className="w-5 h-5 rounded-full border"
-                            style={{ backgroundColor: item.selectedColor }}
-                          />
-                        </div>
-                      )}
-                      {item.selectedSize && (
-                        <span className="px-2 py-0.5 rounded-md bg-gray-200 text-gray-700">
-                          Size: {item.selectedSize}
-                        </span>
-                      )}
-                      {item.warranty && (
-                        <span className="px-2 py-0.5 rounded-md bg-green-100 text-green-800 font-medium">
-                          Warranty Included
-                        </span>
-                      )}
-                      {item.customOptions &&
-                        Object.entries(item.customOptions).map(
-                          ([key, value]) => (
-                            <span
-                              key={key}
-                              className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-medium"
-                            >
-                              {key}: {value}
-                            </span>
-                          )
-                        )}
-                    </div>
-                  </div>
+                const totalItemPrice = convertedPrice
+                  ? convertedPrice * item.quantity
+                  : 0;
 
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-2 mt-3 sm:mt-0">
-                    <button
-                      className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center hover:bg-gray-300 transition"
-                      onClick={() =>
-                        updateQuantity(item._id, item.quantity - 1)
-                      }
-                    >
-                      -
-                    </button>
-                    <span className="px-3">{item.quantity}</span>
-                    <button
-                      className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center hover:bg-gray-300 transition"
-                      onClick={() =>
-                        updateQuantity(item._id, item.quantity + 1)
-                      }
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  {/* Total Price */}
-                  <p className="text-base font-semibold ml-4 mt-3 sm:mt-0">
-                    $
-                    {(item.salePrice && item.salePrice < item.price
-                      ? item.salePrice
-                      : item.price) * item.quantity}
-                  </p>
-
-                  {/* Remove Button */}
-                  <button
-                    className="ml-4 text-gray-500 hover:text-red-600 mt-3 sm:mt-0 transition"
-                    onClick={() => removeItem(item._id)}
+                return (
+                  <div
+                    key={item._id}
+                    className="flex flex-col sm:flex-row items-center sm:items-start py-4 border-b hover:bg-gray-100 transition rounded-md px-2"
                   >
-                    <X size={20} />
-                  </button>
-                </div>
-              ))}
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-24 h-24 object-cover rounded-md shadow-sm mr-4"
+                    />
+
+                    <div className="flex-1 flex flex-col gap-1">
+                      <p className="text-base font-medium">{item.title}</p>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="line-through text-gray-400">
+                          {symbolMap[currency]}
+                          {convertPrice
+                            ? (
+                                convertPrice(
+                                  item.price,
+                                  item.currency || "USD"
+                                ) ?? item.price
+                              ).toFixed(2)
+                            : item.price.toFixed(2)}
+                        </span>
+                        <span className="text-red-600 font-semibold">
+                          {symbolMap[currency]}
+                          {convertedPrice?.toFixed(2)}
+                        </span>
+                        {item.salePrice && item.salePrice < item.price && (
+                          <span className="text-green-600 ml-2">
+                            You save {symbolMap[currency]}
+                            {(
+                              (item.price - item.salePrice) *
+                              item.quantity
+                            ).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Selected Options */}
+                      <div className="flex flex-wrap gap-2 mt-1 text-sm">
+                        {item.selectedColor && (
+                          <div className="flex items-center gap-1">
+                            <span className="font-medium">Color:</span>
+                            <span
+                              className="w-5 h-5 rounded-full border"
+                              style={{ backgroundColor: item.selectedColor }}
+                            />
+                          </div>
+                        )}
+                        {item.selectedSize && (
+                          <span className="px-2 py-0.5 rounded-md bg-gray-200 text-gray-700">
+                            Size: {item.selectedSize}
+                          </span>
+                        )}
+                        {item.warranty && (
+                          <span className="px-2 py-0.5 rounded-md bg-green-100 text-green-800 font-medium">
+                            Warranty Included
+                          </span>
+                        )}
+                        {item.customOptions &&
+                          Object.entries(item.customOptions).map(
+                            ([key, value]) => (
+                              <span
+                                key={key}
+                                className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 font-medium"
+                              >
+                                {key}: {value}
+                              </span>
+                            )
+                          )}
+                      </div>
+                    </div>
+
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-2 mt-3 sm:mt-0">
+                      <button
+                        className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center hover:bg-gray-300 transition"
+                        onClick={() =>
+                          updateQuantity(item._id, item.quantity - 1)
+                        }
+                      >
+                        -
+                      </button>
+                      <span className="px-3">{item.quantity}</span>
+                      <button
+                        className="w-8 h-8 bg-gray-200 rounded-full flex justify-center items-center hover:bg-gray-300 transition"
+                        onClick={() =>
+                          updateQuantity(item._id, item.quantity + 1)
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    {/* Total Price */}
+                    <p className="text-base font-semibold ml-4 mt-3 sm:mt-0">
+                      {symbolMap[currency]}
+                      {totalItemPrice.toFixed(2)}
+                    </p>
+
+                    {/* Remove Button */}
+                    <button
+                      className="ml-4 text-gray-500 hover:text-red-600 mt-3 sm:mt-0 transition"
+                      onClick={() => removeItem(item._id)}
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
@@ -214,23 +242,38 @@ const CartPage = () => {
               </div>
               <div className="flex justify-between text-sm">
                 <span>Subtotal ({totalCartItems} items)</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>
+                  {symbolMap[currency]}
+                  {subtotal.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>
+                  {symbolMap[currency]}
+                  {tax.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Shipping</span>
-                <span>${totalShippingCost.toFixed(2)}</span>
+                <span>
+                  {symbolMap[currency]}
+                  {totalShippingCost.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between font-semibold border-t pt-2">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>
+                  {symbolMap[currency]}
+                  {total.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-sm text-red-600 font-medium">
                 <span>You Saved</span>
-                <span>-${totalDiscount.toFixed(2)}</span>
+                <span>
+                  -{symbolMap[currency]}
+                  {totalDiscount.toFixed(2)}
+                </span>
               </div>
               <Button
                 className="w-full bg-red-500 hover:bg-red-600 text-white mt-2"

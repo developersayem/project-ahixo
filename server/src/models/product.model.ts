@@ -4,6 +4,7 @@ export interface IProduct extends Document {
   seller: mongoose.Types.ObjectId;
   title: string;
   description: string;
+  currency?: string;
   price: number;
   salePrice?: number;
   stock: number;
@@ -41,6 +42,7 @@ const ProductSchema: Schema<IProduct> = new Schema(
     warranty: { type: Boolean, default: false },
     colors: [{ type: String }],
     shippingCost: { type: Number, default: 0 },
+    currency: { type: String, default: "USD" },
     ratings: [
       {
         user: { type: Schema.Types.ObjectId, ref: "User" },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
 import api from "@/lib/axios";
 import { Button } from "@/components/ui/button";
@@ -21,20 +21,44 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
+import { useCurrency } from "@/contexts/currency-context";
+import { fetcher } from "@/lib/fetcher";
 
 interface ProductFormProps {
   productId?: string;
 }
 
 export function ProductForm({ productId }: ProductFormProps) {
+  const { currency, setCurrency, symbolMap } = useCurrency();
   const { user } = useAuth();
   const isEditing = !!productId;
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   const { data: existingProduct } = useSWR(
     isEditing ? `/api/v1/${user?.role}/products/${productId}` : null,
     (url: string) => api.get(url).then((res) => res.data.data)
   );
+
+  const { data: CategoriesRes } = useSWR(`/api/v1/categories`, fetcher);
+  const categoriesData = useMemo(
+    () => CategoriesRes?.data || [],
+    [CategoriesRes]
+  );
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    setMounted(true);
+    if (categoriesData.length) {
+      const flattenedCategories = categoriesData.flatMap(
+        (cat: { subCategories: { name: string }[] }) =>
+          cat.subCategories.map((subCat) =>
+            subCat.name.toLowerCase().replace(/\s+/g, "-")
+          )
+      );
+      setCategories(flattenedCategories);
+    }
+  }, [categoriesData]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -54,18 +78,10 @@ export function ProductForm({ productId }: ProductFormProps) {
 
   const [images, setImages] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
+  const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const [newTag, setNewTag] = useState("");
   const [newFeature, setNewFeature] = useState("");
   const [newColor, setNewColor] = useState("");
-
-  const categories = [
-    "Electronics",
-    "Fashion",
-    "Home & Garden",
-    "Sports & Outdoors",
-    "Books",
-    "Toys & Games",
-  ];
 
   const warranties = [
     { label: "Yes", value: "true" },
@@ -91,9 +107,11 @@ export function ProductForm({ productId }: ProductFormProps) {
         rating: existingProduct.rating?.toString() || "",
       });
       setPreviewImages(existingProduct.images || []);
+      if (existingProduct.currency) setCurrency(existingProduct.currency);
     }
-  }, [existingProduct]);
+  }, [existingProduct, setCurrency]);
 
+  // Handlers
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -106,21 +124,14 @@ export function ProductForm({ productId }: ProductFormProps) {
     setPreviewImages((prev) => [...prev, ...newPreviews]);
   };
 
-  const [deletedImages, setDeletedImages] = useState<string[]>([]);
-
   const removeImage = (index: number) => {
     const removed = previewImages[index];
-
-    // If it's an existing image, mark it for deletion
-    if (!images[index]) {
-      setDeletedImages((prev) => [...prev, removed]);
-    }
-
+    if (!images[index]) setDeletedImages((prev) => [...prev, removed]);
     setImages((prev) => prev.filter((_, i) => i !== index));
     setPreviewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ---------------- Tag Handlers ----------------
+  // Tags
   const addTag = () => {
     if (newTag && !formData.tags.includes(newTag.trim())) {
       setFormData((prev) => ({ ...prev, tags: [...prev.tags, newTag.trim()] }));
@@ -140,7 +151,7 @@ export function ProductForm({ productId }: ProductFormProps) {
     }));
   };
 
-  // ---------------- Feature Handlers ----------------
+  // Features
   const addFeature = () => {
     if (newFeature && !formData.features.includes(newFeature.trim())) {
       setFormData((prev) => ({
@@ -163,7 +174,7 @@ export function ProductForm({ productId }: ProductFormProps) {
     }));
   };
 
-  // ---------------- Color Handlers ----------------
+  // Colors
   const addColor = () => {
     if (newColor && !formData.colors.includes(newColor.trim())) {
       setFormData((prev) => ({
@@ -227,8 +238,9 @@ export function ProductForm({ productId }: ProductFormProps) {
         }
       });
 
+      data.append("currency", currency);
+
       images.forEach((file) => data.append("images", file));
-      // Before sending the request
       deletedImages.forEach((img) => data.append("removeImages[]", img));
 
       if (isEditing && productId) {
@@ -244,8 +256,7 @@ export function ProductForm({ productId }: ProductFormProps) {
       mutate(`/api/v1/${user?.role}/products`);
       toast.success(isEditing ? "Product updated!" : "Product created!");
       resetForm();
-      // Redirect to the view page
-      router.push(`/dashboard/products/view/${productId}`);
+      router.push(`/dashboard/products`);
     } catch (err) {
       const axiosError = err as AxiosError;
       console.error(
@@ -256,10 +267,13 @@ export function ProductForm({ productId }: ProductFormProps) {
     }
   };
 
+  // Don't render until mounted to avoid hydration issues
+  if (!mounted) return null;
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
+      {/* Left form */}
       <div className="lg:col-span-2 space-y-6">
-        {/* Basic Info */}
         <Card className="shadow-none rounded-none border-gray-200">
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
@@ -276,7 +290,6 @@ export function ProductForm({ productId }: ProductFormProps) {
                 placeholder="Enter product title"
               />
             </div>
-
             {/* Description */}
             <div className="space-y-2">
               <Label htmlFor="description">Description</Label>
@@ -291,10 +304,9 @@ export function ProductForm({ productId }: ProductFormProps) {
                 rows={4}
               />
             </div>
-
-            {/* Category, Warranty, Brand */}
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="space-y-2">
+            {/* Category / Currency / Warranty / Brand */}
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
+              <div className="space-y-1">
                 <Label htmlFor="category">Category *</Label>
                 <Select
                   value={formData.category}
@@ -302,15 +314,12 @@ export function ProductForm({ productId }: ProductFormProps) {
                     handleInputChange("category", value)
                   }
                 >
-                  <SelectTrigger className="rounded-none">
+                  <SelectTrigger className="rounded-none h-10">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent className="rounded-none">
                     {categories.map((category) => (
-                      <SelectItem
-                        key={category}
-                        value={category.toLowerCase().replace(/\s+/g, "-")}
-                      >
+                      <SelectItem key={category} value={category}>
                         {category}
                       </SelectItem>
                     ))}
@@ -318,7 +327,26 @@ export function ProductForm({ productId }: ProductFormProps) {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1">
+                <Label htmlFor="currency">Currency *</Label>
+                <Select
+                  value={currency}
+                  onValueChange={(value) => setCurrency(value)}
+                >
+                  <SelectTrigger className="rounded-none h-10 text-muted-foreground">
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-none">
+                    {Object.keys(symbolMap).map((cur) => (
+                      <SelectItem key={cur} value={cur}>
+                        {cur} ({symbolMap[cur]})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
                 <Label htmlFor="warranty">Warranty</Label>
                 <Select
                   value={formData.warranty}
@@ -326,7 +354,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                     handleInputChange("warranty", value)
                   }
                 >
-                  <SelectTrigger className="rounded-none">
+                  <SelectTrigger className="rounded-none h-10">
                     <SelectValue placeholder="Select warranty" />
                   </SelectTrigger>
                   <SelectContent className="rounded-none">
@@ -339,19 +367,18 @@ export function ProductForm({ productId }: ProductFormProps) {
                 </Select>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label htmlFor="brand">Brand</Label>
                 <Input
                   id="brand"
-                  className="rounded-none"
+                  className="rounded-none h-10"
                   value={formData.brand}
                   onChange={(e) => handleInputChange("brand", e.target.value)}
                   placeholder="Enter brand name"
                 />
               </div>
             </div>
-
-            {/* Price, SalePrice, Stock */}
+            {/* Price / Sale Price / Stock */}
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="price">Price *</Label>
@@ -524,7 +551,7 @@ export function ProductForm({ productId }: ProductFormProps) {
         </Card>
       </div>
 
-      {/* Images & Submit */}
+      {/* Right Images & Submit */}
       <div className="space-y-6">
         <Card className="shadow-none rounded-none">
           <CardHeader>
@@ -545,41 +572,32 @@ export function ProductForm({ productId }: ProductFormProps) {
               </label>
             </div>
 
-            {previewImages.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-2">
-                {previewImages.map((img, index) => (
-                  <div
-                    key={index}
-                    className="relative group overflow-hidden border"
+            <div className="grid grid-cols-3 gap-2 mt-2">
+              {previewImages.map((img, i) => (
+                <div key={i} className="relative w-full aspect-square">
+                  <Image
+                    src={img}
+                    alt={`preview-${i}`}
+                    fill
+                    className="object-cover rounded"
+                  />
+                  <Button
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-1 right-1 p-1 rounded-full"
+                    onClick={() => removeImage(i)}
                   >
-                    <Image
-                      src={img}
-                      alt={`Product ${index + 1}`}
-                      width={200}
-                      height={200}
-                      className="w-full h-48 object-cover rounded-none"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="sm"
-                      className="absolute rounded-none top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeImage(index)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
-        <div>
-          <Button onClick={handleSubmit} className="w-full rounded-none">
-            {isEditing ? "Update Product" : "Create Product"}
-          </Button>
-        </div>
+        <Button type="button" onClick={handleSubmit} className="w-full">
+          {isEditing ? "Update Product" : "Create Product"}
+        </Button>
       </div>
     </div>
   );

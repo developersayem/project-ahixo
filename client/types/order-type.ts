@@ -1,3 +1,4 @@
+
 export interface ITimelineEntry {
   status: "processing" | "delivered" | "on-hold" | "canceled";
   timestamp: string; // ISO string
@@ -12,6 +13,7 @@ export interface IOrderBuyer {
   _id: string;
   name: string;
   email: string;
+  title?: string;
 }
 
 export interface IOrderProduct {
@@ -21,10 +23,13 @@ export interface IOrderProduct {
   name: string
   price:number
   brand:string
-
+  title?:string
+  currency?:string
+  shippingCost?:number
 }
 
 export interface IOrder {
+  currency?: string;
   _id: string;
   orderNumber: number; // readable per-seller order number
   seller: string; // Just the seller ID from API response

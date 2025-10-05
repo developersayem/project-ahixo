@@ -305,33 +305,38 @@ export const removeOrderItem = asyncHandler(async (req: Request, res: Response) 
   res.json(new ApiResponse(200, order, "Product removed from order successfully"));
 });
 
+
+// ---------------- Create Order ----------------
 export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   const buyerId = (req as any).user?._id;
-  const { products, shippingAddress, note, phone, paymentMethod } = req.body;
+  const { products, shippingAddress, note, phone, paymentMethod, currency } = req.body;
 
   if (!buyerId) throw new ApiError(401, "Unauthorized");
   if (!products || !Array.isArray(products) || products.length === 0)
     throw new ApiError(400, "Products are required");
   if (!shippingAddress) throw new ApiError(400, "Shipping address is required");
 
-  const createdOrders = [];
+  const createdOrders= [];
 
-  // Step 1: Fetch product from DB and attach seller
+  // Step 1: Fetch products from DB and attach seller info
   const productsWithSeller = await Promise.all(
     products.map(async (p: any) => {
       const productFromDB = await Product.findById(p.product);
       if (!productFromDB) throw new ApiError(400, `Product not found: ${p.product}`);
       if (!productFromDB.seller) throw new ApiError(400, `Product missing seller: ${p.product}`);
 
+      const price = productFromDB.salePrice && productFromDB.salePrice < productFromDB.price
+        ? productFromDB.salePrice
+        : productFromDB.price;
+
       return {
         product: p.product,
         quantity: p.quantity,
-        price: productFromDB.salePrice && productFromDB.salePrice < productFromDB.price
-          ? productFromDB.salePrice
-          : productFromDB.price, // use DB price to prevent tampering
-        title: p.title,
+        price,
+        title: productFromDB.title,
         seller: productFromDB.seller.toString(),
         shippingCost: productFromDB.shippingCost || 0,
+        currency: currency || productFromDB.currency || "USD",
       };
     })
   );
@@ -343,12 +348,11 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     itemsBySeller[item.seller].push(item);
   });
 
-  // Step 3: Create order per seller
+  // Step 3: Create orders per seller
   for (const [sellerId, items] of Object.entries(itemsBySeller)) {
-    const total = items.reduce(
-      (sum, p) => sum + p.price * p.quantity + (p.shippingCost || 0),
-      0
-    );
+    const subtotal = items.reduce((sum, p) => sum + p.price * p.quantity, 0);
+    const totalShippingCost = items.reduce((sum, p) => sum + (p.shippingCost || 0), 0);
+    const total = subtotal + totalShippingCost;
 
     const order = new Order({
       seller: sellerId,
@@ -358,9 +362,16 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
         quantity: p.quantity,
         price: p.price,
         title: p.title,
+        shippingCost: p.shippingCost,
+        currency: p.currency,
       })),
+      subtotal,
+      totalShippingCost,
       total,
       shippingAddress,
+      phone,
+      paymentMethod: paymentMethod || "cod",
+      currency: currency || "USD",
       status: "processing",
       timeline: [
         {
@@ -370,17 +381,14 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
           updatedBy: buyerId,
         },
       ],
-      phone,
-      paymentMethod,
     });
 
     await order.save();
     createdOrders.push(order);
   }
 
-  // ✅ Step 4: Delete cart items for this buyer
+  // Step 4: Clear buyer's cart
   await Cart.deleteMany({ buyer: buyerId });
 
   res.status(201).json(new ApiResponse(201, createdOrders, "Orders created successfully"));
 });
-

@@ -30,7 +30,8 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     features,
     colors,
     warranty,
-    rating
+    rating,
+    currency // ✅ Added currency
   } = req.body;
 
   if (!title || !category || !price || !stock) {
@@ -47,12 +48,28 @@ export const createProduct = asyncHandler(async (req: Request, res: Response) =>
     salePrice: salePrice ? Number(salePrice) : Number(price),
     stock: Number(stock),
     shippingCost: shippingCost ? Number(shippingCost) : 0,
-    tags: Array.isArray(tags) ? tags : typeof tags === "string" ? tags.split(",").map(t => t.trim()) : [],
-    features: Array.isArray(features) ? features : typeof features === "string" ? features.split(",").map(f => f.trim()) : [],
-    colors: Array.isArray(colors) ? colors : typeof colors === "string" ? colors.split(",").map(c => c.trim()) : [],
+    tags: Array.isArray(tags)
+      ? tags
+      : typeof tags === "string"
+      ? tags.split(",").map((t) => t.trim())
+      : [],
+    features: Array.isArray(features)
+      ? features
+      : typeof features === "string"
+      ? features.split(",").map((f) => f.trim())
+      : [],
+    colors: Array.isArray(colors)
+      ? colors
+      : typeof colors === "string"
+      ? colors.split(",").map((c) => c.trim())
+      : [],
     warranty: warranty || "",
     rating: rating ? Number(rating) : undefined,
-    images: req.files && Array.isArray(req.files) ? (req.files as Express.Multer.File[]).map(file => toPublicUrl(file.path)) : []
+    currency: currency || "USD", // ✅ Save currency with default USD
+    images:
+      req.files && Array.isArray(req.files)
+        ? (req.files as Express.Multer.File[]).map((file) => toPublicUrl(file.path))
+        : [],
   });
 
   if (!product.images || product.images.length === 0) {
@@ -90,6 +107,7 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
     colors,
     warranty,
     rating,
+    currency, // ✅ Added currency
     removeImages, // array of image URLs to remove
   } = req.body;
 
@@ -127,6 +145,7 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
   product.category = category ?? product.category;
   product.brand = brand ?? product.brand;
   product.warranty = warranty ?? product.warranty;
+  product.currency = currency ?? product.currency; // ✅ Update currency
 
   product.price = price ? Number(price) : product.price;
   product.salePrice = salePrice ? Number(salePrice) : product.salePrice;
@@ -171,6 +190,7 @@ export const updateProduct = asyncHandler(async (req: Request, res: Response) =>
     .status(200)
     .json(new ApiResponse(200, updatedProduct, "Product updated successfully"));
 });
+
 
 // -------------------- DELETE PRODUCT --------------------
 export const deleteProduct = asyncHandler(async (req: Request, res: Response) => {

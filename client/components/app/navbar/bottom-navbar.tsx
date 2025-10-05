@@ -8,6 +8,7 @@ import Image from "next/image";
 import clsx from "clsx";
 import { useCart } from "@/hooks/api/useCart";
 import { useAuth } from "@/contexts/auth-context";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface INav {
   name: string;
@@ -100,6 +101,7 @@ export function BottomNavbar() {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { totalCartItems, total } = useCart();
+  const { symbolMap, currency } = useCurrency();
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -213,7 +215,8 @@ export function BottomNavbar() {
                 <div className="bg-brand-600 flex items-center text-white hover:bg-brand-700 h-12 capitalize space-x-3 m-0 px-4 py-2 transition-all">
                   <ShoppingCart className="w-5 h-5" />
                   <span className="text-sm font-bold">
-                    ${total.toFixed(2)} ({totalCartItems})
+                    {symbolMap[currency]}
+                    {total.toFixed(2)} ({totalCartItems})
                   </span>
                 </div>
               </Link>

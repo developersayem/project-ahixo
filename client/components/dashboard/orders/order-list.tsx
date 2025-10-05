@@ -84,6 +84,18 @@ export function OrderList({
     return <Badge className={config.color}>{config.label}</Badge>;
   };
 
+  const formatCurrency = (amount: number, currency = "USD") => {
+    try {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency,
+        minimumFractionDigits: 0,
+      }).format(amount);
+    } catch {
+      return `${currency} ${amount}`;
+    }
+  };
+
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       await api.put(
@@ -162,9 +174,10 @@ export function OrderList({
                   key={order._id}
                   className="flex items-center justify-between p-4 border border-border"
                 >
+                  {/* Left section */}
                   <div className="flex items-center space-x-4">
                     <div>
-                      <h3 className="text-lg">
+                      <h3 className="text-lg font-medium">
                         <span>Order-</span>
                         <span>{order.orderNumber}</span>
                       </h3>
@@ -181,13 +194,15 @@ export function OrderList({
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-6">
+                  {/* Right section */}
+                  <div className="flex items-center space-x-6 text-right">
                     <p className="text-sm text-muted-foreground">
                       {order.products.length} items
                     </p>
-                    <p className="font-medium">${order.total}</p>
-
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium">
+                      {formatCurrency(order.total, order.currency)}
+                    </p>
+                    <p className="text-sm text-muted-foreground whitespace-nowrap">
                       {new Intl.DateTimeFormat("en-US", {
                         year: "numeric",
                         month: "short",
@@ -212,6 +227,7 @@ export function OrderList({
                           <Eye className="h-4 w-4 mr-2" />
                           View Details
                         </DropdownMenuItem>
+
                         {order.status === "processing" && (
                           <>
                             <DropdownMenuItem
@@ -232,6 +248,7 @@ export function OrderList({
                             </DropdownMenuItem>
                           </>
                         )}
+
                         {order.status === "on-hold" && (
                           <DropdownMenuItem
                             onClick={() =>

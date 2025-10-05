@@ -8,10 +8,12 @@ import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { toast } from "sonner";
+import { useCart } from "@/hooks/api/useCart";
 
 export default function WishlistPage() {
   const { user } = useAuth();
   const router = useRouter();
+  const { mutateCart } = useCart();
 
   const {
     data: wishlistRes,
@@ -37,7 +39,10 @@ export default function WishlistPage() {
         productId,
         quantity,
       });
-      if (res.data.success) toast.success("Added to cart");
+      if (res.data.success) {
+        await mutateCart();
+        toast.success("Added to cart");
+      }
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");

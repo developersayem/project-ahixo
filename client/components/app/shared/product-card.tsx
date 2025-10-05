@@ -10,6 +10,7 @@ import { useCart } from "@/hooks/api/useCart";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface ProductCardProps {
   product: IProduct;
@@ -18,16 +19,32 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const router = useRouter();
   const { addItem } = useCart();
-  const { setCartFromBuyNow } = useCreateOrder(); // ✅ use context
+  const { setCartFromBuyNow } = useCreateOrder();
+  const { currency, symbolMap, convertPrice } = useCurrency();
 
   if (!setCartFromBuyNow)
     throw new Error("ProductCard must be used inside CreateOrderProvider");
 
   const inStock = product.stock > 0;
 
-  // --- Render stars ---
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
+  // =============================
+  // 🔸 Convert product price to user currency
+  // =============================
+  const formatPrice = (price: number, fromCurrency?: string) => {
+    const converted = convertPrice(price, fromCurrency || "USD");
+    if (converted == null) return "—";
+    const symbol = symbolMap[currency] || "$";
+    return `${symbol}${converted.toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  // =============================
+  // 🔸 Render stars
+  // =============================
+  const renderStars = (rating: number) =>
+    Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
         className={`h-3 w-3 ${
@@ -37,9 +54,10 @@ export function ProductCard({ product }: ProductCardProps) {
         }`}
       />
     ));
-  };
 
-  // --- Add to Cart ---
+  // =============================
+  // 🔸 Add to cart
+  // =============================
   const handleAddToCart = async () => {
     if (!inStock) return;
     try {
@@ -56,62 +74,81 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  // --- Buy Now ---
+  // =============================
+  // 🔸 Buy Now
+  // =============================
   const handleBuyNow = () => {
     if (!inStock) return;
     try {
-      setCartFromBuyNow(product, 1); // ✅ set single product in order context
-      router.push("/checkout"); // ✅ go to checkout page
+      setCartFromBuyNow(product, 1);
+      router.push("/checkout");
     } catch (err) {
       console.error(err);
       toast.error("Failed to process Buy Now");
     }
   };
 
+  // =============================
+  // 🔸 Price logic
+  // =============================
+  const basePrice = product.price || 0;
+  const salePrice =
+    product.salePrice && product.salePrice < basePrice
+      ? product.salePrice
+      : basePrice;
+
+  // =============================
+  // 🔸 JSX
+  // =============================
   return (
-    <Card className="group hover:shadow-lg transition-shadow duration-200 rounded-none h-full w-full gap-0 p-0 m-0 border-gray-100 shadow-gray-100 hover:scale-102">
+    <Card className="group hover:shadow-lg transition-transform duration-200 rounded-none h-full w-full border-gray-100 hover:scale-[1.02]">
       <CardContent className="p-4 flex flex-col h-full">
         <Link href={`/products/${product._id}`}>
-          {/* Product Image */}
+          {/* 🖼️ Image */}
           <div className="relative aspect-square mb-4 bg-gray-50 overflow-hidden">
             <Image
-              src={product.images[0] || "/placeholder.svg"}
+              src={product.images?.[0] || "/placeholder.svg"}
               alt={product.title}
               fill
               className="object-contain group-hover:scale-105 transition-transform duration-200"
             />
           </div>
 
-          {/* Product Info */}
-          <div className="flex flex-col flex-1 justify-between">
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-foreground leading-tight line-clamp-2">
-                {product.title}
-              </h3>
+          {/* 📝 Info */}
+          <div className="flex flex-col flex-1 justify-between space-y-2">
+            <h3 className="text-sm font-medium text-foreground leading-tight line-clamp-2">
+              {product.title}
+            </h3>
 
-              {/* Rating */}
-              <div className="flex items-center gap-1">
-                {renderStars(Number(product.rating))}
-              </div>
+            <div className="flex items-center gap-1">
+              {renderStars(Number(product.rating || 0))}
+            </div>
 
-              {/* Price */}
-              <div className="text-lg font-semibold text-foreground mb-3">
-                ${product.price.toLocaleString()}
-              </div>
+            {/* 💰 Price */}
+            <div className="flex flex-col">
+              {product.salePrice && product.salePrice < product.price && (
+                <span className="text-xs text-gray-500 line-through">
+                  {formatPrice(product.price, product.currency)}
+                </span>
+              )}
+              <span className="text-lg font-semibold text-foreground">
+                {formatPrice(salePrice, product.currency)}
+              </span>
             </div>
           </div>
         </Link>
 
-        {/* Buttons */}
+        {/* 🛒 Buttons */}
         <div className="flex flex-col md:flex-row gap-2 mt-auto">
           <Button
             size="sm"
             className="flex-1 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-none"
-            onClick={handleBuyNow} // ✅ buy now action
+            onClick={handleBuyNow}
             disabled={!inStock}
           >
-            Buy Now
+            {inStock ? "Buy Now" : "Out of Stock"}
           </Button>
+
           <Button
             disabled={!inStock}
             onClick={handleAddToCart}

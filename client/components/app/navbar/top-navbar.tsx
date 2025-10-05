@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { CurrencySelector } from "@/components/shared/currency-selector";
 
 export function TopNavbar() {
   return (
@@ -35,23 +36,8 @@ export function TopNavbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 px-2 text-gray-600 hover:text-gray-900"
-                >
-                  U.S. Dollar
-                  <ChevronDown className="ml-1 h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem>U.S. Dollar</DropdownMenuItem>
-                <DropdownMenuItem>Euro</DropdownMenuItem>
-                <DropdownMenuItem>British Pound</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/*  CurrencySelector */}
+            <CurrencySelector />
           </div>
           <div className="flex items-center space-x-4">
             <Link

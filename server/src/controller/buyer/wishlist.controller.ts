@@ -26,6 +26,7 @@ export const getWishlist = asyncHandler(async (req: Request, res: Response) => {
     name: product.title,
     image: product.images?.[0] || "",
     price: product.salePrice || product.price,
+    currency: product.currency || "USD",
     originalPrice: product.salePrice ? product.price : undefined,
     status:
       product.stock === 0

@@ -1,8 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useState, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  ReactNode,
+} from "react";
 import { IProduct } from "@/types/product-type";
 import { ICartItem } from "@/types/cart.type";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface CreateOrderContextType {
   cartItems: ICartItem[];
@@ -19,52 +26,57 @@ interface CreateOrderContextType {
 
 const CreateOrderContext = createContext<CreateOrderContextType | null>(null);
 
-export const CreateOrderProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const CreateOrderProvider = ({ children }: { children: ReactNode }) => {
+  const { convertPrice } = useCurrency();
   const [cartItems, setCartItems] = useState<ICartItem[]>([]);
 
   // ---------------- Calculations ----------------
-  const subtotal = useMemo(
-    () =>
-      cartItems.reduce((acc, item) => {
-        const effectivePrice = item.salePrice ?? item.price;
-        return acc + effectivePrice * item.quantity;
-      }, 0),
-    [cartItems]
-  );
+  const subtotal = useMemo(() => {
+    return cartItems.reduce((acc, item) => {
+      const effectivePrice = item.salePrice ?? item.price;
+      return (
+        acc +
+        (convertPrice?.(effectivePrice, item.currency || "USD") ??
+          effectivePrice) *
+          item.quantity
+      );
+    }, 0);
+  }, [cartItems, convertPrice]);
 
-  const totalShippingCost = useMemo(
-    () => cartItems.reduce((acc, item) => acc + (item.shippingCost ?? 0), 0),
-    [cartItems]
-  );
+  const totalShippingCost = useMemo(() => {
+    return cartItems.reduce((acc, item) => {
+      const shipping = item.shippingCost ?? 0;
+      return (
+        acc + (convertPrice?.(shipping, item.currency || "USD") ?? shipping)
+      );
+    }, 0);
+  }, [cartItems, convertPrice]);
 
-  const totalCartItems = useMemo(
-    () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
-    [cartItems]
-  );
+  const totalCartItems = useMemo(() => {
+    return cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  }, [cartItems]);
 
-  const totalDiscount = useMemo(
-    () =>
-      cartItems.reduce((acc, item) => {
-        if (item.salePrice && item.salePrice < item.price) {
-          return acc + (item.price - item.salePrice) * item.quantity;
-        }
-        return acc;
-      }, 0),
-    [cartItems]
-  );
+  const totalDiscount = useMemo(() => {
+    return cartItems.reduce((acc, item) => {
+      if (item.salePrice && item.salePrice < item.price) {
+        const discount = item.price - item.salePrice;
+        return (
+          acc +
+          (convertPrice?.(discount, item.currency || "USD") ?? discount) *
+            item.quantity
+        );
+      }
+      return acc;
+    }, 0);
+  }, [cartItems, convertPrice]);
 
-  const tax = 0; // keep tax calculation same as useCart, can update later
+  const tax = 0;
   const total = subtotal + totalShippingCost + tax;
 
   // ---------------- Actions ----------------
   const setCartFromCartPage = (items: ICartItem[]) => setCartItems(items);
 
   const setCartFromBuyNow = (product: IProduct, quantity: number = 1) => {
-    console.log("setCartFromBuyNow", product, quantity);
     setCartItems([
       {
         _id: product._id,
@@ -76,12 +88,13 @@ export const CreateOrderProvider = ({
         quantity,
         images: product.images,
         image: product.images[0],
-        shippingCost: 10,
+        shippingCost: 10, // default shipping
         category: product.category,
         stock: product.stock,
         colors: product.colors,
         sizes: product.sizes,
         warranty: product.warranty,
+        currency: product.currency,
         total: (product.salePrice ?? product.price) * quantity,
       },
     ]);
@@ -111,8 +124,7 @@ export const CreateOrderProvider = ({
 
 export const useCreateOrder = () => {
   const context = useContext(CreateOrderContext);
-  if (!context) {
+  if (!context)
     throw new Error("useCreateOrder must be used inside CreateOrderProvider");
-  }
   return context;
 };

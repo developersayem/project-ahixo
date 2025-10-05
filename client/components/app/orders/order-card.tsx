@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Truck, CheckCircle, Clock, XCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { IOrder } from "@/types/order-type";
+import { useCurrency } from "@/contexts/currency-context";
 
 interface OrderCardProps {
   order: IOrder;
@@ -19,6 +20,8 @@ export function OrderCard({
   onRemoveItem,
   onCancelOrder,
 }: OrderCardProps) {
+  const { currency, convertPrice, symbolMap } = useCurrency();
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       "on-hold": {
@@ -37,13 +40,12 @@ export function OrderCard({
         icon: Clock,
       },
       canceled: {
-        label: "canceled",
+        label: "Canceled",
         color: "bg-red-100 text-red-600",
         icon: XCircle,
       },
     };
 
-    // Normalize status
     const normalizedStatus = status === "canceled" ? "canceled" : status;
     const config = statusConfig[
       normalizedStatus as keyof typeof statusConfig
@@ -71,7 +73,7 @@ export function OrderCard({
             <div>
               <h3 className="text-lg font-medium">Order {order._id}</h3>
               <p className="text-sm text-muted-foreground">
-                Order Placed: {order.date}
+                Order Placed: {new Date(order.date).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -80,7 +82,10 @@ export function OrderCard({
             {order.status === "processing" && (
               <Button
                 variant="outline"
-                onClick={() => onCancelOrder(order._id)}
+                onClick={() => {
+                  console.log("cancelling order", order._id);
+                  onCancelOrder(order._id);
+                }}
                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
               >
                 <XCircle className="w-4 h-4 mr-2" />
@@ -93,57 +98,66 @@ export function OrderCard({
 
       <CardContent className="p-6">
         <div className="space-y-4">
-          {order.products.map((product) => (
-            <div
-              key={product._id}
-              className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-border gap-4"
-            >
-              {/* Product Image */}
-              <div className="w-20 h-20 bg-muted overflow-hidden flex-shrink-0">
-                <Image
-                  src={product.images?.[0] || "/placeholder.svg"}
-                  alt={product.name}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+          {order.products.map((product) => {
+            const convertedPrice = convertPrice
+              ? convertPrice(product.price, product.currency || "USD")
+              : product.price;
 
-              {/* Product Info */}
-              <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2">
-                <div>
-                  <h4 className="font-medium text-foreground">
-                    {product.name}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    {product.brand}
-                  </p>
-                  <div className="flex items-center space-x-4 mt-1">
-                    <span className="text-sm text-muted-foreground">
-                      Qty: {product.quantity}
-                    </span>
-                    <span className="font-medium">
-                      ${product.price.toLocaleString()}
-                    </span>
-                  </div>
+            return (
+              <div
+                key={product._id}
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-border gap-4"
+              >
+                {/* Product Image */}
+                <div className="w-20 h-20 bg-muted overflow-hidden flex-shrink-0">
+                  <Image
+                    src={product.images?.[0] || "/placeholder.svg"}
+                    alt={product.title || product.name}
+                    width={80}
+                    height={80}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
 
-                {/* Delete Button */}
-                {order.status === "processing" && (
-                  <div className="mt-2 sm:mt-0 flex-shrink-0">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onRemoveItem(order._id, product._id)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                {/* Product Info */}
+                <div className="flex-1 flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2">
+                  <div>
+                    <h4 className="font-medium text-foreground">
+                      {product.title || product.name}
+                    </h4>
+                    {product.brand && (
+                      <p className="text-sm text-muted-foreground">
+                        {product.brand}
+                      </p>
+                    )}
+                    <div className="flex items-center space-x-4 mt-1">
+                      <span className="text-sm text-muted-foreground">
+                        Qty: {product.quantity}
+                      </span>
+                      <span className="font-medium">
+                        {symbolMap[currency]}
+                        {convertedPrice?.toFixed(2)}
+                      </span>
+                    </div>
                   </div>
-                )}
+
+                  {/* Delete Button */}
+                  {order.status === "processing" && (
+                    <div className="mt-2 sm:mt-0 flex-shrink-0">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onRemoveItem(order._id, product._id)}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <Separator className="my-4" />
@@ -157,7 +171,10 @@ export function OrderCard({
 
           <div className="text-right">
             <p className="text-lg font-bold text-foreground">
-              ${order.total.toLocaleString()}
+              {symbolMap[currency]}
+              {convertPrice
+                ? convertPrice(order.total)?.toFixed(2)
+                : order.total.toFixed(2)}
             </p>
           </div>
         </div>
