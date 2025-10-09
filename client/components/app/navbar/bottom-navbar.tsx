@@ -93,6 +93,12 @@ const categories = [
     icon: "/icons/tools-icon.png",
     value: "home-improvement-tools",
   },
+  {
+    name: "All Categories",
+    icon: "/icons/all-category.png",
+    value: "all-categories",
+    link: "/categories",
+  },
 ];
 
 export function BottomNavbar() {
@@ -129,10 +135,14 @@ export function BottomNavbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [shouldStayOpen]);
 
-  const handleCategoryClick = (categoryValue: string) => {
-    router.push(`/products?category=${categoryValue}`);
-    if (!shouldStayOpen) {
-      setIsOpen(false);
+  const handleCategoryClick = (categoryValue: string, link?: string) => {
+    if (link) {
+      router.push(link);
+    } else {
+      router.push(`/products?category=${categoryValue}`);
+      if (!shouldStayOpen) {
+        setIsOpen(false);
+      }
     }
   };
 
@@ -174,7 +184,7 @@ export function BottomNavbar() {
                   {categories.map((cat, idx) => (
                     <div
                       key={idx}
-                      onClick={() => handleCategoryClick(cat.value)}
+                      onClick={() => handleCategoryClick(cat.value, cat.link)}
                       className="flex items-center space-x-3 px-2 py-3 hover:bg-brand-100 cursor-pointer border-b last:border-b-0 group"
                     >
                       <Image

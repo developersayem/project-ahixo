@@ -1,10 +1,9 @@
-import BestSellingProducts from "@/components/app/home/best-selling-products";
-import FeaturedCategories from "@/components/app/home/featured-categories";
-import FeaturedProducts from "@/components/app/home/featured-products";
-import FlashSaleSection from "@/components/app/home/flash-sale-section";
+import { CategoriesSection } from "@/components/app/home/categories-section";
+import { FeaturesSection } from "@/components/app/home/features-section";
 import { HeroCarousel } from "@/components/app/home/hero-carousel";
-import ProductShowcase from "@/components/app/home/product-showcase";
-import TopSellersCarousel from "@/components/app/home/top-sellers-carousel";
+import { ProductsShowcase } from "@/components/app/home/products-showcase";
+import { SellerCtaSection } from "@/components/app/home/seller-cta-section";
+import { TestimonialSection } from "@/components/app/home/testimonial-section";
 
 export default function Home() {
   return (
@@ -15,18 +14,11 @@ export default function Home() {
           <HeroCarousel />
         </div>
         <div className="px-4 md:px-0 space-y-8 ">
-          {/* Fash sale sections */}
-          <FlashSaleSection />
-          {/* Featured categories section */}
-          <FeaturedCategories />
-          {/* Featured products section */}
-          <FeaturedProducts />
-          {/* Best selling products section */}
-          <BestSellingProducts />
-          {/* product show  section */}
-          <ProductShowcase />
-          {/* Top sellers carousel section */}
-          <TopSellersCarousel />
+          <ProductsShowcase />
+          <FeaturesSection />
+          <CategoriesSection />
+          <SellerCtaSection />
+          <TestimonialSection />
         </div>
       </div>
     </main>
