@@ -1,0 +1,240 @@
+{
+  "top_navbar": {
+    "become_seller": "Become a Seller",
+    "login_as_seller": "Login as Seller"
+  },
+  "middle_navbar": {
+    "search_placeholder": "i am shopping for...",
+    "user_nav": {
+      "orders": "Orders",
+      "wishlist": "Wishlist",
+      "login_out": "Logout",
+      "dashboard": "Dashboard"
+    }
+  },
+  "bottom_navbar": {
+    "pages": {
+      "home": "Home",
+      "products": "Products",
+      "flash_sale": "Flash Sale",
+      "categories": "Categories",
+      "brands": "Brands",
+      "contact": "Contact Us"
+    },
+    "categories": {
+      "title": "Categories",
+      "see_all": "See All",
+      "women": "Woman Fashion",
+      "men": "Men Fashion",
+      "computer": "Computer & Accessories",
+      "automobile": "Automobile & Motorcycle",
+      "kids": "Kids & Toys",
+      "sports": "Sports & Outdoors",
+      "jewelry": "Jewelry & Watches",
+      "cellphones": "Cellphone & Tabs",
+      "beauty": "Beauty, Health & Hair",
+      "home": "Home Improvement & Tools",
+      "all": "All Categories"
+    }
+  },
+  "footer": {
+    "tag_line": "A multi-vendor eCommerce platform",
+    "social_title": "Follow Us",
+    "quick_links": {
+      "title": "Quick Links",
+      "link1": "Support Policy Page",
+      "link2": "Return Policy Page",
+      "link3": "About Us",
+      "link4": "Privacy Policy Page",
+      "link5": "Seller Policy",
+      "link6": "Term Conditions Page"
+    },
+    "contacts": {
+      "title": "Contact Us",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email"
+    },
+    "my_account": {
+      "title": "My Account",
+      "link1": "Login",
+      "link2": "Order History",
+      "link3": "My Wishlist",
+      "link4": "Track Order",
+      "link5": "Be a Affiliate Partner"
+    },
+    "seller_zone": {
+      "title": "Seller Zone",
+      "link1": "Become a Seller",
+      "link2": "Seller Login",
+      "link3": "Download Seller App"
+    },
+    "copyright": "Copyright © 2025 all rights reserved by AHIXO"
+  },
+  "home": {
+    "featured_products": {
+      "title": "Featured Products",
+      "description": "Discover authentic African products from verified sellers across the continent",
+      "button": "View All Products"
+    },
+    "features_section": {
+      "title": "Why Choose AHIXO?",
+      "description": "Built for Africa, by Africa. Experience commerce the way it should be.",
+      "feature1": {
+        "title": "Secure Payments",
+        "description": "Protected transactions with multiple payment options across Africa"
+      },
+      "feature2": {
+        "title": "Fast Shipping",
+        "description": "Reliable delivery network connecting all African countries"
+      },
+      "feature3": {
+        "title": "Pan-African Trade",
+        "description": "Connect buyers and sellers across the entire continent"
+      },
+      "feature4": {
+        "title": "Local & International",
+        "description": "Serve both local communities and global markets"
+      }
+    },
+    "categories_section": {
+      "title": "Explore Categories",
+      "description": "Discover authentic African products and connect with sellers across the continent",
+      "item1": "Fashion",
+      "item2": "Beauty",
+      "item3": "Electronics",
+      "item4": "Home & Living",
+      "item5": "Handmade African Goods",
+      "item6": "Gift & Crafts"
+    },
+    "seller_cta_section": {
+      "title": "Ready to Grow Your Business?",
+      "description": "Join thousands of African entrepreneurs building their dreams on AHIXO",
+      "item1": "Active Sellers",
+      "item2": "Countries Connected",
+      "item3": "Monthly Sales",
+      "button": "become a seller"
+    },
+    "testimonial_section": {
+      "title": "One Continent, One Cart.",
+      "description": "Connecting African entrepreneurs with global opportunities, building bridges across borders, and creating prosperity for all."
+    }
+  },
+  "products": {
+    "product_title": "Products",
+    "flash_sale_title": "Flash Sale Products",
+    "products_card": {
+      "buy_now": "Buy Now",
+      "add_to_cart": "Add to Cart"
+    }
+  },
+  "categories": {
+    "title": "Categories"
+  },
+  "brands": {
+    "title": "Brands"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "We're here to help! Whether you have a question about your order, need assistance with a product, or just want to share feedback, our team is ready to assist you.",
+    "address": "Address",
+    "email": "Email Address",
+    "phone": "Phone",
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "Enter your name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "phone": "Phone",
+      "phonePlaceholder": "Enter your phone number",
+      "optional": "Optional",
+      "message": "Tell us about your query",
+      "messagePlaceholder": "Enter your message",
+      "button": "Submit"
+    }
+  },
+  "cart": {
+    "order_summary": "Your Cart",
+    "empty": "Your cart is empty",
+    "total_products": "Total Products",
+    "sub_total": "Subtotal",
+    "item": "Item",
+    "tax": "Tax",
+    "shipping": "Shipping",
+    "total": "Total",
+    "you_saved": "You Saved",
+    "button": "Proceed to Checkout",
+    "color": "Color",
+    "size": "Size",
+    "warranty_included": "Warranty InIncluded"
+  },
+  "checkout": {
+    "order_summary": "Order Summary",
+    "sub_total": "Subtotal",
+    "empty": "Your cart is empty",
+    "continue_shopping": "Continue Shopping",
+    "tax": "Tax",
+    "ship": "Ship",
+    "items": "Items",
+    "shipping": "Shipping",
+    "total": "Total",
+    "you_saved": "You Saved",
+    "button": "Place Order",
+    "loading_button": "Placing Order...",
+    "form": {
+      "title": "Shipping Address",
+      "full_name": "Full Name",
+      "full_name_placeholder": "Enter your full name",
+      "phone_number": "Phone Number",
+      "phone_number_placeholder": "Enter your phone number",
+      "address": "Address",
+      "address_placeholder": "Enter your address",
+      "city": "City",
+      "city_placeholder": "Enter your city",
+      "postal_code": "Postal Code",
+      "postal_code_placeholder": "Enter your postal code",
+      "order_note": "Order Note",
+      "order_note_placeholder": "Enter your order note",
+      "optional": "optional",
+      "payment": {
+        "title": "Payment Method",
+        "method1": "Cash on Delivery"
+      }
+    }
+  },
+  "orders": {
+    "title": "My Order",
+    "order_id": "Order ID",
+    "return_order": "Fast return within 7 days",
+    "cancel_order": "CANCEL ORDER",
+    "order_placed": "Order Placed",
+    "no_brand": "no brand",
+    "tabs": {
+      "tab1": "All Orders",
+      "tab2": "Processing",
+      "tab3": "On Hold",
+      "tab4": "Delivered",
+      "tab45": "Canceled"
+    },
+    "status": {
+      "processing": "Processing",
+      "completed": "Completed",
+      "on_hold": "On Hold",
+      "canceled": "Canceled",
+      "delivered": "Delivered"
+    },
+    "empty_orders": {
+      "title": "No orders found",
+      "description": "You haven't placed any orders yet.",
+      "button": "Start Shopping"
+    }
+  },
+  "wishlist": {
+    "title": "My Wishlist",
+    "description": "All your favorite items in one place.",
+    "cta": {
+      "title": "Ready to purchase?",
+      "button": "Continue Shopping"
+    }
+  }
+}

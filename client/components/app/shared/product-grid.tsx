@@ -13,8 +13,10 @@ import { ProductCard } from "./product-card";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import { IProduct } from "@/types/product-type";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
 interface ProductGridProps {
+  dict: IDictionary;
   pageName: string;
   selectedCategory: string | null;
   selectedSubcategory?: string | null;
@@ -28,6 +30,7 @@ interface ProductGridProps {
 const PRODUCTS_PER_PAGE = 12;
 
 export function ProductGrid({
+  dict,
   pageName,
   selectedCategory,
   selectedSubcategory,
@@ -196,7 +199,7 @@ export function ProductGrid({
       {paginatedProducts.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {paginatedProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard key={product._id} product={product} dict={dict} />
           ))}
         </div>
       )}

@@ -7,8 +7,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { UserNav } from "@/components/shared/user-nav";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-export function MiddleNavbar() {
+export function MiddleNavbar({ dict }: { dict: IDictionary }) {
   const { user } = useAuth();
 
   return (
@@ -36,7 +37,7 @@ export function MiddleNavbar() {
             <div className="relative">
               <Input
                 type="text"
-                placeholder="I am shopping for..."
+                placeholder={dict.middle_navbar.search_placeholder}
                 className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
               />
               <Button
@@ -81,7 +82,7 @@ export function MiddleNavbar() {
               </div>
             ) : (
               <div className="flex items-center space-x-2 mr-5">
-                <UserNav />
+                <UserNav dict={dict} />
               </div>
             )}
           </div>

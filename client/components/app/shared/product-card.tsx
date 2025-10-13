@@ -11,12 +11,14 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
 import { useCurrency } from "@/contexts/currency-context";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
 interface ProductCardProps {
+  dict: IDictionary;
   product: IProduct;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, dict }: ProductCardProps) {
   const router = useRouter();
   const { addItem } = useCart();
   const { setCartFromBuyNow } = useCreateOrder();
@@ -101,7 +103,7 @@ export function ProductCard({ product }: ProductCardProps) {
   // 🔸 JSX
   // =============================
   return (
-    <Card className="group hover:shadow-lg transition-transform duration-200 rounded-none h-full w-full border-gray-100 hover:scale-[1.02]">
+    <Card className="group hover:shadow-lg transition-transform duration-200 rounded-none h-full w-full border-gray-100 hover:scale-[1.02] py-0">
       <CardContent className="p-4 flex flex-col h-full">
         <Link href={`/products/${product._id}`}>
           {/* 🖼️ Image */}
@@ -139,14 +141,14 @@ export function ProductCard({ product }: ProductCardProps) {
         </Link>
 
         {/* 🛒 Buttons */}
-        <div className="flex flex-col md:flex-row gap-2 mt-auto">
+        <div className="flex flex-col md:flex-col gap-2 mt-auto">
           <Button
             size="sm"
             className="flex-1 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-none"
             onClick={handleBuyNow}
             disabled={!inStock}
           >
-            {inStock ? "Buy Now" : "Out of Stock"}
+            {inStock ? dict.products.products_card.buy_now : "Out of Stock"}
           </Button>
 
           <Button
@@ -156,7 +158,7 @@ export function ProductCard({ product }: ProductCardProps) {
             variant="outline"
             className="flex-1 py-2 border-brand-500 text-brand-500 hover:bg-brand-50 bg-transparent rounded-none"
           >
-            Add to Cart
+            {dict.products.products_card.add_to_cart}
           </Button>
         </div>
       </CardContent>

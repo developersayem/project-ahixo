@@ -12,10 +12,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/auth-context";
+import { IDictionary } from "@/types/locale/dictionary.type";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export function UserNav() {
+export function UserNav({ dict }: { dict: IDictionary }) {
   const { user, logout } = useAuth();
+  const pathname = usePathname();
+
+  // Extract current locale from URL (e.g. /en/products)
+  const locale = pathname.split("/")[1] || "en";
 
   return (
     <>
@@ -53,21 +59,29 @@ export function UserNav() {
           {user?.role === "buyer" ? (
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Link href="/orders">My Orders</Link>
+                <Link href={`/${locale}/orders`}>
+                  {dict.middle_navbar.user_nav.orders}
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link href="/wishlist">My Wishlist</Link>
+                <Link href={`/${locale}/wishlist`}>
+                  {dict.middle_navbar.user_nav.wishlist}
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
           ) : (
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/dashboard">
+                  {dict.middle_navbar.user_nav.dashboard}
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
+          <DropdownMenuItem onClick={logout}>
+            {dict.middle_navbar.user_nav.login_out}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

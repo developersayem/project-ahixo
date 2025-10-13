@@ -10,8 +10,9 @@ import { useAuth } from "@/contexts/auth-context";
 import { IOrder } from "@/types/order-type";
 import api from "@/lib/axios";
 import { toast } from "sonner";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-export default function OrdersPage() {
+export default function OrdersPageContent({ dict }: { dict: IDictionary }) {
   const [activeTab, setActiveTab] = useState("all");
   const { user } = useAuth();
 
@@ -48,10 +49,11 @@ export default function OrdersPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mx-auto">
         <h1 className="text-3xl font-serif font-bold text-foreground mb-8">
-          My Orders
+          {dict.orders.title}
         </h1>
 
         <OrderStatusFilter
+          dict={dict}
           activeStatus={activeTab}
           onStatusChange={setActiveTab}
         />
@@ -59,10 +61,11 @@ export default function OrdersPage() {
         {/* orders card */}
         <div className="space-y-4">
           {filteredOrders.length === 0 ? (
-            <EmptyOrders />
+            <EmptyOrders dict={dict} />
           ) : (
             filteredOrders.map((order: IOrder) => (
               <OrderCard
+                dict={dict}
                 key={order._id}
                 order={order}
                 onRemoveItem={removeItemFromOrder}

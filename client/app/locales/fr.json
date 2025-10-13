@@ -1,0 +1,240 @@
+{
+  "top_navbar": {
+    "become_seller": "Devenir un vendeur",
+    "login_as_seller": "Se connecter en tant que vendeur"
+  },
+  "middle_navbar": {
+    "search_placeholder": "Je fais mes achats pour...",
+    "user_nav": {
+      "orders": "Commandes",
+      "wishlist": "Liste de souhaits",
+      "login_out": "Se déconnecter",
+      "dashboard": "Tableau de bord"
+    }
+  },
+  "bottom_navbar": {
+    "pages": {
+      "home": "Accueil",
+      "products": "Produits",
+      "flash_sale": "Vente Flash",
+      "categories": "Catégories",
+      "brands": "Marques",
+      "contact": "Contactez-nous"
+    },
+    "categories": {
+      "title": "Catégories",
+      "see_all": "Voir Tout",
+      "women": "Mode Femme",
+      "men": "Mode Homme",
+      "computer": "Ordinateurs & Accessoires",
+      "automobile": "Automobile & Moto",
+      "kids": "Enfants & Jouets",
+      "sports": "Sports & Plein air",
+      "jewelry": "Bijoux & Montres",
+      "cellphones": "Téléphones & Tablettes",
+      "beauty": "Beauté, Santé & Cheveux",
+      "home": "Amélioration de la Maison & Outils",
+      "all": "Toutes les Catégories"
+    }
+  },
+  "footer": {
+    "tag_line": "Une plateforme eCommerce multi-vendeurs",
+    "social_title": "Suivez-nous",
+    "quick_links": {
+      "title": "Liens Rapides",
+      "link1": "Page de Politique de Support",
+      "link2": "Page de Politique de Retour",
+      "link3": "À propos de nous",
+      "link4": "Page de Politique de Confidentialité",
+      "link5": "Politique du Vendeur",
+      "link6": "Page des Conditions Générales"
+    },
+    "contacts": {
+      "title": "Contactez-nous",
+      "address": "Adresse",
+      "phone": "Téléphone",
+      "email": "Email"
+    },
+    "my_account": {
+      "title": "Mon Compte",
+      "link1": "Connexion",
+      "link2": "Historique des Commandes",
+      "link3": "Ma Liste de Souhaits",
+      "link4": "Suivre la Commande",
+      "link5": "Devenir Partenaire Affilié"
+    },
+    "seller_zone": {
+      "title": "Espace Vendeur",
+      "link1": "Devenir Vendeur",
+      "link2": "Connexion Vendeur",
+      "link3": "Télécharger l’Application Vendeur"
+    },
+    "copyright": "Droits d'auteur © 2025, tous droits réservés par AHIXO"
+  },
+  "home": {
+    "featured_products": {
+      "title": "Produits en Vedette",
+      "description": "Découvrez des produits africains authentiques auprès de vendeurs vérifiés à travers le continent",
+      "button": "Voir Tous les Produits"
+    },
+    "features_section": {
+      "title": "Pourquoi choisir AHIXO ?",
+      "description": "Conçu pour l'Afrique, par l'Afrique. Vivez le commerce comme il devrait l'être.",
+      "feature1": {
+        "title": "Paiements Sécurisés",
+        "description": "Transactions protégées avec plusieurs options de paiement à travers l'Afrique"
+      },
+      "feature2": {
+        "title": "Livraison Rapide",
+        "description": "Réseau de livraison fiable connectant tous les pays africains"
+      },
+      "feature3": {
+        "title": "Commerce Panafricain",
+        "description": "Connectez acheteurs et vendeurs à travers tout le continent"
+      },
+      "feature4": {
+        "title": "Local & International",
+        "description": "Servir à la fois les communautés locales et les marchés mondiaux"
+      }
+    },
+    "categories_section": {
+      "title": "Explorer les Catégories",
+      "description": "Découvrez des produits africains authentiques et connectez-vous avec des vendeurs à travers le continent",
+      "item1": "Mode",
+      "item2": "Beauté",
+      "item3": "Électronique",
+      "item4": "Maison & Vie",
+      "item5": "Produits Africains Artisanaux",
+      "item6": "Cadeaux & Artisanat"
+    },
+    "seller_cta_section": {
+      "title": "Prêt à développer votre entreprise ?",
+      "description": "Rejoignez des milliers d'entrepreneurs africains qui construisent leurs rêves sur AHIXO",
+      "item1": "Vendeurs Actifs",
+      "item2": "Pays Connectés",
+      "item3": "Ventes Mensuelles",
+      "button": "Devenir un vendeur"
+    },
+    "testimonial_section": {
+      "title": "Un Continent, Un Panier.",
+      "description": "Connecter les entrepreneurs africains aux opportunités mondiales, construire des ponts au-delà des frontières et créer la prospérité pour tous."
+    }
+  },
+  "products": {
+    "product_title": "Produits",
+    "flash_sale_title": "Produits en Vente Flash",
+    "products_card": {
+      "buy_now": "Acheter Maintenant",
+      "add_to_cart": "Ajouter au Panier"
+    }
+  },
+  "categories": {
+    "title": "Catégories"
+  },
+  "brands": {
+    "title": "Marques"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "description": "Nous sommes là pour vous aider ! Que vous ayez une question concernant votre commande, besoin d’aide pour un produit ou que vous souhaitiez simplement partager votre avis, notre équipe est prête à vous assister.",
+    "address": "Adresse",
+    "email": "E-mail Adresse",
+    "phone": "Téléphone",
+    "form": {
+      "name": "Nom",
+      "namePlaceholder": "Entrez votre nom",
+      "email": "E-mail",
+      "emailPlaceholder": "Entrez votre e-mail",
+      "phone": "Téléphone",
+      "phonePlaceholder": "Entrez votre numéro de téléphone",
+      "optional": "Facultatif",
+      "message": "Dites-nous tout ce que vous pensez",
+      "messagePlaceholder": "Entrez votre message",
+      "button": "Envoyer"
+    }
+  },
+  "cart": {
+    "order_summary": "Votre Panier",
+    "empty": "Votre panier est vide",
+    "total_products": "Produits Totaux",
+    "sub_total": "Sous-total",
+    "item": "Article",
+    "tax": "Taxe",
+    "shipping": "Livraison",
+    "total": "Total",
+    "you_saved": "Vous avez économisé",
+    "button": "Passer à la caisse",
+    "color": "Couleur",
+    "size": "Taille",
+    "warranty_included": "Garantie Inclus"
+  },
+  "checkout": {
+    "order_summary": "Récapitulatif de la commande",
+    "sub_total": "Sous-total",
+    "tax": "Taxe",
+    "empty": "Votre panier est vide",
+    "continue_shopping": "Continuer vos achats",
+    "ship": "Expédition",
+    "items": "Articles",
+    "shipping": "Livraison",
+    "total": "Total",
+    "you_saved": "Vous avez économisé",
+    "button": "Passer la commande",
+    "loading_button": "Passer la commande...",
+    "form": {
+      "title": "Adresse de livraison",
+      "full_name": "Nom complet",
+      "full_name_placeholder": "Entrez votre nom complet",
+      "phone_number": "Numéro de téléphone",
+      "phone_number_placeholder": "Entrez votre numéro de téléphone",
+      "address": "Adresse",
+      "address_placeholder": "Entrez votre adresse",
+      "city": "Ville",
+      "city_placeholder": "Entrez votre ville",
+      "postal_code": "Code postal",
+      "postal_code_placeholder": "Entrez votre code postal",
+      "order_note": "Note de commande",
+      "order_note_placeholder": "Entrez votre note de commande",
+      "optional": "optionnel",
+      "payment": {
+        "title": "Méthode de Paiement",
+        "method1": " Paiement à la livraison"
+      }
+    }
+  },
+  "orders": {
+    "title": "Ma commande",
+    "order_id": "ID de commande",
+    "return_order": "Retour rapide sous 7 jours",
+    "cancel_order": "ANNULER LA COMMANDE",
+    "order_placed": "Commande passée",
+    "no_brand": "aucune marque",
+    "tabs": {
+      "tab1": "Toutes les commandes",
+      "tab2": "En traitement",
+      "tab3": "En attente",
+      "tab4": "Livré",
+      "tab45": "Annulé"
+    },
+    "status": {
+      "processing": "En traitement",
+      "completed": "Terminée",
+      "on_hold": "En attente",
+      "canceled": "Annulée",
+      "delivered": "Livrée"
+    },
+    "empty_orders": {
+      "title": "Aucune commande trouvée",
+      "description": "Vous n'avez encore passé aucune commande.",
+      "button": "Commencer vos achats"
+    }
+  },
+  "wishlist": {
+    "title": "Ma liste de souhaits",
+    "description": "Tous vos articles préférés en un seul endroit.",
+    "cta": {
+      "title": "Prêt à acheter ?",
+      "button": "Continuer vos achats"
+    }
+  }
+}

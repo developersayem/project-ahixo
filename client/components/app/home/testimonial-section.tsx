@@ -1,4 +1,6 @@
-export function TestimonialSection() {
+import { IDictionary } from "@/types/locale/dictionary.type";
+
+export function TestimonialSection({ dict }: { dict: IDictionary }) {
   return (
     <section
       className={`py-20 to-white transition-all duration-300 ease-in-out`}
@@ -12,11 +14,10 @@ export function TestimonialSection() {
               </div>
             </div>
             <blockquote className="text-3xl md:text-4xl font-bold text-[#0F4F2A] mb-6 leading-tight">
-              &quot;One Continent, One Cart.&quot;
+              &quot;{dict.home.testimonial_section.title}&quot;
             </blockquote>
             <p className="text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
-              Connecting African entrepreneurs with global opportunities,
-              building bridges across borders, and creating prosperity for all.
+              {dict.home.testimonial_section.description}
             </p>
           </div>
         </div>

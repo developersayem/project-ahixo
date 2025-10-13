@@ -99,7 +99,7 @@ export function OrderDetailsModal({
     });
 
     // Add completed entry if status is completed
-    if (order.status === "completed") {
+    if (order.status === "delivered") {
       timeline.push({
         status: "completed" as const,
         timestamp: order.updatedAt || order.date,

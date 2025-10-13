@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
 import { toast } from "sonner";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-export default function ContactPage() {
+export default function ContactPageContent({ dict }: { dict: IDictionary }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -51,12 +52,10 @@ export default function ContactPage() {
         <div className="space-y-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Contact us
+              {dict.contact.title}
             </h1>
             <p className="text-gray-600 text-lg leading-relaxed">
-              We&apos;re here to help! Whether you have a question about your
-              order, need assistance with a product, or just want to share
-              feedback, our team is ready to assist you.
+              {dict.contact.description}
             </p>
           </div>
 
@@ -66,7 +65,9 @@ export default function ContactPage() {
                 <MapPin className="w-5 h-5 text-gray-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Address</h3>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  {dict.contact.address}
+                </h3>
                 <p className="text-gray-600">
                   13th Street, 47 W 13th St, New York, NY 10011, USA
                 </p>
@@ -78,7 +79,9 @@ export default function ContactPage() {
                 <Phone className="w-5 h-5 text-gray-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
+                <h3 className="font-semibold text-gray-900 mb-1">
+                  {dict.contact.phone}
+                </h3>
                 <p className="text-gray-600">124-251-524</p>
               </div>
             </div>
@@ -89,7 +92,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">
-                  Email Address
+                  {dict.contact.email}
                 </h3>
                 <p className="text-gray-600">contact@ahixo.com</p>
               </div>
@@ -102,11 +105,11 @@ export default function ContactPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-900 font-medium">
-                Name
+                {dict.contact.form.email}
               </Label>
               <Input
                 id="name"
-                placeholder="Enter Name"
+                placeholder={dict.contact.form.namePlaceholder}
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
                 className="h-12 border-gray-300 focus:border-gray-400"
@@ -116,12 +119,12 @@ export default function ContactPage() {
 
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-900 font-medium">
-                Email
+                {dict.contact.form.email}
               </Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter Email"
+                placeholder={dict.contact.form.emailPlaceholder}
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 className="h-12 border-gray-300 focus:border-gray-400"
@@ -131,12 +134,12 @@ export default function ContactPage() {
 
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-gray-900 font-medium">
-                Phone no. (optional)
+                {dict.contact.form.phone} ({dict.contact.form.optional})
               </Label>
               <Input
                 id="phone"
                 type="tel"
-                placeholder="Enter Phone"
+                placeholder={dict.contact.form.phonePlaceholder}
                 value={formData.phone}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 className="h-12 border-gray-300 focus:border-gray-400"
@@ -145,11 +148,11 @@ export default function ContactPage() {
 
             <div className="space-y-2">
               <Label htmlFor="message" className="text-gray-900 font-medium">
-                Tell us about your query
+                {dict.contact.form.message}
               </Label>
               <Textarea
                 id="message"
-                placeholder="Type here..."
+                placeholder={dict.contact.form.messagePlaceholder}
                 rows={6}
                 value={formData.message}
                 onChange={(e) => handleInputChange("message", e.target.value)}
@@ -162,7 +165,7 @@ export default function ContactPage() {
               type="submit"
               className="w-full h-12 bg-brand-600 hover:bg-brand-700 text-white font-medium"
             >
-              Submit
+              {dict.contact.form.button}
             </Button>
           </form>
         </div>

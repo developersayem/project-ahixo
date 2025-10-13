@@ -7,12 +7,15 @@ import { useCreateOrder } from "@/contexts/create-order-context";
 import { useCart } from "@/hooks/api/useCart";
 import { ICartItem } from "@/types/cart.type";
 import { X } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import { useCurrency } from "@/contexts/currency-context";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-const CartPage = () => {
+const CartPageContent = ({ dict }: { dict: IDictionary }) => {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1] || "en";
   const { currency, convertPrice, symbolMap } = useCurrency(); // ✅ Currency context
   const {
     isLoading,
@@ -83,11 +86,17 @@ const CartPage = () => {
     clearOrder();
     setCartFromCartPage(itemsForCheckout);
 
-    router.push("/checkout");
+    router.push(`/${locale}/checkout`);
   };
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading cart</div>;
+  if (Array.isArray(groupedItems) && groupedItems.length === 0)
+    return (
+      <div className="flex justify-center items-center text-lg">
+        {dict.cart.empty}
+      </div>
+    );
 
   return (
     <div className="flex justify-center p-4 bg-gray-50 min-h-screen">
@@ -144,7 +153,7 @@ const CartPage = () => {
                         </span>
                         {item.salePrice && item.salePrice < item.price && (
                           <span className="text-green-600 ml-2">
-                            You save {symbolMap[currency]}
+                            {dict.cart.you_saved} {symbolMap[currency]}
                             {(
                               (item.price - item.salePrice) *
                               item.quantity
@@ -157,7 +166,9 @@ const CartPage = () => {
                       <div className="flex flex-wrap gap-2 mt-1 text-sm">
                         {item.selectedColor && (
                           <div className="flex items-center gap-1">
-                            <span className="font-medium">Color:</span>
+                            <span className="font-medium">
+                              {dict.cart.color}:
+                            </span>
                             <span
                               className="w-5 h-5 rounded-full border"
                               style={{ backgroundColor: item.selectedColor }}
@@ -166,12 +177,12 @@ const CartPage = () => {
                         )}
                         {item.selectedSize && (
                           <span className="px-2 py-0.5 rounded-md bg-gray-200 text-gray-700">
-                            Size: {item.selectedSize}
+                            {dict.cart.size}: {item.selectedSize}
                           </span>
                         )}
                         {item.warranty && (
                           <span className="px-2 py-0.5 rounded-md bg-green-100 text-green-800 font-medium">
-                            Warranty Included
+                            {dict.cart.warranty_included}
                           </span>
                         )}
                         {item.customOptions &&
@@ -233,43 +244,45 @@ const CartPage = () => {
         <div className="w-full lg:w-1/3">
           <Card className="shadow-md p-4">
             <h2 className="text-xl font-semibold border-b pb-2 mb-4">
-              Order Summary
+              {dict.cart.order_summary}
             </h2>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between text-sm">
-                <span>Total Products</span>
+                <span>{dict.cart.total_products}</span>
                 <span>{totalCartItems}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Subtotal ({totalCartItems} items)</span>
+                <span>
+                  {dict.cart.sub_total} ({totalCartItems} {dict.cart.item})
+                </span>
                 <span>
                   {symbolMap[currency]}
                   {subtotal.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Tax</span>
+                <span>{dict.cart.tax}</span>
                 <span>
                   {symbolMap[currency]}
                   {tax.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span>Shipping</span>
+                <span>{dict.cart.shipping}</span>
                 <span>
                   {symbolMap[currency]}
                   {totalShippingCost.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between font-semibold border-t pt-2">
-                <span>Total</span>
+                <span>{dict.cart.total}</span>
                 <span>
                   {symbolMap[currency]}
                   {total.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-sm text-red-600 font-medium">
-                <span>You Saved</span>
+                <span>{dict.cart.you_saved}</span>
                 <span>
                   -{symbolMap[currency]}
                   {totalDiscount.toFixed(2)}
@@ -279,7 +292,7 @@ const CartPage = () => {
                 className="w-full bg-red-500 hover:bg-red-600 text-white mt-2"
                 onClick={handleProceedToCheckout}
               >
-                Proceed to Checkout ({totalCartItems})
+                {dict.cart.button} ({totalCartItems})
               </Button>
             </div>
           </Card>
@@ -289,4 +302,4 @@ const CartPage = () => {
   );
 };
 
-export default CartPage;
+export default CartPageContent;

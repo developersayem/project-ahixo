@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<Response> {
   try {
     const { name, email, phone, message } = await req.json();
 
@@ -9,23 +9,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // NodeMailer transporter for Gmail SSL
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,       // smtp.gmail.com
-      port: Number(process.env.SMTP_PORT), // 465
-      secure: true,                      // SSL
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: true,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
-      tls: {
-        rejectUnauthorized: false,       // allow self-signed certs
-      },
+      tls: { rejectUnauthorized: false },
     });
 
     const mailOptions = {
-      from: `"${name}" <${email}>`,        // sender
-      to: process.env.CONTACT_EMAIL,       // your receiving email
+      from: `"${name}" <${email}>`,
+      to: process.env.CONTACT_EMAIL,
       subject: `New Contact Form Message from ${name}`,
       text: `
 Name: ${name}
@@ -46,11 +43,8 @@ Message: ${message}
     await transporter.sendMail(mailOptions);
 
     return NextResponse.json({ success: true, message: "Email sent successfully!" });
-  }  catch (err: unknown) {
-  if (err instanceof Error) {
+  } catch (err: unknown) {
     console.error(err);
     return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
   }
-  // handle other types of errors
-}
 }

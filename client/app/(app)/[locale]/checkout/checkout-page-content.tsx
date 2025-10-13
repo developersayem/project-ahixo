@@ -15,8 +15,9 @@ import { useCreateOrder } from "@/contexts/create-order-context";
 import { useCurrency } from "@/contexts/currency-context";
 import api from "@/lib/axios";
 import { useCart } from "@/hooks/api/useCart";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-const CheckoutPage = () => {
+const CheckoutPageContents = ({ dict }: { dict: IDictionary }) => {
   const context = useCreateOrder();
   const { mutateCart } = useCart();
   const { currency, symbolMap, convertPrice } = useCurrency();
@@ -109,9 +110,9 @@ const CheckoutPage = () => {
   if (cartItems.length === 0) {
     return (
       <div className="container mx-auto p-8 text-center">
-        <p className="text-lg font-semibold">Your cart is empty.</p>
+        <p className="text-lg font-semibold">{dict.checkout.empty}.</p>
         <Button className="mt-4" onClick={() => router.push("/")}>
-          Continue Shopping
+          {dict.checkout.continue_shopping}
         </Button>
       </div>
     );
@@ -123,63 +124,65 @@ const CheckoutPage = () => {
       <div className="lg:col-span-2 space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Shipping Address</CardTitle>
+            <CardTitle>{dict.checkout.form.title}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="space-y-2">
-              <Label>Full Name</Label>
+              <Label>{dict.checkout.form.full_name}</Label>
               <Input
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
-                placeholder="John Doe"
+                placeholder={dict.checkout.form.full_name_placeholder}
               />
             </div>
             <div className="space-y-2">
-              <Label>Phone Number</Label>
+              <Label>{dict.checkout.form.phone_number}</Label>
               <Input
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+1XXXXXXXXX"
+                placeholder={dict.checkout.form.phone_number_placeholder}
               />
             </div>
             <div className="space-y-2">
-              <Label>Address</Label>
+              <Label>{dict.checkout.form.address}</Label>
               <Textarea
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                placeholder="Street address..."
+                placeholder={dict.checkout.form.address_placeholder}
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>City</Label>
+                <Label>{dict.checkout.form.city}</Label>
                 <Input
                   name="city"
                   value={formData.city}
                   onChange={handleChange}
-                  placeholder="City"
+                  placeholder={dict.checkout.form.city_placeholder}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Postal Code</Label>
+                <Label>{dict.checkout.form.postal_code}</Label>
                 <Input
                   name="postalCode"
                   value={formData.postalCode}
                   onChange={handleChange}
-                  placeholder="1207"
+                  placeholder={dict.checkout.form.postal_code_placeholder}
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Order Note</Label>
+              <Label>
+                {dict.checkout.form.order_note} ({dict.checkout.form.optional})
+              </Label>
               <Textarea
                 name="note"
                 value={formData.note}
                 onChange={handleChange}
-                placeholder="Special instructions..."
+                placeholder={dict.checkout.form.order_note_placeholder}
               />
             </div>
           </CardContent>
@@ -187,7 +190,7 @@ const CheckoutPage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Payment Method</CardTitle>
+            <CardTitle>{dict.checkout.form.payment.title}</CardTitle>
           </CardHeader>
           <CardContent>
             <RadioGroup
@@ -199,7 +202,9 @@ const CheckoutPage = () => {
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="cod" id="cod" />
-                <Label htmlFor="cod">Cash on Delivery</Label>
+                <Label htmlFor="cod">
+                  {dict.checkout.form.payment.method1}
+                </Label>
               </div>
             </RadioGroup>
           </CardContent>
@@ -210,7 +215,7 @@ const CheckoutPage = () => {
       <div>
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle>Order Summary</CardTitle>
+            <CardTitle>{dict.checkout.order_summary}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2 max-h-64 overflow-y-auto pr-2">
@@ -240,7 +245,7 @@ const CheckoutPage = () => {
                         <p className="text-sm font-medium">{item.title}</p>
                         <p className="text-xs text-gray-700 pt-1 text-end">
                           {item.quantity} × {symbolMap[currency]}
-                          {convertedPrice?.toFixed(2)} + Ship:{" "}
+                          {convertedPrice?.toFixed(2)} + {dict.checkout.ship}:{" "}
                           {symbolMap[currency]}
                           {convertedShipping?.toFixed(2)}
                         </p>
@@ -254,35 +259,35 @@ const CheckoutPage = () => {
             <Separator />
 
             <div className="flex justify-between text-sm">
-              <span>Subtotal</span>
+              <span>{dict.checkout.sub_total}</span>
               <span>
                 {symbolMap[currency]}
                 {subtotal.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Shipping</span>
+              <span>{dict.checkout.shipping}</span>
               <span>
                 {symbolMap[currency]}
                 {totalShippingCost.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span>Tax</span>
+              <span>{dict.checkout.tax}</span>
               <span>
                 {symbolMap[currency]}
                 {tax.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between text-sm text-green-600">
-              <span>You Saved</span>
+              <span>{dict.checkout.you_saved}</span>
               <span>
                 -{symbolMap[currency]}
                 {totalDiscount.toFixed(2)}
               </span>
             </div>
             <div className="flex justify-between font-bold border-t pt-2">
-              <span>Total</span>
+              <span>{dict.checkout.total}</span>
               <span>
                 {symbolMap[currency]}
                 {total.toFixed(2)}
@@ -295,8 +300,8 @@ const CheckoutPage = () => {
               disabled={loading || cartItems.length === 0}
             >
               {loading
-                ? "Placing Order..."
-                : `Place Order (${totalCartItems} Items)`}
+                ? `${dict.checkout.loading_button}`
+                : `${dict.checkout.button} (${totalCartItems} ${dict.checkout.items})`}
             </Button>
           </CardContent>
         </Card>
@@ -305,4 +310,4 @@ const CheckoutPage = () => {
   );
 };
 
-export default CheckoutPage;
+export default CheckoutPageContents;

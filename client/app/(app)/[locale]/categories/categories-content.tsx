@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import Link from "next/link";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
 // TypeScript interfaces
 interface Subcategory {
@@ -30,7 +31,7 @@ interface Category {
 const capitalize = (str: string) =>
   str.replace(/\b\w/g, (l) => l.toUpperCase());
 
-export default function CategoriesPage() {
+export default function CategoriesPageContent({ dict }: { dict: IDictionary }) {
   const { data: CategoriesRes } = useSWR(`/api/v1/categories`, fetcher);
   const categories: Category[] = CategoriesRes?.data || [];
 
@@ -41,11 +42,15 @@ export default function CategoriesPage() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                <BreadcrumbLink href="/">
+                  {dict.bottom_navbar.pages.home}
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>All Categories</BreadcrumbPage>
+                <BreadcrumbPage>
+                  {dict.bottom_navbar.pages.categories}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>

@@ -9,8 +9,9 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { toast } from "sonner";
 import { useCart } from "@/hooks/api/useCart";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-export default function WishlistPage() {
+export default function WishlistPageContent({ dict }: { dict: IDictionary }) {
   const { user } = useAuth();
   const router = useRouter();
   const { mutateCart } = useCart();
@@ -58,10 +59,10 @@ export default function WishlistPage() {
             <div className="flex items-center space-x-3">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  My Wishlist
+                  {dict.wishlist.title}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  All your favorite items in one place.
+                  {dict.wishlist.description}
                 </p>
               </div>
             </div>
@@ -84,7 +85,7 @@ export default function WishlistPage() {
             <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
               <div className="text-center sm:text-left">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Ready to purchase?
+                  {dict.wishlist.cta.title}
                 </h3>
               </div>
               <div className="flex space-x-3">
@@ -92,7 +93,7 @@ export default function WishlistPage() {
                   variant="outline"
                   onClick={() => router.push("/products")}
                 >
-                  Continue Shopping
+                  {dict.wishlist.cta.button}
                 </Button>
               </div>
             </div>

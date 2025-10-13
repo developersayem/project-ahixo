@@ -1,40 +1,18 @@
-"use client";
-
-import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import {} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { CurrencySelector } from "@/components/shared/currency-selector";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-export function TopNavbar() {
+export function TopNavbar({ dict }: { dict: IDictionary }) {
   return (
     <div className="bg-gray-100 border-b border-gray-200">
       <div className="container mx-auto">
         <div className="flex items-center justify-between h-7 text-sm">
           {/* Left side - Language and Currency */}
           <div className="flex items-center space-x-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 px-2 text-gray-600 hover:text-gray-900"
-                >
-                  English
-                  <ChevronDown className="ml-1 h-3 w-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem>English</DropdownMenuItem>
-                <DropdownMenuItem>Spanish</DropdownMenuItem>
-                <DropdownMenuItem>French</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <LanguageSwitcher />
 
             {/*  CurrencySelector */}
             <CurrencySelector />
@@ -49,7 +27,7 @@ export function TopNavbar() {
                 size="sm"
                 className="h-8 px-2 text-gray-600 hover:text-gray-900"
               >
-                Become a Seller !
+                {dict.top_navbar.become_seller} !
               </Button>
             </Link>
             <span className="text-gray-600">|</span>
@@ -59,7 +37,7 @@ export function TopNavbar() {
                 size="sm"
                 className="h-8 px-2 text-gray-600 hover:text-gray-900"
               >
-                Login to Seller
+                {dict.top_navbar.login_as_seller}
               </Button>
             </Link>
           </div>

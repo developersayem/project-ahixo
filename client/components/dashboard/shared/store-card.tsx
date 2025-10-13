@@ -1,10 +1,7 @@
 "use client";
 
-import { LogOut, ShieldCheck, Star, ShoppingBag } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
+import { ShieldCheck, Star, ShoppingBag } from "lucide-react";
 import { IUser } from "@/types/user-type";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 interface INavBarProps {
@@ -28,7 +25,7 @@ const demoUser: IUser = {
   },
 };
 
-export function StoreCard({ user, logout }: INavBarProps) {
+export function StoreCard({ user }: INavBarProps) {
   const currentUser = user ?? demoUser;
 
   return (

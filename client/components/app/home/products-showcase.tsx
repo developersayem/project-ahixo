@@ -12,8 +12,9 @@ import { useCurrency } from "@/contexts/currency-context";
 import { toast } from "sonner";
 import { useCart } from "@/hooks/api/useCart";
 import api from "@/lib/axios";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-export function ProductsShowcase() {
+export function ProductsShowcase({ dict }: { dict: IDictionary }) {
   // Fetch products from backend
   const { data: products } = useSWR<IProduct[]>(
     "/api/v1/products?page=1&limit=20",
@@ -61,11 +62,10 @@ export function ProductsShowcase() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-[#0F4F2A] mb-3">
-            Featured Products
+            {dict.home.featured_products.title}
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Discover authentic African products from verified sellers across the
-            continent
+            {dict.home.featured_products.description}
           </p>
         </div>
 
@@ -162,7 +162,7 @@ export function ProductsShowcase() {
               variant="outline"
               className="border-[#0F4F2A] text-[#0F4F2A] hover:bg-[#0F4F2A] hover:text-white bg-transparent"
             >
-              View All Products
+              {dict.home.featured_products.button}
             </Button>
           </Link>
         </div>

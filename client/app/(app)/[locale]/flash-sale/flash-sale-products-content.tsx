@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Breadcrumb,
@@ -19,8 +19,9 @@ import {
 } from "@/components/ui/select";
 import { ProductSidebar } from "@/components/app/shared/product-sidebar";
 import { ProductGrid } from "@/components/app/shared/product-grid";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-function ProductsContent() {
+function FlashSaleProductsContent({ dict }: { dict: IDictionary }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -69,8 +70,8 @@ function ProductsContent() {
   // Generate breadcrumb based on filters
   const getBreadcrumbItems = () => {
     const items = [
-      { label: "Home", href: "/" },
-      { label: "Flash Sale", href: "/flash-sale" },
+      { label: dict.bottom_navbar.pages.home, href: "/" },
+      { label: dict.bottom_navbar.pages.flash_sale, href: "/flash-sale" },
     ];
 
     if (selectedBrand) {
@@ -112,7 +113,7 @@ function ProductsContent() {
     ? selectedCategory
         .replace(/-/g, " ")
         .replace(/\b\w/g, (l) => l.toUpperCase())
-    : "All Products";
+    : dict.products.flash_sale_title;
 
   return (
     <div className="min-h-screen bg-background">
@@ -170,6 +171,7 @@ function ProductsContent() {
             </div>
 
             <ProductGrid
+              dict={dict}
               pageName="flash-sale"
               selectedCategory={selectedCategory}
               selectedSubcategory={selectedSubcategory}
@@ -186,10 +188,4 @@ function ProductsContent() {
   );
 }
 
-export default function ProductsPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ProductsContent />
-    </Suspense>
-  );
-}
+export default FlashSaleProductsContent;

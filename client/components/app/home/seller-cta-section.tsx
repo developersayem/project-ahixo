@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { IDictionary } from "@/types/locale/dictionary.type";
 import { TrendingUp, Users, Globe } from "lucide-react";
 import Link from "next/link";
 
-export function SellerCtaSection() {
+export function SellerCtaSection({ dict }: { dict: IDictionary }) {
   return (
     <section
       className={`py-20 bg-gradient-to-r from-[#0F4F2A] to-[#1a6b3a] transition-all duration-300 ease-in-out `}
@@ -14,11 +15,10 @@ export function SellerCtaSection() {
               <TrendingUp className="w-10 h-10 text-[#0F4F2A]" />
             </div>
             <h2 className="text-4xl font-bold mb-4">
-              Ready to Grow Your Business?
+              {dict.home.seller_cta_section.title}
             </h2>
             <p className="text-xl text-gray-100 mb-8 leading-relaxed">
-              Join thousands of African entrepreneurs building their dreams on
-              AHIXO
+              {dict.home.seller_cta_section.description}
             </p>
           </div>
 
@@ -26,17 +26,23 @@ export function SellerCtaSection() {
             <div className="text-center">
               <Users className="w-12 h-12 text-[#F4B400] mx-auto mb-4" />
               <h3 className="text-2xl font-bold mb-2">50K+</h3>
-              <p className="text-gray-200">Active Sellers</p>
+              <p className="text-gray-200">
+                {dict.home.seller_cta_section.item1}
+              </p>
             </div>
             <div className="text-center">
               <Globe className="w-12 h-12 text-[#F4B400] mx-auto mb-4" />
               <h3 className="text-2xl font-bold mb-2">54</h3>
-              <p className="text-gray-200">Countries Connected</p>
+              <p className="text-gray-200">
+                {dict.home.seller_cta_section.item2}
+              </p>
             </div>
             <div className="text-center">
               <TrendingUp className="w-12 h-12 text-[#F4B400] mx-auto mb-4" />
               <h3 className="text-2xl font-bold mb-2">$2M+</h3>
-              <p className="text-gray-200">Monthly Sales</p>
+              <p className="text-gray-200">
+                {dict.home.seller_cta_section.item3}
+              </p>
             </div>
           </div>
 
@@ -45,7 +51,7 @@ export function SellerCtaSection() {
               size="lg"
               className="bg-[#F4B400] hover:bg-[#e6a200] text-[#0F4F2A] font-semibold h-16 px-12 text-xl"
             >
-              Become a Seller
+              {dict.home.seller_cta_section.button}
             </Button>
           </Link>
         </div>

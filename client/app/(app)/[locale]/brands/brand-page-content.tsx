@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { fetcher } from "@/lib/fetcher";
 import useSWR from "swr";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
 interface IBrandRes {
   data: IBrand[];
@@ -21,7 +22,7 @@ interface IBrand {
   name: string;
 }
 
-export default function BrandsPage() {
+export default function BrandsPageContent({ dict }: { dict: IDictionary }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch brands from backend
@@ -42,12 +43,14 @@ export default function BrandsPage() {
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/">Home</Link>
+                  <Link href="/">{dict.bottom_navbar.pages.home}</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>All Brands</BreadcrumbPage>
+                <BreadcrumbPage>
+                  {dict.bottom_navbar.pages.brands}
+                </BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -55,7 +58,9 @@ export default function BrandsPage() {
 
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">All Brands</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            {dict.brands.title}
+          </h1>
 
           {/* Search Bar */}
           <div className="max-w-md">

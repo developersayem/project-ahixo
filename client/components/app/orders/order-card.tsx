@@ -8,14 +8,17 @@ import { Truck, CheckCircle, Clock, XCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { IOrder } from "@/types/order-type";
 import { useCurrency } from "@/contexts/currency-context";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
 interface OrderCardProps {
+  dict: IDictionary;
   order: IOrder;
   onRemoveItem: (orderId: string, itemId: string) => void;
   onCancelOrder: (orderId: string) => void;
 }
 
 export function OrderCard({
+  dict,
   order,
   onRemoveItem,
   onCancelOrder,
@@ -25,22 +28,22 @@ export function OrderCard({
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       "on-hold": {
-        label: "On Hold",
+        label: dict.orders.status.on_hold,
         color: "bg-orange-100 text-orange-600",
         icon: Truck,
       },
       delivered: {
-        label: "Delivered",
+        label: dict.orders.status.delivered,
         color: "bg-green-100 text-green-600",
         icon: CheckCircle,
       },
       processing: {
-        label: "Processing",
+        label: dict.orders.status.processing,
         color: "bg-blue-100 text-blue-600",
         icon: Clock,
       },
       canceled: {
-        label: "Canceled",
+        label: dict.orders.status.canceled,
         color: "bg-red-100 text-red-600",
         icon: XCircle,
       },
@@ -71,9 +74,12 @@ export function OrderCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div>
-              <h3 className="text-lg font-medium">Order {order._id}</h3>
+              <h3 className="text-lg font-medium">
+                {dict.orders.order_id}: {order._id}
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Order Placed: {new Date(order.date).toLocaleDateString()}
+                {dict.orders.order_placed}:{" "}
+                {new Date(order.date).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -89,7 +95,7 @@ export function OrderCard({
                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
               >
                 <XCircle className="w-4 h-4 mr-2" />
-                CANCEL ORDER
+                {dict.orders.cancel_order}
               </Button>
             )}
           </div>
@@ -165,7 +171,7 @@ export function OrderCard({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <span className="text-sm text-muted-foreground">
-              Fast return within 7 days
+              {dict.orders.return_order}:
             </span>
           </div>
 

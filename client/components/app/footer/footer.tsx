@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { Facebook, Twitter, Instagram, Youtube, Linkedin } from "lucide-react";
+import { IDictionary } from "@/types/locale/dictionary.type";
 
-export default function Footer() {
+export default function Footer({ dict }: { dict: IDictionary }) {
   return (
     <footer className=" bg-neutral-900 text-white">
       <div className="">
@@ -25,16 +26,16 @@ export default function Footer() {
                   </div>
                 </div>
               </Link>
-              <p className="text-gray-300 text-sm">
-                A multi-vendor eCommerce platform
-              </p>
+              <p className="text-gray-300 text-sm">{dict.footer.tag_line}</p>
             </div>
 
             {/* Social Media and Mobile Apps */}
             <div className="flex flex-col sm:flex-row gap-8">
               {/* Follow Us */}
               <div>
-                <h3 className="text-gray-400 font-semibold mb-4">FOLLOW US</h3>
+                <h3 className="text-gray-400 font-semibold mb-4">
+                  {dict.footer.social_title}
+                </h3>
                 <div className="flex gap-3">
                   <Link
                     href="#"
@@ -77,14 +78,16 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Quick Links */}
             <div>
-              <h3 className="text-gray-400 font-semibold mb-6">QUICK LINKS</h3>
+              <h3 className="text-gray-400 font-semibold mb-6">
+                {dict.footer.quick_links.title}
+              </h3>
               <ul className="space-y-3 text-sm">
                 <li>
                   <Link
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Support Policy Page
+                    {dict.footer.quick_links.link1}
                   </Link>
                 </li>
                 <li>
@@ -92,7 +95,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Return Policy Page
+                    {dict.footer.quick_links.link2}
                   </Link>
                 </li>
                 <li>
@@ -100,7 +103,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    About Us
+                    {dict.footer.quick_links.link3}
                   </Link>
                 </li>
                 <li>
@@ -108,7 +111,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Privacy Policy Page
+                    {dict.footer.quick_links.link4}
                   </Link>
                 </li>
                 <li>
@@ -116,7 +119,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Seller Policy
+                    {dict.footer.quick_links.link5}
                   </Link>
                 </li>
                 <li>
@@ -124,7 +127,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Term Conditions Page
+                    {dict.footer.quick_links.link6}
                   </Link>
                 </li>
               </ul>
@@ -132,18 +135,26 @@ export default function Footer() {
 
             {/* Contacts */}
             <div>
-              <h3 className="text-gray-400 font-semibold mb-6">CONTACTS</h3>
+              <h3 className="text-gray-400 font-semibold mb-6">
+                {dict.footer.contacts.title}
+              </h3>
               <div className="space-y-4 text-sm">
                 <div>
-                  <h4 className="text-white font-medium mb-1">Address</h4>
+                  <h4 className="text-white font-medium mb-1">
+                    {dict.footer.contacts.address}
+                  </h4>
                   <p className="text-gray-300">Demo Address</p>
                 </div>
                 <div>
-                  <h4 className="text-white font-medium mb-1">Phone</h4>
+                  <h4 className="text-white font-medium mb-1">
+                    {dict.footer.contacts.phone}
+                  </h4>
                   <p className="text-gray-300">123456789</p>
                 </div>
                 <div>
-                  <h4 className="text-white font-medium mb-1">Email</h4>
+                  <h4 className="text-white font-medium mb-1">
+                    {dict.footer.contacts.email}
+                  </h4>
                   <p className="text-gray-300">demo.example@gmail.com</p>
                 </div>
               </div>
@@ -151,14 +162,16 @@ export default function Footer() {
 
             {/* My Account */}
             <div>
-              <h3 className="text-gray-400 font-semibold mb-6">MY ACCOUNT</h3>
+              <h3 className="text-gray-400 font-semibold mb-6">
+                {dict.footer.my_account.title}
+              </h3>
               <ul className="space-y-3 text-sm">
                 <li>
                   <Link
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Login
+                    {dict.footer.my_account.link1}
                   </Link>
                 </li>
                 <li>
@@ -166,7 +179,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Order History
+                    {dict.footer.my_account.link2}
                   </Link>
                 </li>
                 <li>
@@ -174,7 +187,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    My Wishlist
+                    {dict.footer.my_account.link3}
                   </Link>
                 </li>
                 <li>
@@ -182,7 +195,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Track Order
+                    {dict.footer.my_account.link4}
                   </Link>
                 </li>
                 <li>
@@ -190,7 +203,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Be an affiliate partner
+                    {dict.footer.my_account.link5}
                   </Link>
                 </li>
               </ul>
@@ -198,17 +211,17 @@ export default function Footer() {
 
             {/* Seller Zone & Delivery Boy */}
             <div>
-              <h3 className="text-gray-400 font-semibold mb-6">SELLER ZONE</h3>
+              <h3 className="text-gray-400 font-semibold mb-6">
+                {dict.footer.seller_zone.title}
+              </h3>
+
               <ul className="space-y-3 mb-6 text-sm">
                 <li>
                   <Link
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Become A Seller{" "}
-                    <span className="text-yellow-400 font-medium">
-                      Apply Now
-                    </span>
+                    {dict.footer.seller_zone.link1}
                   </Link>
                 </li>
                 <li>
@@ -216,7 +229,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Login to Seller Panel
+                    {dict.footer.seller_zone.link2}
                   </Link>
                 </li>
                 <li>
@@ -224,7 +237,7 @@ export default function Footer() {
                     href="#"
                     className="text-gray-300 hover:text-white transition-colors"
                   >
-                    Download Seller App
+                    {dict.footer.seller_zone.link3}
                   </Link>
                 </li>
               </ul>
@@ -236,10 +249,7 @@ export default function Footer() {
         <div className="border-t border-gray-700">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <p className="text-gray-400 text-sm">
-                Copyright © 2025 all rights reserved by{" "}
-                <span className="text-brand-400 font-bold">AHIXO</span>
-              </p>
+              <p className="text-gray-400 text-sm">{dict.footer.copyright}</p>
               <div className="flex items-center gap-2 bg-neutral-50 px-3">
                 <img
                   src="https://demo.activeitzone.com/ecommerce_repo/public/uploads/all/NankP5emHOKcdCWqX6Bks1Qa63iDgoLA6WPGn7oe.webp"
