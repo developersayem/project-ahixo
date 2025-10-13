@@ -12,6 +12,8 @@ export interface IDictionary {
   };
   middle_navbar: {
     search_placeholder: string;
+    login:string
+    register:string
     user_nav: {
       orders?: string;
       wishlist?: string;

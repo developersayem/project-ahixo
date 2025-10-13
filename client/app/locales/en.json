@@ -5,6 +5,8 @@
   },
   "middle_navbar": {
     "search_placeholder": "i am shopping for...",
+    "login": "Login",
+    "register": "Register",
     "user_nav": {
       "orders": "Orders",
       "wishlist": "Wishlist",

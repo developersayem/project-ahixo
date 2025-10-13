@@ -13,8 +13,12 @@ import { toast } from "sonner";
 import { useCart } from "@/hooks/api/useCart";
 import api from "@/lib/axios";
 import { IDictionary } from "@/types/locale/dictionary.type";
+import { usePathname } from "next/navigation";
 
 export function ProductsShowcase({ dict }: { dict: IDictionary }) {
+  const pathname = usePathname();
+  // Extract current locale from URL (e.g. /en/products)
+  const locale = pathname.split("/")[1] || "en";
   // Fetch products from backend
   const { data: products } = useSWR<IProduct[]>(
     "/api/v1/products?page=1&limit=20",
@@ -81,7 +85,10 @@ export function ProductsShowcase({ dict }: { dict: IDictionary }) {
               : null;
 
             return (
-              <Link href={`/products/${product._id}`} key={product._id}>
+              <Link
+                href={`/${locale}/products/${product._id}`}
+                key={product._id}
+              >
                 <Card className="group hover:shadow-xl transition-all duration-300 border-0 bg-white">
                   <CardContent className="p-0">
                     {/* Product Image */}
@@ -156,7 +163,7 @@ export function ProductsShowcase({ dict }: { dict: IDictionary }) {
         </div>
 
         <div className="text-center mt-8">
-          <Link href="/products">
+          <Link href={`/${locale}/products`}>
             <Button
               size="lg"
               variant="outline"

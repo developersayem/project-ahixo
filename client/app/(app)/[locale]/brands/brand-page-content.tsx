@@ -13,6 +13,7 @@ import {
 import { fetcher } from "@/lib/fetcher";
 import useSWR from "swr";
 import { IDictionary } from "@/types/locale/dictionary.type";
+import { usePathname } from "next/navigation";
 
 interface IBrandRes {
   data: IBrand[];
@@ -23,6 +24,9 @@ interface IBrand {
 }
 
 export default function BrandsPageContent({ dict }: { dict: IDictionary }) {
+  const pathname = usePathname();
+  // Extract current locale from URL (e.g. /en/products)
+  const locale = pathname.split("/")[1] || "en";
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch brands from backend
@@ -79,7 +83,9 @@ export default function BrandsPageContent({ dict }: { dict: IDictionary }) {
           {filteredBrands?.map((brand, index) => (
             <Link
               key={index}
-              href={`/products?brand=${encodeURIComponent(brand.name)}`}
+              href={`/${locale}/products?brand=${encodeURIComponent(
+                brand.name
+              )}`}
               className="group"
             >
               <div className="bg-white p-6 border-spacing-0.5 border-[1px] border-gray-100  hover:shadow-2xl hover:scale-101 transition-all duration-200">

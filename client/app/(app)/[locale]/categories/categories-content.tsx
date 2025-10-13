@@ -13,6 +13,7 @@ import useSWR from "swr";
 import { fetcher } from "@/lib/fetcher";
 import Link from "next/link";
 import { IDictionary } from "@/types/locale/dictionary.type";
+import { usePathname } from "next/navigation";
 
 // TypeScript interfaces
 interface Subcategory {
@@ -32,6 +33,9 @@ const capitalize = (str: string) =>
   str.replace(/\b\w/g, (l) => l.toUpperCase());
 
 export default function CategoriesPageContent({ dict }: { dict: IDictionary }) {
+  const pathname = usePathname();
+  // Extract current locale from URL (e.g. /en/products)
+  const locale = pathname.split("/")[1] || "en";
   const { data: CategoriesRes } = useSWR(`/api/v1/categories`, fetcher);
   const categories: Category[] = CategoriesRes?.data || [];
 
@@ -57,7 +61,7 @@ export default function CategoriesPageContent({ dict }: { dict: IDictionary }) {
         </div>
 
         <h1 className="text-2xl font-semibold text-foreground mb-8">
-          All Categories
+          {dict.categories.title}
         </h1>
 
         <div className="space-y-8">
@@ -78,7 +82,7 @@ export default function CategoriesPageContent({ dict }: { dict: IDictionary }) {
                         <div key={sub._id} className="space-y-3">
                           <h3 className="font-medium text-foreground text-sm">
                             <Link
-                              href={`/products?category=${encodeURIComponent(
+                              href={`/${locale}/products?category=${encodeURIComponent(
                                 sub.name
                               )}`}
                               className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"

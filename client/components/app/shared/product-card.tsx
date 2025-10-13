@@ -8,7 +8,7 @@ import Link from "next/link";
 import { IProduct } from "@/types/product-type";
 import { useCart } from "@/hooks/api/useCart";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
 import { useCurrency } from "@/contexts/currency-context";
 import { IDictionary } from "@/types/locale/dictionary.type";
@@ -19,10 +19,14 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, dict }: ProductCardProps) {
+  const pathname = usePathname();
   const router = useRouter();
   const { addItem } = useCart();
   const { setCartFromBuyNow } = useCreateOrder();
   const { currency, symbolMap, convertPrice } = useCurrency();
+
+  // Extract current locale from URL (e.g. /en/products)
+  const locale = pathname.split("/")[1] || "en";
 
   if (!setCartFromBuyNow)
     throw new Error("ProductCard must be used inside CreateOrderProvider");
@@ -105,7 +109,7 @@ export function ProductCard({ product, dict }: ProductCardProps) {
   return (
     <Card className="group hover:shadow-lg transition-transform duration-200 rounded-none h-full w-full border-gray-100 hover:scale-[1.02] py-0">
       <CardContent className="p-4 flex flex-col h-full">
-        <Link href={`/products/${product._id}`}>
+        <Link href={`/${locale}/products/${product._id}`}>
           {/* 🖼️ Image */}
           <div className="relative aspect-square mb-4 bg-gray-50 overflow-hidden">
             <Image

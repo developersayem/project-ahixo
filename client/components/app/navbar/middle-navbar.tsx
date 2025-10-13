@@ -1,13 +1,13 @@
 "use client";
 
-import { Search, User } from "lucide-react";
+import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { UserNav } from "@/components/shared/user-nav";
 import { IDictionary } from "@/types/locale/dictionary.type";
+import { SearchBar } from "../shared/search-bar";
 
 export function MiddleNavbar({ dict }: { dict: IDictionary }) {
   const { user } = useAuth();
@@ -34,19 +34,8 @@ export function MiddleNavbar({ dict }: { dict: IDictionary }) {
 
           {/* Search Bar */}
           <div className="flex-1 max-w-2xl mx-8">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder={dict.middle_navbar.search_placeholder}
-                className="w-full pl-4 pr-12 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-              />
-              <Button
-                size="sm"
-                className="absolute right-0.5 top-0.5 bottom-1 bg-transparent hover:bg-transparent border-none text-black px-3 shadow-none"
-              >
-                <Search className="w-4 h-4" />
-              </Button>
-            </div>
+            {/* Search Bar */}
+            <SearchBar placeholder={dict.middle_navbar.search_placeholder} />
           </div>
 
           {/* User Account */}
@@ -63,7 +52,7 @@ export function MiddleNavbar({ dict }: { dict: IDictionary }) {
                       size="sm"
                       className="h-auto p-0 text-gray-600 group-hover:text-brand-500 hover:bg-transparent"
                     >
-                      Login
+                      {dict.middle_navbar.login}
                     </Button>
                   </div>
                 </Link>
@@ -75,7 +64,7 @@ export function MiddleNavbar({ dict }: { dict: IDictionary }) {
                       size="sm"
                       className="h-auto p-0 text-gray-600 hover:text-brand-500 hover:bg-transparent"
                     >
-                      Registration
+                      {dict.middle_navbar.register}
                     </Button>
                   </Link>
                 </div>

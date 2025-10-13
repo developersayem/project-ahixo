@@ -1,9 +1,14 @@
+"use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { IDictionary } from "@/types/locale/dictionary.type";
 import { Shirt, Sparkles, Smartphone, Home, Palette, Gift } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function CategoriesSection({ dict }: { dict: IDictionary }) {
+  const pathname = usePathname();
+  // Extract current locale from URL (e.g. /en/products)
+  const locale = pathname.split("/")[1] || "en";
   const categories = [
     {
       icon: Shirt,
@@ -50,7 +55,7 @@ export function CategoriesSection({ dict }: { dict: IDictionary }) {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {categories.map((category, index) => (
-            <Link href={`/categories`} key={index}>
+            <Link href={`/${locale}/categories`} key={index}>
               <Card className="border-2 border-[#F4B400]/20 hover:border-[#F4B400] transition-colors cursor-pointer group">
                 <CardContent className="p-6 text-center">
                   <div

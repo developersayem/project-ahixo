@@ -5,6 +5,8 @@
   },
   "middle_navbar": {
     "search_placeholder": "Je fais mes achats pour...",
+    "login": "Se connecter",
+    "register": "S'inscrire",
     "user_nav": {
       "orders": "Commandes",
       "wishlist": "Liste de souhaits",
