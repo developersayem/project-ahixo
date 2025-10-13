@@ -196,3 +196,65 @@ export const getFlashSaleProducts = async (req: Request, res: Response) => {
   }
 };
 
+// ---------------- Search Products ----------------
+export const searchProducts = async (req: Request, res: Response) => {
+  try {
+    const { query = "", limit = 10 } = req.query;
+
+    if (!query || typeof query !== "string") {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    // Build search condition (title, description, tags, brand, category)
+    const searchCondition = {
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
+        { tags: { $regex: query, $options: "i" } },
+        { brand: { $regex: query, $options: "i" } },
+        { category: { $regex: query, $options: "i" } },
+      ],
+    };
+
+    const products = await Product.aggregate([
+      { $match: searchCondition },
+      {
+        $addFields: {
+          averageRating: { $avg: "$ratings.rating" },
+          totalRatings: { $size: "$ratings" },
+        },
+      },
+      {
+        $project: {
+          title: 1,
+          description: 1,
+          price: 1,
+          salePrice: 1,
+          images: 1,
+          category: 1,
+          brand: 1,
+          tags: 1,
+          colors: 1,
+          features: 1,
+          stock: 1,
+          shippingCost: 1,
+          currency: 1,
+          averageRating: 1,
+          totalRatings: 1,
+          createdAt: 1,
+          updatedAt: 1,
+        },
+      },
+      { $limit: Number(limit) },
+    ]);
+
+    if (!products.length) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    res.status(200).json({ results: products.length, products });
+  } catch (error) {
+    console.error("Error searching products:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
