@@ -11,9 +11,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { usePathname } from "next/navigation";
 
 export default function MobileNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const pathname = usePathname();
+
+  // Extract current locale from URL (e.g. /en/products)
+  const locale = pathname.split("/")[1] || "en";
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -30,23 +36,23 @@ export default function MobileNavbar() {
     },
     {
       name: "products",
-      link: "/products",
+      link: `/${locale}/products`,
     },
     {
       name: "flash sale",
-      link: "/flash-sale",
-    },
-    {
-      name: "brands",
-      link: "/brands",
+      link: `/${locale}/flash-sale`,
     },
     {
       name: "all categories",
-      link: "/categories",
+      link: `/${locale}/categories`,
+    },
+    {
+      name: "brands",
+      link: `/${locale}/brands`,
     },
     {
       name: "contact us",
-      link: "/contact",
+      link: `/${locale}/contact`,
     },
   ];
 
