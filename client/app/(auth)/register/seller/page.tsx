@@ -80,7 +80,7 @@ export default function SellerRegisterPage() {
       });
       if (res.success) {
         toast.success("Email verified successfully!");
-        router.push("/login/seller");
+        router.push("/login");
       } else {
         toast.error(res.message || "Verification failed");
       }
