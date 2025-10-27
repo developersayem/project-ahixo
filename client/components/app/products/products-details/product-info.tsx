@@ -21,6 +21,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
 import { useCurrency } from "@/contexts/currency-context";
 import api from "@/lib/axios";
+import { AxiosError } from "axios";
 
 interface ProductInfoProps {
   product: IProduct;
@@ -72,14 +73,37 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
   const totalPrice = finalPrice * quantity;
 
-  // ---------------- Handlers ----------------
+  // ---------------- Handlers ---------------- // =============================
+  // 🔸 Add to wishlist (with clear feedback)
+  // =============================
   const handleAddToWishlist = async (productId: string) => {
     try {
       const res = await api.post(`/api/v1/buyer/wishlist/${productId}`);
-      if (res.data.success) toast.success("Product added to wishlist");
+
+      // Use message from backend (if available)
+      const message = res.data?.message || "Wishlist updated successfully";
+
+      if (message.includes("removed")) {
+        toast.info("Product removed from your wishlist ❤️‍🔥");
+      } else if (message.includes("already")) {
+        toast.info("Product is already in your wishlist 💖");
+      } else {
+        toast.success("Product added to your wishlist 💝");
+      }
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to add product to wishlist");
+      const axiosError = error as AxiosError<{ message?: string }>;
+      const status = axiosError.response?.status;
+      const backendMessage = axiosError.response?.data?.message;
+
+      if (status === 401) {
+        toast.error("Please log in to use the wishlist feature 🔐");
+      } else if (status === 400) {
+        toast.info(backendMessage || "Product already in your wishlist 💖");
+      } else {
+        toast.error(
+          backendMessage || "Something went wrong while updating wishlist 😢"
+        );
+      }
     }
   };
 
