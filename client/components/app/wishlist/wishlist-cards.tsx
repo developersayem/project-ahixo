@@ -1,6 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -104,10 +104,9 @@ export function WishlistCards({
           >
             {/* Product Image */}
             <div className="relative w-full h-48 rounded-lg overflow-hidden mb-3">
-              <Image
+              <img
                 src={item.image}
                 alt={item.name}
-                fill
                 className="object-cover"
                 sizes="100%"
               />

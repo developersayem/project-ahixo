@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 
 interface Product {
   id: string;
@@ -210,10 +210,9 @@ export default function ProductShowcase() {
           <div
             className={`${category.bgColor} hidden md:block flex-shrink-0 w-80 h-96 relative overflow-hidden`}
           >
-            <Image
+            <img
               src={category.lifestyleImage || "/placeholder.svg"}
               alt={category.lifestyleAlt}
-              fill
               className="object-cover "
             />
           </div>
@@ -231,10 +230,9 @@ export default function ProductShowcase() {
                 >
                   {/* Product Image */}
                   <div className="relative mb-3 row-span-2">
-                    <Image
+                    <img
                       src={product.image || "/placeholder.svg"}
                       alt={product.name}
-                      fill
                       className="object-contain group-hover:scale-105 transition-transform"
                     />
                   </div>

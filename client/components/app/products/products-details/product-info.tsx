@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,6 @@ import {
   ShoppingCart,
   Star,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { IProduct } from "@/types/product-type";
@@ -277,7 +277,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <div className="flex items-center text-sm gap-16">
             <span className="text-sm text-gray-600">Refund</span>
             <div className="flex items-center gap-2">
-              <Image
+              <img
                 src="/images/refund-sticker.png"
                 alt="Refund Policy"
                 width={200}

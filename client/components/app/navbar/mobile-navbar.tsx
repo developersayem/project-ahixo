@@ -1,9 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
 import { X, Menu, Search, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -67,7 +67,7 @@ export default function MobileNavbar() {
 
         {/* Logo */}
         <div className="text-xl font-bold">
-          <Image
+          <img
             src="/logos/ahixo-logo.webp"
             alt="AHIXO"
             width={150}

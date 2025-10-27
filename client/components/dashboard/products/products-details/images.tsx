@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { IProduct } from "@/types/product-type";
 
 interface ImagesProps {
@@ -21,7 +21,7 @@ export function Images({ product }: ImagesProps) {
     <div className="space-y-4 md:w-5/8">
       {/* Main Image */}
       <div className="aspect-square bg-gray-100 overflow-hidden relative">
-        <Image
+        <img
           src={images[selectedImage]}
           alt={product.title}
           width={500}
@@ -41,7 +41,7 @@ export function Images({ product }: ImagesProps) {
               selectedImage === index ? "border-brand-500" : "border-gray-200"
             }`}
           >
-            <Image
+            <img
               src={image}
               alt={`${product.title} ${index + 1}`}
               width={64}

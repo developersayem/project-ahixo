@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import useSWR from "swr";
@@ -12,7 +13,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Search, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import api from "@/lib/axios";
@@ -111,7 +111,7 @@ export function ProductList() {
               className="flex items-center justify-between p-2 border border-border"
             >
               <div className="flex items-center space-x-4">
-                <Image
+                <img
                   src={product.images[0] || "/placeholder.svg"}
                   alt={product.title}
                   width={60}

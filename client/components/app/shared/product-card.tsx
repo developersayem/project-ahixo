@@ -1,9 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { IProduct } from "@/types/product-type";
 import { useCart } from "@/hooks/api/useCart";
@@ -20,6 +20,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, dict }: ProductCardProps) {
   const pathname = usePathname();
+
   const router = useRouter();
   const { addItem } = useCart();
   const { setCartFromBuyNow } = useCreateOrder();
@@ -87,7 +88,7 @@ export function ProductCard({ product, dict }: ProductCardProps) {
     if (!inStock) return;
     try {
       setCartFromBuyNow(product, 1);
-      router.push("/checkout");
+      router.push(`/${locale}/checkout`);
     } catch (err) {
       console.error(err);
       toast.error("Failed to process Buy Now");
@@ -112,10 +113,9 @@ export function ProductCard({ product, dict }: ProductCardProps) {
         <Link href={`/${locale}/products/${product._id}`}>
           {/* 🖼️ Image */}
           <div className="relative aspect-square mb-4 bg-gray-50 overflow-hidden">
-            <Image
+            <img
               src={product.images?.[0] || "/placeholder.svg"}
               alt={product.title}
-              fill
               className="object-contain group-hover:scale-105 transition-transform duration-200"
             />
           </div>

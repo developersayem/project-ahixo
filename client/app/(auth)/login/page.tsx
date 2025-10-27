@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
 import { LoginForm } from "@/components/shared/login-form";
-import Image from "next/image";
 
 export default function LoginPage() {
   return (
@@ -9,7 +9,7 @@ export default function LoginPage() {
         {/* Left Side - Image */}
         <div className="hidden lg:flex flex-1 relative bg-gradient-to-br from-brand-100 to-gray-200">
           <div className="absolute inset-0 flex items-center justify-center">
-            <Image
+            <img
               src="/logos/ahixo-logo-not-align.webp"
               alt="Shopping cart with package"
               className="max-w-md w-full h-auto object-contain"

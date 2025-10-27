@@ -1,8 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { UserNav } from "@/components/shared/user-nav";
@@ -21,7 +21,7 @@ export function MiddleNavbar({ dict }: { dict: IDictionary }) {
             <div className="flex items-center">
               <div className="flex items-center ml-10">
                 <div className="text-xl font-bold">
-                  <Image
+                  <img
                     src="/logos/ahixo-logo.webp"
                     alt="AHIXO"
                     width={150}

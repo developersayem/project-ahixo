@@ -1,8 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import type React from "react";
 import { useState } from "react";
-import Image from "next/image";
 import { IProduct } from "@/types/product-type";
 
 interface ProductImagesProps {
@@ -46,7 +46,7 @@ export function ProductImages({ product }: ProductImagesProps) {
           transition: "background-size 0.3s ease",
         }}
       >
-        <Image
+        <img
           src={images[selectedImage] || "/placeholder.svg"}
           alt={product.title}
           width={500}
@@ -68,7 +68,7 @@ export function ProductImages({ product }: ProductImagesProps) {
               selectedImage === index ? "border-brand-500" : "border-gray-200"
             }`}
           >
-            <Image
+            <img
               src={image || "/placeholder.svg"}
               alt={`${product.title} ${index + 1}`}
               width={64}

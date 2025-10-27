@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -5,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Truck, CheckCircle, Clock, XCircle, Trash2 } from "lucide-react";
-import Image from "next/image";
 import { IOrder } from "@/types/order-type";
 import { useCurrency } from "@/contexts/currency-context";
 import { IDictionary } from "@/types/locale/dictionary.type";
@@ -116,7 +116,7 @@ export function OrderCard({
               >
                 {/* Product Image */}
                 <div className="w-20 h-20 bg-muted overflow-hidden flex-shrink-0">
-                  <Image
+                  <img
                     src={product.images?.[0] || "/placeholder.svg"}
                     alt={product.title || product.name}
                     width={80}

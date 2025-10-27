@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 
 interface AutoCarouselProps {
   className?: string;
@@ -46,12 +46,10 @@ export function HeroCarousel({ className = "" }: AutoCarouselProps) {
           }`}
         >
           <div className="relative w-full h-full bg-slate-800">
-            <Image
+            <img
               src={slide.image || "/placeholder.svg"}
               alt={slide.image || `Slide ${index++}`}
-              fill
               className="object-cover"
-              priority={index === 0}
             />
           </div>
         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import type React from "react";
@@ -5,7 +6,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Image from "next/image";
 import Link from "next/link";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import {
@@ -35,12 +35,7 @@ export function VerificationForm() {
     <div className="w-full max-w-md mx-auto p-6 bg-white">
       {/* Header Icon */}
       <div className="flex justify-center mb-6">
-        <Image
-          src="/logos/ahixo-logo.webp"
-          alt="AHIXO"
-          width={150}
-          height={50}
-        />
+        <img src="/logos/ahixo-logo.webp" alt="AHIXO" width={150} height={50} />
       </div>
 
       {step === "email" && (

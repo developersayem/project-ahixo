@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import type React from "react";
@@ -8,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
@@ -54,7 +54,7 @@ export function LoginForm({
       {/* Header */}
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4 md:hidden">
-          <Image
+          <img
             src="/logos/ahixo-logo.webp"
             alt="AHIXO"
             width={150}

@@ -1,10 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { ChevronDown, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import Image from "next/image";
 import clsx from "clsx";
 import { useCart } from "@/hooks/api/useCart";
 import { useAuth } from "@/contexts/auth-context";
@@ -183,7 +183,7 @@ export function BottomNavbar({ dict }: { dict: IDictionary }) {
                       onClick={() => handleCategoryClick(cat.value, cat.link)}
                       className="flex items-center space-x-3 px-3 py-[10.5px] hover:bg-brand-100 cursor-pointer border-b last:border-b-0 group"
                     >
-                      <Image
+                      <img
                         src={cat.icon}
                         alt={cat.name}
                         width={20}

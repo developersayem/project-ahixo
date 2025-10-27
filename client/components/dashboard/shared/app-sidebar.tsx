@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import * as React from "react";
@@ -22,13 +23,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-// import { useAuth } from "@/contexts/auth-context";
 import Link from "next/link";
 import { NavUser } from "./nav-user";
-import Image from "next/image";
 import { useAuth } from "@/contexts/auth-context";
-// import { UserCard } from "./user-card";
-// import { StoreCard } from "./store-card";
 
 const mainRoute = "/dashboard";
 
@@ -176,7 +173,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="flex items-center">
                   <div className="flex items-center">
                     <div className="text-xl font-bold">
-                      <Image
+                      <img
                         src="/logos/ahixo-logo.webp"
                         alt="AHIXO"
                         width={150}

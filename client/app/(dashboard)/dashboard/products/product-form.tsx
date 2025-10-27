@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X, Plus } from "lucide-react";
-import Image from "next/image";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
@@ -549,7 +549,7 @@ export function ProductForm({ productId }: ProductFormProps) {
                     key={index}
                     className="relative group overflow-hidden border"
                   >
-                    <Image
+                    <img
                       src={img}
                       alt={`Product ${index + 1}`}
                       width={200}

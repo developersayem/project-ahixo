@@ -1,6 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Minus, Plus, ShoppingCart } from "lucide-react";
@@ -41,10 +41,9 @@ export function WishlistItem({
       <td className="p-3 sm:p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
           <div className="relative h-20 w-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-            <Image
+            <img
               src={item.image}
               alt={item.name}
-              fill
               className="object-cover"
               sizes="80px"
             />

@@ -1,6 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -94,7 +94,7 @@ export default function SellerRegisterPage() {
       {/* Left Side */}
       <div className="hidden lg:flex flex-1 relative bg-gradient-to-br from-brand-100 to-gray-200">
         <div className="absolute inset-0 flex items-center justify-center">
-          <Image
+          <img
             src="/logos/ahixo-logo-not-align.webp"
             alt="AHIXO Seller Register"
             className="max-w-md w-full h-auto object-contain"
@@ -110,7 +110,7 @@ export default function SellerRegisterPage() {
           {step === "register" ? (
             <>
               <div className="flex justify-center mb-4 lg:hidden">
-                <Image
+                <img
                   src="/logos/ahixo-logo.webp"
                   alt="AHIXO"
                   width={150}

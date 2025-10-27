@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -16,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X, Plus } from "lucide-react";
-import Image from "next/image";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
@@ -575,10 +575,9 @@ export function ProductForm({ productId }: ProductFormProps) {
             <div className="grid grid-cols-3 gap-2 mt-2">
               {previewImages.map((img, i) => (
                 <div key={i} className="relative w-full aspect-square">
-                  <Image
+                  <img
                     src={img}
                     alt={`preview-${i}`}
-                    fill
                     className="object-cover rounded"
                   />
                   <Button
