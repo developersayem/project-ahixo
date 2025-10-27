@@ -17,7 +17,7 @@ import { IProduct } from "@/types/product-type";
 import { MessageSellerModal } from "./message-seller-modal";
 import { toast } from "sonner";
 import { useCart } from "@/hooks/api/useCart";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
 import { useCurrency } from "@/contexts/currency-context";
 import api from "@/lib/axios";
@@ -28,6 +28,8 @@ interface ProductInfoProps {
 
 export function ProductInfo({ product }: ProductInfoProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1] || "en";
   const { setCartFromBuyNow } = useCreateOrder();
   const { addItem, mutateCart } = useCart();
   const { convertPrice, symbolMap, currency } = useCurrency();
@@ -92,7 +94,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
 
       // Wait for SWR to refresh
       await mutateCart();
-      router.push("/cart");
+      router.push(`/${locale}/cart`);
       toast.success("Added to cart!");
     } catch (err) {
       console.error(err);
@@ -104,7 +106,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
     if (!inStock) return;
     try {
       setCartFromBuyNow(product, 1);
-      router.push("/checkout");
+      router.push(`/${locale}/checkout`);
     } catch (err) {
       console.error(err);
       toast.error("Failed to process Buy Now");

@@ -103,7 +103,11 @@ export function ProductsShowcase({ dict }: { dict: IDictionary }) {
                         size="sm"
                         variant="ghost"
                         className="absolute top-2 right-2 bg-white/80 hover:bg-white text-gray-600 hover:text-red-500 w-8 h-8 p-0"
-                        onClick={() => handleAddToWishlist(product._id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAddToWishlist(product._id);
+                        }}
                       >
                         <Heart className="w-4 h-4" />
                       </Button>
@@ -148,7 +152,11 @@ export function ProductsShowcase({ dict }: { dict: IDictionary }) {
                       </div>
 
                       <Button
-                        onClick={() => handleAddToCart(product)}
+                        onClick={(e) => {
+                          e.preventDefault(); // stop <Link> navigation
+                          e.stopPropagation(); // stop event bubbling
+                          handleAddToCart(product);
+                        }}
                         className="w-full bg-[#F4B400] hover:bg-[#e6a200] text-[#0F4F2A] font-medium text-xs h-8"
                       >
                         <ShoppingCart className="w-3 h-3 mr-1" />

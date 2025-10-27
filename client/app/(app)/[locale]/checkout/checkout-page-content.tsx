@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCreateOrder } from "@/contexts/create-order-context";
 import { useCurrency } from "@/contexts/currency-context";
 import api from "@/lib/axios";
@@ -22,6 +22,8 @@ const CheckoutPageContents = ({ dict }: { dict: IDictionary }) => {
   const { mutateCart } = useCart();
   const { currency, symbolMap, convertPrice } = useCurrency();
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = pathname.split("/")[1] || "en";
 
   if (!context)
     throw new Error("CheckoutPage must be used inside CreateOrderProvider");
@@ -98,7 +100,7 @@ const CheckoutPageContents = ({ dict }: { dict: IDictionary }) => {
       toast.success("Order placed successfully!");
       clearOrder();
       mutateCart();
-      router.push("/orders");
+      router.push(`/${locale}/orders`);
     } catch (err) {
       console.error("Order error:", err);
       toast.error("Something went wrong while placing order");
