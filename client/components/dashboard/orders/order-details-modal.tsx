@@ -58,6 +58,8 @@ export function OrderDetailsModal({
     return <Badge className={config.color}>{config.label}</Badge>;
   };
 
+  console.log(order);
+
   const getStatusIcon = (status: string) => {
     const statusConfig = {
       processing: Clock,

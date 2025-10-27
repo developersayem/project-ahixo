@@ -20,7 +20,7 @@ export function OrderStatusFilter({
         <TabsTrigger value="all">{dict.orders.tabs.tab1}</TabsTrigger>
         <TabsTrigger value="processing">{dict.orders.tabs.tab2}</TabsTrigger>
         <TabsTrigger value="on-hold">{dict.orders.tabs.tab3}</TabsTrigger>
-        <TabsTrigger value="delivered">{dict.orders.tabs.tab4}</TabsTrigger>
+        <TabsTrigger value="completed">{dict.orders.tabs.tab4}</TabsTrigger>
         <TabsTrigger value="canceled">{dict.orders.tabs.tab45}</TabsTrigger>
       </TabsList>
     </Tabs>
