@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
+// import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -61,12 +61,12 @@ export const SellersTable: React.FC<SellersTableProps> = ({ sellers }) => {
                 className="hover:bg-gray-50 transition-colors"
               >
                 <TableCell>
-                  <Link
+                  {/* <Link
                     href={`/admin/sellers/${seller._id}`}
                     className="text-blue-600 hover:underline"
-                  >
-                    {seller.fullName}
-                  </Link>
+                  > */}
+                  {seller.fullName}
+                  {/* </Link> */}
                 </TableCell>
                 <TableCell>{seller.email}</TableCell>
                 <TableCell>{seller.phone}</TableCell>
